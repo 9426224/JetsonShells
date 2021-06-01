@@ -3,48 +3,41 @@
 ##############################################
 # FunctionName:echocolor
 ##############################################
-function echocolor(  )
-{
+function echocolor() {
     string=$1
     color=$2
     currentTimestamp=$(date "+%Y-%m-%d %H:%M:%S")
 
     ## String
-    if [ "x${string}" == "x" ];then
+    if [ "x${string}" == "x" ]; then
         string=""
     else
         string="${currentTimestamp} ${string}"
     fi
 
-    ## Color 
+    ## Color
     #Red : Error Message
-    if [ "${color}" == "red" ];
-    then
+    if [ "${color}" == "red" ]; then
         string="\n\033[1;41;37m ${string} \033[0m"
 
     #Green : Success Message
-    elif [ "${color}" == "green" ];
-    then
+    elif [ "${color}" == "green" ]; then
         string="\033[1;42;37m ${string} \033[0m"
 
     #Yellow : Warning Message
-    elif [ "${color}" == "yellow" ];
-    then
+    elif [ "${color}" == "yellow" ]; then
         string="\033[1;43;37m ${string} \033[0m"
 
     #Blue : Question Message
-    elif [ "${color}" == "blue" ];
-    then
+    elif [ "${color}" == "blue" ]; then
         string="\033[1;44;37m ${string} \033[0m"
 
-    #Purple : Module Install Start 
-    elif [ "${color}" == "purple" ];
-    then
+    #Purple : Module Install Start
+    elif [ "${color}" == "purple" ]; then
         string="\033[1;45;37m ${string} \033[0m"
 
     #Cyan : Version Message
-    elif [ "${color}" == "cyan" ];
-    then
+    elif [ "${color}" == "cyan" ]; then
         string="\033[1;46;37m ${string} \033[0m"
 
     else
@@ -57,25 +50,24 @@ function echocolor(  )
 ##############################################
 # FunctionName:UpdateSource
 ##############################################
-function UpdateSource(  )
-{
+function UpdateSource() {
     echocolor "Update Source" "purple"
     if [[ -f /etc/apt/sources.list.bak ]]; then
-		echocolor "sources.list.bak exists" "yellow"
-	else
-		mv /etc/apt/sources.list{,.bak}
-	fi
+        echocolor "sources.list.bak exists" "yellow"
+    else
+        mv /etc/apt/sources.list{,.bak}
+    fi
 
-	[ -f /etc/apt/sources.list ] && rm /etc/apt/sources.list
+    [ -f /etc/apt/sources.list ] && rm /etc/apt/sources.list
 
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
-	echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
 
     echocolor "Ubuntu source has been updated to Tsinghua source." "green"
 }
@@ -83,18 +75,17 @@ function UpdateSource(  )
 ##############################################
 # FunctionName:InstallSimpleProgram
 ##############################################
-function InstallSimpleProgram (  )
-{
+function InstallSimpleProgram() {
     echo
     program=$1
     echocolor "Install $program" "purple"
-	which $program
-	if [ $? -eq 1 ];then
-		$systemPackage -y install $program  
-        if [ $? -ne 0 ];then
+    which $program
+    if [ $? -eq 1 ]; then
+        $systemPackage -y install $program
+        if [ $? -ne 0 ]; then
             echocolor "$program install failed, try re-install..." "red"
             $systemPackage -y install $program
-            if [ $? -ne 0 ];then
+            if [ $? -ne 0 ]; then
                 echocolor "$program install failed." "red"
             else
                 echocolor "$program has been installed." "green"
@@ -104,21 +95,20 @@ function InstallSimpleProgram (  )
         fi
     else
         echocolor "$program already installed." "yellow"
-	fi	
-    echo	
+    fi
+    echo
 }
 
 ##############################################
 # FunctionName:InstallROS
 ##############################################
-function InstallROS (  )
-{
+function InstallROS() {
     echo
     echocolor "Install ROS" "purple"
     sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-    
+
     apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-    if [ $? -eq 1 ];then
+    if [ $? -eq 1 ]; then
         curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
     fi
 
@@ -130,28 +120,28 @@ function InstallROS (  )
     InstallSimpleProgram "python-wstool"
     InstallSimpleProgram "python-catkin-tools"
 
-    if [ $? -eq 1 ];then
+    if [ $? -eq 1 ]; then
         echocolor "Get apt update list failed." "red"
     fi
-    
+
     $systemPackage install ros-melodic-desktop-full
-    if [ $? -eq 0 ];then
+    if [ $? -eq 0 ]; then
         echocolor "ROS Desktop Full Installed Successfully." "green"
     else
         echocolor "ROS Desktop Full Installed Failed." "red"
     fi
 
-    echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+    echo "source /opt/ros/melodic/setup.bash" >>~/.bashrc
     source ~/.bashrc
     echocolor "Add ros source to .bashrc successfully." "green"
 
     rosdep init
-    if [ $? -eq 1 ];then
+    if [ $? -eq 1 ]; then
         wget http://packages.ros.org/ros.key -O - | apt-key add -
         rosdep init
     fi
     rosdep update
-    if [ $? -eq 1 ];then
+    if [ $? -eq 1 ]; then
         echocolor "Rosdep init failed." "red"
     fi
     echo
@@ -160,8 +150,7 @@ function InstallROS (  )
 ##############################################
 # FunctionName:InstallOpenCV
 ##############################################
-function InstallOpenCV (  )
-{
+function InstallOpenCV() {
     echo
     echocolor "Install OpenCV" "purple"
     #OpenCV dependencies
@@ -175,7 +164,7 @@ function InstallOpenCV (  )
     InstallSimpleProgram "libjasper-dev"
 
     opencv_version
-    if [ $? -ne 1 ];then
+    if [ $? -ne 1 ]; then
         echocolor "OpenCV already installed." "yellow"
     else
         folder = ${HOME}/src
@@ -186,7 +175,7 @@ function InstallOpenCV (  )
             echocolor "opencv-3.4.14.tar.gz exists" "yellow"
         else
             wget -c https://codeload.github.com/opencv/opencv/tar.gz/refs/tags/3.4.14 -O opencv-3.4.14.tar.gz
-            if [ $? -eq 1 ];then
+            if [ $? -eq 1 ]; then
                 echocolor "Download OpenCV 3.4.14 source code failed." "red"
                 exit
             else
@@ -196,7 +185,7 @@ function InstallOpenCV (  )
 
         if [[ -f ./opencv-3.4.14.tar.gz ]]; then
             tar -zxf opencv-3.4.14.tar.gz
-            if [ $? -eq 1 ];then
+            if [ $? -eq 1 ]; then
                 echocolor "Unzip OpenCV failed, may file was wrong or broken, try delete and re-run scripts." "red"
                 exit
             else
@@ -206,18 +195,18 @@ function InstallOpenCV (  )
 
         cd ./opencv-3.4.14 && mkdir -p build && cd build
         cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTS=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_FAST_MATH=1 -DCUDA_ARCH_BIN=7.5 -DWITH_CUBLAS=1 -DENABLE_FAST_MATH=1 -DWITH_TBB=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DWITH_V4L=ON -DBUILD_TIFF=ON -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_EXAMPLES=OFF -DWITH_GSTREAMER=ON -DWITH_GTK=ON -DWITH_GTHREAD=ON -DWITH_QT=ON -DWITH_OPENGL=ON -DWITH_FFMPEG=ON -DWITH_LIBV4L=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DHAVE_opencv_python3=ON -DBUILD_EXAMPLES=OFF ..
-        if [ $? -eq 1 ];then
+        if [ $? -eq 1 ]; then
             echocolor "CMake OpenCV failed, please check the external libraries that opencv depends on." "red"
             exit
         fi
 
         make -j $(nproc) ..
-        if [ $? -eq 1 ];then
+        if [ $? -eq 1 ]; then
             echocolor "Make OpenCV failed, please check the error message." "red"
             exit
         fi
         make -j $(nproc) install
-        if [ $? -eq 1 ];then
+        if [ $? -eq 1 ]; then
             echocolor "Install OpenCV failed, please check the error message." "red"
             exit
         else
@@ -231,15 +220,12 @@ function InstallOpenCV (  )
 ##############################################
 # FunctionName:InstallProtobuf
 ##############################################
-function InstallProtobuf (  )
-{
+function InstallProtobuf() {
     echo
     echocolor "Install Protobuf" "purple"
     #Protobuf dependencies
-    InstallSimpleProgram "autoconf" 
+    InstallSimpleProgram "autoconf"
     InstallSimpleProgram "libtool"
-
-    
 
     folder = ${HOME}/src
     mkdir -p $folder
@@ -266,7 +252,7 @@ function InstallProtobuf (  )
     make check
     make -j $(nproc) install
     ldconfig
-    
+
     pip3 uninstall -y protobuf
     pip3 install Cython
     cd python/
@@ -274,18 +260,102 @@ function InstallProtobuf (  )
     python3 setup.py test --cpp_implementation
     sudo python3 setup.py install --cpp_implementation
     echocolor "Install Protobuf Success, Install Address at /usr." "purple"
+    echo/
+}
+
+##############################################
+# FunctionName:Installlibtorch
+##############################################
+function Installlibtorch() {
     echo
+    echocolor "Install Protobuf" "purple"
+
+    folder = ${HOME}/src
+    mkdir -p $folder
+    cd $folder
+
+    if [ ! -f libtorch-shared-with-deps-1.7.0.zip ]; then
+        wget https://download.pytorch.org/libtorch/cu102/libtorch-shared-with-deps-1.7.0.zip
+    fi
+
+    
+
+    echocolor "Install libtorch Success, Install Address at ~/src/libtorch." "purple"
+    echo
+}
+
+##############################################
+# FunctionName:InstallCmake
+##############################################
+function InstallCmake() {
+    echo
+    echocolor "Install Cmake" "purple"
+    
+    version=3.20
+    build=3
+    cmakeVersion=$(cmake --version | awk 'NR==1 {print $3}')
+
+    if [[ $cmakeVersion > $version.$build ]]  || [[ $cmakeVersion == $version.$build ]]; then
+        echocolor "Cmake already install." "yellow"
+    else
+        apt remove cmake
+        if [ $? -eq 1 ]; then
+            echocolor "Remove older version of cmake failed." "red"
+            exit
+        else
+            echocolor "Remove older version of cmake succeed." "green"
+        fi
+
+        folder = ${HOME}/src
+        mkdir -p $folder
+        cd $folder
+
+        if [ ! -f cmake-$version.$build.tar.gz ]; then
+            wget https://cmake.org/files/v$version/cmake-$version.$build.tar.gz
+        fi
+
+        tar -xzvf cmake-$version.$build.tar.gz
+        if [ $? -eq 1 ]; then
+            echocolor "Unzip cmake failed." "red"
+            exit
+        else
+            echocolor "Unzip cmake succeed." "green"
+        fi
+
+        cd cmake-$version.$build
+        ./bootstrap
+
+        make -j $(nproc)
+        if [ $? -eq 1 ]; then
+            echocolor "Make cmake failed." "red"
+            exit
+        else
+            echocolor "Make cmake succeed." "green"
+        fi
+
+        make -j $(nproc) install
+        if [ $? -eq 1 ]; then
+            echocolor "Install cmake failed." "red"
+            exit
+        else
+            echocolor "Install cmake succeed." "green"
+        fi
+
+        ln -s /usr/local/bin/cmake /usr/bin/cmake
+
+        echocolor "Install Cmake Success." "purple"
+        echo
+    fi
 }
 
 ##############################################
 # FunctionName:GetSuperUserPermission
 ##############################################
-function GetSuperUserPermission (  )
-{
+function GetSuperUserPermission() {
     echo
     echocolor "Get SuperUser Permission" "purple"
     sudo su
-    if [ $? -eq 1 ];then
+    if [ $? -eq 1 ]; then
         echocolor "Get SuperUser Permission failed." "red"
         exit
     else
@@ -297,8 +367,7 @@ function GetSuperUserPermission (  )
 ##############################################
 # FunctionName:GetCurrentVersion
 ##############################################
-function GetCurrentVersion (  )
-{
+function GetCurrentVersion() {
     shellVersion="0.0.1"
     echocolor "Install Package Shell Version: $shellVersion" "cyan"
 
@@ -317,13 +386,13 @@ function GetCurrentVersion (  )
         release="ubuntu"
         systemPackage="apt"
     fi
-    
+
     systempwd="/etc/systemd/system/"
     jetpackVersion=$(cat /etc/nv_tegra_release)
     tensorRTVersion=$(dpkg -l | grep TensorRT | head -1)
-    python2Version=$(python -V 2>&1|awk '{print $2}')
-    python3Version=$(python3 -V 2>&1|awk '{print $2}')
-    
+    python2Version=$(python -V 2>&1 | awk '{print $2}')
+    python3Version=$(python3 -V 2>&1 | awk '{print $2}')
+
     echocolor "System version: $release" "cyan"
     echocolor "Jetpack version: $jetpackVersion" "cyan"
     echocolor "TensorRT version: $tensorRTVersion" "cyan"
@@ -335,30 +404,36 @@ function GetCurrentVersion (  )
 ##############################################
 # FunctionName:InstallRequirements
 ##############################################
-function InstallRequirements(  )
-{
+function InstallRequirements() {
     echo
     echocolor "Install Requirements" "purple"
     echocolor "Do you want to start install requirements? (Y/N)" "blue"
     read startDependencies
-    if [ $startRequirements != "Y" ] && [ $startRequirements != "y" ];then 
-        echocolor "Install requirements failed!" "red"        
-        exit 0;
+    if [ $startRequirements != "Y" ] && [ $startRequirements != "y" ]; then
+        echocolor "Install requirements failed!" "red"
+        exit 0
     fi
-    
+
     UpdateSource
-        
+
     InstallSimpleProgram "gcc"
     InstallSimpleProgram "git"
     InstallSimpleProgram "curl"
     InstallSimpleProgram "wget"
     InstallSimpleProgram "cmake"
+    InstallSimpleProgram "vim"
+    InstallSimpleProgram "make"
+    InstallSimpleProgram "libnss3"
+    InstallSimpleProgram "tree"
+    InstallSimpleProgram "openssh-server"
+    InstallSimpleProgram "openssh-client"
     
+    InstallCmake
 
-    InstallProtobuf&
-
+    #InstallProtobuf &
     InstallROS
     InstallOpenCV
+    Installlibtorch
 
     echo
 }
@@ -366,13 +441,11 @@ function InstallRequirements(  )
 ##############################################
 # FunctionName:Main
 ##############################################
-function Main(  )
-{
+function Main() {
     # GetSuperUserPermission
     GetCurrentVersion
     InstallRequirements
 }
-
 
 ###################################
 Main
