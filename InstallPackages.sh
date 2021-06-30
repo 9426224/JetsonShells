@@ -174,8 +174,8 @@ function InstallOpenCV() {
     InstallSimpleProgram "libgtk2.0-dev"
     InstallSimpleProgram "libavcodec-dev"
     InstallSimpleProgram "libavformat-dev"
-    InstallSimpleProgram "libjpeg.dev"
-    InstallSimpleProgram "libtiff4.dev"
+    InstallSimpleProgram "libjpeg-dev"
+    InstallSimpleProgram "libtiff4-dev"
     InstallSimpleProgram "libswscale-dev"
     InstallSimpleProgram "libjasper-dev"
 
@@ -330,11 +330,12 @@ function InstallCmake() {
     echo
     echocolor "Install Cmake" "purple"
 
-    version=3.20.3
+    version=3.20
+    build=3
     cmakeVersion=$(cmake --version | awk 'NR==1 {print $3}')
 
-    if version_lt $cmakeVersion $version; then
-        apt remove cmake
+    if version_lt $cmakeVersion $version.$build; then
+        #apt remove cmake
         if [ $? -eq 1 ]; then
             echocolor "Remove older version of cmake failed." "red"
             exit
@@ -449,7 +450,7 @@ function InstallRequirements() {
 
     echocolor "Do you want to start install requirements? (Y/N)" "blue"
     read startDependencies
-    if [ $startRequirements != "Y" ] && [ $startRequirements != "y" ]; then
+    if [[ $startRequirements -gt "Y" ]] && [[ $startRequirements -gt "y" ]]; then
         echocolor "Install requirements failed!" "red"
         exit 0
     fi
@@ -472,7 +473,7 @@ function InstallRequirements() {
     
     InstallCmake
 
-    #InstallProtobuf &
+    # InstallProtobuf &
     InstallProtobuf
     InstallROS
     InstallOpenCV
