@@ -296,6 +296,9 @@ function Installlibtorch() {
     InstallSimpleProgram "python3-pip"
     InstallSimpleProgram "libopenblas-base"
     InstallSimpleProgram "libopenmpi-dev"
+    InstallSimpleProgram "libopenblas-dev"
+    InstallSimpleProgram "libatlas-dev"
+    InstallSimpleProgram "liblapack-dev"
 
     torchVersion=$(python3 -c "import torch;print(torch.__version__)")
     installVersion=1.7.0
