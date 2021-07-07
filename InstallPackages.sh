@@ -61,24 +61,59 @@ function version_ge() { test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)"
 function UpdateSource() {
     echocolor "Update Source" "purple"
 
-    if [[ -f /etc/apt/sources.list.bak ]]; then
-        echocolor "sources.list.bak exists" "yellow"
-    else
-        mv /etc/apt/sources.list{,.bak}
-    fi
+    rm /etc/apt/source.list.bak
+    mv /etc/apt/sources.list{,.bak}
 
     [ -f /etc/apt/sources.list ] && rm /etc/apt/sources.list
 
-    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
-    echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
-
-    echocolor "Ubuntu source has been updated to Tsinghua source." "green"
+    echocolor "Choose which source you want use: (A/T/U/S/N) (A:Aliyun T:TsingHua U: Ustc S:Ubuntu Source N:Do not update source)" "blue"
+    read sourceChoose
+    if [[ "$sourceChoose" = "N" ]] || [[ "$sourceChoose" = "n" ]]; then
+        cp -ax /etc/apt/sources.list.bak /etc/apt/sources.list
+        echocolor "Doesn't update source" "yellow"
+    elif [[ "$sourceChoose" = "A" ]] || [[ "$sourceChoose" = "a" ]]; then
+        echo "deb https://mirrors.aliyun.com/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb https://mirrors.aliyun.com/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb https://mirrors.aliyun.com/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb https://mirrors.aliyun.com/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src https://mirrors.aliyun.com/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src https://mirrors.aliyun.com/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src https://mirrors.aliyun.com/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src https://mirrors.aliyun.com/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+        echocolor "Ubuntu source has been updated to Aliyun source." "green"
+    elif [[ "$sourceChoose" = "T" ]] || [[ "$sourceChoose" = "t" ]]; then
+        echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe" >>/etc/apt/sources.list
+        echocolor "Ubuntu source has been updated to Tsinghua source." "green"
+    elif [[ "$sourceChoose" = "U" ]] || [[ "$sourceChoose" = "u" ]]; then
+        echo "deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        echocolor "Ubuntu source has been updated to Ustc source." "green"
+    elif [[ "$sourceChoose" = "S" ]] || [[ "$sourceChoose" = "s" ]]; then
+        echo "deb http://ports.ubuntu.com/ bionic main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://ports.ubuntu.com/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://ports.ubuntu.com/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://ports.ubuntu.com/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb http://ports.ubuntu.com/ubuntu-ports/ bionic main universe restricted" >>/etc/apt/source.list
+        echo "deb-src http://ports.ubuntu.com/ bionic main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://ports.ubuntu.com/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://ports.ubuntu.com/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://ports.ubuntu.com/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        echo "deb-src http://ports.ubuntu.com/ubuntu-ports/ bionic main universe restricted" >>/etc/apt/source.list
+        echocolor "Ubuntu source has been updated to Original source." "green"
+    fi
 
     sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 
@@ -131,6 +166,13 @@ function InstallROS() {
     echo
     echocolor "Install ROS" "purple"
 
+    echocolor "Do you want to install ROS? (Y/N)" "blue"
+    read rosInstall
+    if [ "$rosInstall" != "Y" ] && [ "$rosInstall" != "y" ];then
+        echocolor "Install ROS Failed."  "red"
+        return
+    fi
+
     #ROS dependencies
     InstallSimpleProgram "python-rosdep"
     InstallSimpleProgram "python-rosinstall"
@@ -138,7 +180,7 @@ function InstallROS() {
     InstallSimpleProgram "python-wstool"
     InstallSimpleProgram "python-catkin-tools"
 
-    rosversion -d
+    which roscore
     if [ $? -eq 1 ];then
         InstallSimpleProgram "ros-melodic-desktop-full"
 
@@ -169,13 +211,20 @@ function InstallOpenCV() {
     echo
     echocolor "Install OpenCV" "purple"
 
+    echocolor "Do you want to install OpenCV? (Y/N)" "blue"
+    read opencvInstall
+    if [ "$opencvInstall" != "Y" ] && [ "$opencvInstall" != "y" ];then
+        echocolor "Install OpenCV Failed."  "red"
+        return
+    fi
+
     #OpenCV dependencies
     InstallSimpleProgram "build-essential"
     InstallSimpleProgram "libgtk2.0-dev"
     InstallSimpleProgram "libavcodec-dev"
     InstallSimpleProgram "libavformat-dev"
     InstallSimpleProgram "libjpeg-dev"
-    InstallSimpleProgram "libtiff4-dev"
+    InstallSimpleProgram "libtiff-dev"
     InstallSimpleProgram "libswscale-dev"
     InstallSimpleProgram "libjasper-dev"
 
@@ -183,23 +232,24 @@ function InstallOpenCV() {
     opencvVersion=$(pkg-config opencv --modversion)
     version=3.4.14
 
-    if version_lt $opencvVersion $version; then
+    pkg-config opencv --modversion
+    if [ $? -eq 1 ];then
         cd ${HOME}/src
 
-        if [[ -f ./opencv-3.4.14.tar.gz ]]; then
-            echocolor "opencv-3.4.14.tar.gz exists" "yellow"
+        if [[ -f ./opencv-$version.tar.gz ]]; then
+            echocolor "opencv-$version.tar.gz exists" "yellow"
         else
-            wget -c https://codeload.github.com/opencv/opencv/tar.gz/refs/tags/3.4.14 -O opencv-3.4.14.tar.gz
+            wget -c https://codeload.github.com/opencv/opencv/tar.gz/refs/tags/$version -O opencv-$version.tar.gz
             if [ $? -eq 1 ]; then
-                echocolor "Download OpenCV 3.4.14 source code failed." "red"
+                echocolor "Download OpenCV $version source code failed." "red"
                 exit
             else
                 echocolor "Download Succeed." "green"
             fi
         fi
 
-        if [[ -f ./opencv-3.4.14.tar.gz ]]; then
-            tar -zxf opencv-3.4.14.tar.gz
+        if [[ -f ./opencv-$version.tar.gz ]]; then
+            tar -zxf opencv-$version.tar.gz
             if [ $? -eq 1 ]; then
                 echocolor "Unzip OpenCV failed, may file was wrong or broken, try delete and re-run scripts." "red"
                 exit
@@ -208,7 +258,7 @@ function InstallOpenCV() {
             fi
         fi
 
-        cd ./opencv-3.4.14 && mkdir -p build && cd build
+        cd ./opencv-$version && mkdir -p build && cd build
         cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTS=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_FAST_MATH=1 -DCUDA_ARCH_BIN=7.5 -DWITH_CUBLAS=1 -DENABLE_FAST_MATH=1 -DWITH_TBB=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DWITH_V4L=ON -DBUILD_TIFF=ON -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_EXAMPLES=OFF -DWITH_GSTREAMER=ON -DWITH_GTK=ON -DWITH_GTHREAD=ON -DWITH_QT=ON -DWITH_OPENGL=ON -DWITH_FFMPEG=ON -DWITH_LIBV4L=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DHAVE_opencv_python3=ON -DBUILD_EXAMPLES=OFF ..
         if [ $? -eq 1 ]; then
             echocolor "CMake OpenCV failed, please check the external libraries that opencv depends on." "red"
@@ -228,7 +278,12 @@ function InstallOpenCV() {
             echocolor "Install OpenCV Success, Install Address at /usr." "red"
         fi
     else
-        echocolor "OpenCV already installed." "yellow"
+        if version_lt $opencvVersion $version ; then
+            echocolor "OpenCV already installed. Version: $opencvVersion" "yellow"
+        else
+            echocolor "OpenCV already installed. Version: $opencvVersion" "yellow"
+        fi
+        echocolor "OpenCV already installed. Version: $opencvVersion" "yellow"
     fi
 
     echo
@@ -240,6 +295,13 @@ function InstallOpenCV() {
 function InstallProtobuf() {
     echo
     echocolor "Install Protobuf" "purple"
+
+    echocolor "Do you want to install Protobuf? (Y/N)" "blue"
+    read protobufInstall
+    if [ "$protobufInstall" != "Y" ] && [ "$protobufInstall" != "y" ];then
+        echocolor "Install Protobuf Failed."  "red"
+        return
+    fi
 
     #Protobuf dependencies
     InstallSimpleProgram "autoconf"
@@ -291,6 +353,13 @@ function InstallProtobuf() {
 function Installlibtorch() {
     echo
     echocolor "Install libtorch" "purple"
+
+    echocolor "Do you want to install libtorch? (Y/N)" "blue"
+    read libtorchInstall
+    if [ "$libtorchInstall" != "Y" ] && [ "$libtorchInstall" != "y" ];then
+        echocolor "Install libtorch Failed."  "red"
+        return
+    fi
     
     #libtorch dependencies
     InstallSimpleProgram "python3-pip"
@@ -327,11 +396,88 @@ function Installlibtorch() {
 }
 
 ##############################################
+# FunctionName:InstallCvBridge
+##############################################
+function InstallCvBridge() {
+    echo
+    echocolor "Install CvBridge" "purple"
+
+    echocolor "Do you want to install CvBridge? (Y/N)" "blue"
+    read cvbridgeInstall
+    if [ "$cvbridgeInstall" != "Y" ] && [ "$cvbridgeInstall" != "y" ];then
+        echocolor "Install CvBridge Failed."  "red"
+        return
+    fi
+
+    #CvBridge dependencies
+    InstallSimpleProgram "python3-pip"
+    InstallSimpleProgram "python-catkin-tools"
+
+    pip3 install rospkg catkin_pkg
+
+    cvbridgeVersion=1.13.0
+
+    python -c "import cv_bridge"
+    if [ $? -eq 1 ];then
+        cd ${HOME}/src
+
+        if [ ! -f vision_opencv-$cvbridgeVersion ]; then
+            wget https://github.com/ros-perception/vision_opencv/archive/refs/tags/$cvbridgeVersion.zip -O vision_opencv-$cvbridgeVersion.zip
+        fi
+
+        unzip vision_opencv-$cvbridgeVersion.zip
+        if [ $? -eq 1 ]; then
+            echocolor "Unzip vision_opencv failed." "red"
+            exit
+        fi
+
+        mkdir -p ~/cv_bridge_workspace && cd ~/cv_bridge_workspace
+        mkdir -p build src install build devel logs
+
+        mv vision_opencv-$cvbridgeVersion ~/cv_bridge_workspace/src
+
+        cd ~/cv_bridge_workspace
+
+        source /opt/ros/melodic/setup.sh
+        if [ $? -eq 1 ]; then
+            echocolor "Source ros-melodic failed, please check if ros has been install." "red"
+            exit
+        fi
+
+        catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so
+        catkin config --install
+
+        catkin build cv_bridge
+
+        echo "source ~/cv_bridge_workspace/install/setup.bash --extend" >>~/.bashrc
+
+        # cd vision_opencv-$cvbridgeVersion/cv_bridge
+        # mkdir -p build && cd build
+
+        # cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so ..
+        # make 
+        # make install
+
+    else
+        echocolor "CvBridge already installed." "yellow"
+    fi
+
+    echo
+}
+
+##############################################
 # FunctionName:InstallCmake
 ##############################################
 function InstallCmake() {
     echo
     echocolor "Install Cmake" "purple"
+
+    echocolor "Do you want to install Cmake? (Y/N)" "blue"
+    read cmakeInstall
+    if [ "$cmakeInstall" != "Y" ] && [ "$cmakeInstall" != "y" ];then
+        echocolor "Install Cmake Failed."  "red"
+        return
+    fi
 
     version=3.20
     build=3
@@ -476,11 +622,12 @@ function InstallRequirements() {
     
     InstallCmake
 
-    # InstallProtobuf &
+    #InstallProtobuf &
     InstallProtobuf
     InstallROS
     InstallOpenCV
     Installlibtorch
+    InstallCvBridge
 
     echo
 }
