@@ -60,9 +60,9 @@ function version_ge() { test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)"
 ##############################################
 function UpdateSource() {
     echocolor "Update Source" "purple"
-
-    rm /etc/apt/source.list.bak
+    
     mv /etc/apt/sources.list{,.bak}
+    rm /etc/apt/source.list.bak
 
     [ -f /etc/apt/sources.list ] && rm /etc/apt/sources.list
 
@@ -115,16 +115,22 @@ function UpdateSource() {
         echocolor "Ubuntu source has been updated to Original source." "green"
     fi
 
-    sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    echocolor "Add New ros apt-key to keyserver: (Y/N)" "blue"
+    read keyChoose
+    if [[ "$keyChoose" = "Y" ]] || [[ "$keyChoose" = "y" ]]; then
+        sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 
-    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-    if [ $? -eq 1 ]; then
-        curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
+        apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+        if [ $? -eq 1 ]; then
+            curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
+        fi
     fi
 
-    $systemPackage update
-    if [ $? -eq 1 ]; then
-        echocolor "Get apt update list failed." "red"
+    if [[ "$sourceChoose" != "N" ]] && [[ "$sourceChoose" != "n" ]]; then
+        $systemPackage update
+        if [ $? -eq 1 ]; then
+            echocolor "Get apt update list failed." "red"
+        fi
     fi
 
     echo
@@ -339,6 +345,7 @@ function InstallProtobuf() {
         python3 setup.py build --cpp_implementation
         python3 setup.py test --cpp_implementation
         sudo python3 setup.py install --cpp_implementation
+
         echocolor "Install Protobuf Success, Install Address at /usr." "purple"
     else
         echocolor "Protobuf already Installed." "yellow"
@@ -535,6 +542,117 @@ function InstallCmake() {
 }
 
 ##############################################
+# FunctionName:InstallPyCuda
+##############################################
+function InstallPyCuda() {
+    echo
+    echocolor "Install PyCuda" "purple"
+
+    echocolor "Do you want to install PyCuda? (Y/N)" "blue"
+    read pycudaInstall
+    if [ "$pycudaInstall" != "Y" ] && [ "$pycudaInstall" != "y" ];then
+        echocolor "Install PyCuda Failed."  "red"
+        return
+    fi
+
+    #PyCuda dependencies
+    InstallSimpleProgram "build-essential"
+    InstallSimpleProgram "python3-dev"
+    InstallSimpleProgram "libboost-python-dev"
+    InstallSimpleProgram "libboost-thread-dev"
+    InstallSimpleProgram "ros-melodic-vision-msgs"
+
+    pip3 install setuptools
+    pip3 install onnx==1.4.1
+
+    #secUser=$(who am i | awk '{print $1}')
+    nvccPath=$(which nvcc)
+    ln -s $nvccPath /sbin/nvcc
+
+    # if ! which nvcc > /dev/null; then
+    #     echo "ERROR: nvcc not found"
+    #     exit
+    # fi
+
+    python3 -c "import pycuda; print('pycuda version:', pycuda.VERSION)"
+    if [ $? -eq 1 ];then
+        arch=$(uname -m)
+        cd ${HOME}/src
+
+        boost_pylib=$(basename /usr/lib/${arch}-linux-gnu/libboost_python*-py3?.so)
+        boost_pylibname=${boost_pylib%.so}
+        boost_pyname=${boost_pylibname/lib/}
+
+        if [ ! -f pycuda-2019.1.2.tar.gz ]; then
+            wget https://files.pythonhosted.org/packages/5e/3f/5658c38579b41866ba21ee1b5020b8225cec86fe717e4b1c5c972de0a33c/pycuda-2019.1.2.tar.gz
+        fi
+
+        CPU_CORES=$(nproc)
+
+        tar xzvf pycuda-2019.1.2.tar.gz
+
+        cd pycuda-2019.1.2
+
+        python3 ./configure.py --python-exe=/usr/bin/python3 --cuda-root=/usr/local/cuda --cudadrv-lib-dir=/usr/lib/${arch}-linux-gnu --boost-inc-dir=/usr/include --boost-lib-dir=/usr/lib/${arch}-linux-gnu --boost-python-libname=${boost_pyname} --boost-thread-libname=boost_thread --no-use-shipped-boost
+        
+        make -j$CPU_CORES
+        
+        python3 setup.py build
+        
+        sudo python3 setup.py install
+    else
+        echocolor "PyCuda already installed." "yellow"
+    fi
+
+    echo
+}
+
+##############################################
+# FunctionName:InstallJetsonInference
+##############################################
+function InstallJetsonInference() {
+    echo
+    echocolor "Install JetsonInference" "purple"
+
+    echocolor "Do you want to install JetsonInference? (Y/N)" "blue"
+    read jetsoninferenceInstall
+    if [ "$jetsoninferenceInstall" != "Y" ] && [ "$jetsoninferenceInstall" != "y" ];then
+        echocolor "Install JetsonInference Failed."  "red"
+        return
+    fi
+
+    #JetsonInference dependencies
+    InstallSimpleProgram "ros-melodic-image-transport"
+
+    python3 -c "import 2"
+    if [ $? -eq 1 ];then
+        cd ${HOME}/src
+
+        git clone --recursive https://github.com/dusty-nv/jetson-inference
+
+        cd jetson-inference
+        
+        git submodule update --init
+
+        mkdir -p build
+
+        cd build
+
+        cmake ../
+
+        make -j$(nproc)
+
+        make install
+
+        ldconfig
+    else
+        echocolor "JetsonInference already installed." "yellow"
+    fi
+
+    echo
+}
+
+##############################################
 # FunctionName:GetSuperUserPermission
 ##############################################
 function GetSuperUserPermission() {
@@ -591,6 +709,42 @@ function GetCurrentVersion() {
 }
 
 ##############################################
+# FunctionName:SetGitHubUser
+##############################################
+function SetGitHubUser() {
+    echocolor "Now Set GitHub User Account." "purple"
+
+    username=$(git config user.name)
+    useremail=$(git config user.email)
+
+    echocolor "Current name: $username email: $useremail" "cyan"
+
+    echocolor "Do you want to use local email to generate SSH key? (Y/N/C) (Y: Use local N: Not generate C: Change User info)" "blue"
+    read generateSSH
+    if [ "$generateSSH" = "Y" ] || [ "$generateSSH" = "y" ]; then
+        ssh-keygen -t RSA -C $useremail
+        cat ~/.ssh/id_rsa.pub
+        echocolor "Please add those SSH key to your GitHub Account then Enter to continue." "yellow"
+        read
+    elif [ "$generateSSH" = "N" ] || [ "$generateSSH" = "n" ]; then
+        return
+    elif [ "$generateSSH" = "C" ] || [ "$generateSSH" = "c" ]; then
+        echocolor "Enter new user name: " "blue"
+        read newname
+        username=newname
+        echocolor "Enter new user email: " "blue"
+        read newemail
+        useremail=newemail
+        git config --global user.name "$username"
+        git config --global user.email "$useremail"
+        ssh-keygen -t RSA -C $useremail
+        cat ~/.ssh/id_rsa.pub
+        echocolor "Please add those SSH key to your GitHub Account then Enter to continue." "yellow"
+        read
+    fi
+}
+
+##############################################
 # FunctionName:InstallRequirements
 ##############################################
 function InstallRequirements() {
@@ -598,13 +752,15 @@ function InstallRequirements() {
     echocolor "Install Requirements" "purple"
 
     echocolor "Do you want to start install requirements? (Y/N)" "blue"
-    read startDependencies
-    if [[ $startRequirements -gt "Y" ]] && [[ $startRequirements -gt "y" ]]; then
+    read startRequirements
+    if [[ "$startRequirements" != "Y" ]] && [[ "$startRequirements" != "y" ]]; then
         echocolor "Install requirements failed!" "red"
         exit 0
     fi
 
     mkdir -p ${HOME}/src
+
+    SetGitHubUser
 
     UpdateSource
 
@@ -628,6 +784,8 @@ function InstallRequirements() {
     InstallOpenCV
     Installlibtorch
     InstallCvBridge
+    InstallPyCuda
+    InstallJetsonInference
 
     echo
 }
