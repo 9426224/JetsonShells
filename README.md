@@ -2,7 +2,7 @@
 
 #### Introduction
 **Summary**
-This project includes a shell script.
+This project includes a shell script which used to install usable dependencies.
 
 #### Environment
 1.  Hardware: Nvidia Jetson AGX Xavier
