@@ -441,7 +441,7 @@ function InstallCvBridge() {
         mkdir -p ~/cv_bridge_workspace && cd ~/cv_bridge_workspace
         mkdir -p build src install build devel logs
 
-        mv vision_opencv-$cvbridgeVersion ~/cv_bridge_workspace/src
+        mv ~/src/vision_opencv-$cvbridgeVersion/cv_bridge ~/cv_bridge_workspace/src
 
         cd ~/cv_bridge_workspace
 
@@ -451,10 +451,14 @@ function InstallCvBridge() {
             exit
         fi
 
+        cd ${HOME}
+        chown -R ${USER}:${USER} ./cv_bridge_workspace
+        cd ~/cv_bridge_workspace
+
         catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so
         catkin config --install
 
-        catkin build cv_bridge
+        catkin build
 
         echo "source ~/cv_bridge_workspace/install/setup.bash --extend" >>~/.bashrc
 
@@ -624,15 +628,15 @@ function InstallJetsonInference() {
     #JetsonInference dependencies
     InstallSimpleProgram "ros-melodic-image-transport"
 
-    python3 -c "import 2"
+    python3 -c "import jetson.inference"
     if [ $? -eq 1 ];then
-        cd ${HOME}/src
+        cd ${HOME}/src/jetson-inference
 
-        git clone --recursive https://github.com/dusty-nv/jetson-inference
+        # git clone --recursive https://github.com/dusty-nv/jetson-inference
 
-        cd jetson-inference
+        # cd jetson-inference
         
-        git submodule update --init
+        # git submodule update --init
 
         mkdir -p build
 
