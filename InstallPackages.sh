@@ -313,7 +313,8 @@ function InstallProtobuf() {
     InstallSimpleProgram "autoconf"
     InstallSimpleProgram "libtool"
 
-    protoc --version
+    # protoc --version
+    import 1
     if [ $? -eq 1 ];then
         cd ${HOME}/src
 
@@ -428,7 +429,7 @@ function InstallCvBridge() {
     if [ $? -eq 1 ];then
         cd ${HOME}/src
 
-        if [ ! -f vision_opencv-$cvbridgeVersion ]; then
+        if [ ! -f vision_opencv-$cvbridgeVersion.zip ]; then
             wget https://github.com/ros-perception/vision_opencv/archive/refs/tags/$cvbridgeVersion.zip -O vision_opencv-$cvbridgeVersion.zip
         fi
 
