@@ -306,10 +306,14 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     echo $'var url = "mongodb://localhost:27017/admin"\n \
     var db = connect(url)\n \
     db.createUser({user:"bitcq",pwd:"bitcqpwd",roles: [ { role: "root", db: "admin" } ]})\n \
-    var url = "mongodb://localhost:27017/mec_db"\n \
-    var db1 = connect(url)\n \
+    var url1 = "mongodb://localhost:27017/ecu_db"\n \
+    var db1 = connect(url1)\n \
     db1.users.insert({"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","authority":1});\n \
-    db1.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
+    db1.users.ensureIndex({ username: 1 }, { unique: true })\n \
+    var url2 = "mongodb://localhost:27017/mec_db"\n \
+    var db2 = connect(url2)\n \
+    db2.users.insert({ "username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "authority": 1 });\n \
+    db2.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
     rm -rf /tmp/*
 
 
@@ -337,5 +341,5 @@ CMD ["bash"]
 WORKDIR /root/
 
 # sudo docker volume create mongodbdata
-# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always ros:foxy-base
+# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
 # sudo docker exec -it ros-foxy /bin/bash
