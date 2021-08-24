@@ -293,8 +293,6 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     chmod 777 -R /usr/local/mongodb/data && \
     ln -s /usr/local/mongodb/bin/mongod /usr/bin/mongod && \
     ln -s /usr/local/mongodb/bin/mongo /usr/bin/mongo && \
-    # mkdir -p /etc/rc.d/init.d && \
-    # ln -s /lib/lsb/init-functions /etc/rc.d/init.d/functions && \
     touch /usr/local/mongodb/bin/mongodb.conf && \
     echo $'dbpath = /usr/local/mongodb/data/db\n \
     logpath = /usr/local/mongodb/data/log\n \
@@ -312,57 +310,6 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     var db1 = connect(url)\n \
     db1.users.insert({"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","authority":1});\n \
     db1.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
-    # touch /etc/init.d/mongodb && \
-    # chmod 777 /etc/init.d/mongodb && \
-    # echo $'#!/bin/sh\n \
-    # EXE_FILE=/usr/local/mongodb/bin/mongod\n \
-    # CONFIG_FILE=/usr/local/mongodb/bin/mongodb.conf\n \
-    # . /etc/rc.d/init.d/functions\n \
-    # MONGOPID=`ps -ef| grep mongod| grep -v grep| awk '{print $2}'\n \
-    # test -x $EXE_FILE || exit 0\n \
-    # case "$1" in\n \
-    # start)\n \
-    #     ulimit -n 3000\n \
-    #     log_begin_msg "Starting MongoDB server"\n \
-    #     $EXE_FILE --config $CONFIG_FILE\n \
-    #     log_end_msg 0\n \
-    #     ;;\n \
-    # stop)\n \
-    #     log_begin_msg "Stopping MongoDB server"\n \
-    #     if [ ! -z "$MONGOPID" ]; then\n \
-    #         kill -15 $MONGOPID\n \
-    #     fi\n \
-    #     log_end_msg 0\n \
-    #     ;;\n \
-    # status)\n \
-    #     ps -aux| grep mongod\n \
-    #     ;;\n \
-    # *)\n \
-    #     log_success_msg "Usage: /etc/init.d/mongodb {start|stop|status}"\n \
-    #     exit 1\n \
-    # esac\n \
-    # exit 0' > /etc/init.d/mongodb && \
-    # update-rc.d mongodb defaults && \
-    # update-rc.d -f mongodb remove && \
-    # touch /etc/systemd/system/mongodb.service && \
-    # echo $'[Unit]\n \
-    # Description=mongodb\n \
-    # After=network.target\n \
-    # \n \
-    # [Service]\n \
-    # Type=forking\n \
-    # ExecStart=/usr/local/mongodb/bin/mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    # ExecReload=/bin/kill -HUP $MAINPID\n \
-    # Restart=always\n \
-    # \n \
-    # [Install]\n \
-    # WantedBy=multi-user.target' > /etc/systemd/system/mongodb.service && \
-    # chmod 0644 /etc/systemd/system/mongodb.service && \
-    # systemctl enable mongodb.service && \
-    #service mongodb stop && \
-    #kill -9  $(ps -ef | grep mongod | grep -v grep | grep -v PPID | awk '{ print $2}') && \
-    #echo 'auth = true\n' >> /usr/local/mongodb/bin/mongodb.conf && \
-    #service mongodb start && \
     rm -rf /tmp/*
 
 
@@ -373,22 +320,22 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 RUN echo $'#!/bin/bash\n \
     set -e\n \
     /etc/init.d/ssh start\n \
-    # service mongodb start\n \
-    # /usr/local/mongodb/bin/mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    # mongo /usr/local/mongodb/db-install.js\n \
-    # service mongodb stop\n \
-    # sed -i "s|auth = false|auth = true|" /usr/local/mongodb/bin/mongodb.conf\n \
-    # kill -9  $(ps -ef | grep mongod | grep -v grep | grep -v PPID | awk '{ print $2}')\n \
-    # /usr/local/mongodb/bin/mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    # service mongodb start\n \
     mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    #mongo /usr/local/mongodb/db-install.js\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     echo 'source /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
     echo $'PermitRootLogin yes\nPubkeyAuthentication yes' >> /etc/ssh/sshd_config
 
 
+EXPOSE 22
+EXPOSE 8001
+EXPOSE 63029
+
+
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
+
+# sudo docker volume create mongodbdata
+# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always ros:foxy-base
+# sudo docker exec -it ros-foxy /bin/bash
