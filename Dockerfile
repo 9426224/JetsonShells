@@ -3,9 +3,9 @@ FROM ${BASE_IMAGE}
 # Size: 631MB
 
 LABEL maintainer="9426224" \
-      version="0.1" \
-      description="A l4t-base dockerfile for ROS2 User" \
-      email="9426224@live.com"
+    version="0.1" \
+    description="A l4t-base dockerfile for ROS2 User" \
+    email="9426224@live.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -25,20 +25,15 @@ ENV PYTHONIOENCODING=utf-8
 
 # 
 # Description: Install basic packages and Add ROS repo
-# Size: 239MB
+# Size: 11.7MB
 #
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-		curl \
-		wget \
-		gnupg2 \
-		lsb-release \
-		ca-certificates \
-        build-essential \
-		git \
-        openssh-server \
-        vim \
-        usbutils \
+        curl \
+        wget \
+        gnupg2 \
+        lsb-release \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
@@ -61,50 +56,61 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 
 # 
 # Description: Install Development packages
-# Size: 438MB
+# Size: 689MB
 #
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        build-essential \
+        git \
+        openssh-server \
+        vim \
+        usbutils \
         libtool \
         apt-utils \
         autoconf \
         automake \
         unzip \
-		libbullet-dev \
-		libpython3-dev \
-		python3-colcon-common-extensions \
-		python3-flake8 \
-		python3-pip \
-		python3-numpy \
-		python3-pytest-cov \
-		python3-rosdep \
-		python3-setuptools \
-		python3-vcstool \
-		python3-rosinstall-generator \
-		libasio-dev \
-		libtinyxml2-dev \
-		libcunit1-dev \
+        tmux \
+        libbullet-dev \
+        libpython3-dev \
+        python3-colcon-common-extensions \
+        python3-flake8 \
+        python3-pip \
+        python3-numpy \
+        python3-pytest-cov \
+        python3-rosdep \
+        python3-setuptools \
+        python3-vcstool \
+        python3-rosinstall-generator \
+        libasio-dev \
+        libtinyxml2-dev \
+        libcunit1-dev \
         libopenblas-base \
         libopenmpi-dev \
         libopenblas-dev \
         libatlas-base-dev \
+        gfortran \
         liblapack-dev \
         libboost-python-dev \
         libboost-thread-dev \
+        libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && rm -rf /tmp/*
 
 
 # 
-# Description: Install Python Test Environment
-# Size: 17.9MB
+# Description: Install Python Environment
+# Size: 76.2MB
 #
-RUN python3 -m pip install --no-cache-dir -U \
-        wheel && \
+RUN pip3 install --upgrade pip && \
     python3 -m pip install --no-cache-dir -U \
+        wheel \
         Cython \
-        argcomplete \
+        setuptools \
+        numpy==1.19.3 && \
+    python3 -m pip install --no-cache-dir -U \
+        argcomplete \  
         flake8-blind-except \
         flake8-builtins \
         flake8-class-newline \
@@ -129,12 +135,13 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ && \
     ln -s $(which nvcc) /sbin/nvcc
 
 
 # 
-# Description: Install yaml
-# Size: 5.01MB
+# Description: Install yaml-cpp and jsoncpp
+# Size: 6.16MB
 #
 RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 && \
     cd yaml-cpp-0.7 && \
@@ -142,7 +149,14 @@ RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cp
     cd build && \
     cmake -DBUILD_SHARED_LIBS=ON .. && \
     make -j$(nproc) && \
-    make -j$(nproc) install && \
+    make -j$(nproc) install && \ 
+    git clone https://github.com/open-source-parsers/jsoncpp.git && \
+    cd jsoncpp && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \ 
     rm -rf /tmp/*
 
 
@@ -181,43 +195,41 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 # Description: Install Protobuf 3.8.0
 # Size: 307MB
 #
-RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-        https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip && \
-    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-        https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip && \
-    unzip protobuf-python-3.8.0.zip && \
-    unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0 && \
-    cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc && \
-    export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp && \
-    cd protobuf-3.8.0/ && \
-    ./autogen.sh && \
-    ./configure --prefix=/usr/local && \
-    make -j $(nproc) && \
-    make check && \
-    make -j $(nproc) install && \
-    ldconfig && \
-    cd python/ && \
-    python3 setup.py build --cpp_implementation && \
-    python3 setup.py test --cpp_implementation && \
-    sudo python3 setup.py install --cpp_implementation && \
-    rm -rf /tmp/*
+# RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
+#         https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip && \
+#     wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
+#         https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip && \
+#     unzip protobuf-python-3.8.0.zip && \
+#     unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0 && \
+#     cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc && \
+#     export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp && \
+#     cd protobuf-3.8.0/ && \
+#     ./autogen.sh && \
+#     ./configure --prefix=/usr/local && \
+#     make -j $(nproc) && \
+#     make check && \
+#     make -j $(nproc) install && \
+#     ldconfig && \
+#     cd python/ && \
+#     python3 setup.py build --cpp_implementation && \
+#     python3 setup.py test --cpp_implementation && \
+#     sudo python3 setup.py install --cpp_implementation && \
+#     rm -rf /tmp/*
 
 
 # 
-# Description: Install PyCuda 2019.1.2 ONNX 1.4.1
-# Size: 26.4MB
+# Description: Install PyCuda 2019.1.2
+# Size: 26.3MB
 #
-RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-        https://files.pythonhosted.org/packages/5e/3f/5658c38579b41866ba21ee1b5020b8225cec86fe717e4b1c5c972de0a33c/pycuda-2019.1.2.tar.gz && \
-    tar xzvf pycuda-2019.1.2.tar.gz && \
-    cd pycuda-2019.1.2 && \
-    python3 ./configure.py --python-exe=/usr/bin/python3 --cuda-root=/usr/local/cuda --cudadrv-lib-dir=/usr/lib/aarch64-linux-gnu --boost-inc-dir=/usr/include --boost-lib-dir=/usr/lib/aarch64-linux-gnu --boost-python-libname=boost_python3-py36 --boost-thread-libname=boost_thread --no-use-shipped-boost && \
-    make -j$(nproc) && \
-    python3 setup.py build && \
-    python3 setup.py install && \
-    pip3 install --no-cache-dir onnx==1.4.1 && \
-    rm -rf ~/.cache/pip && \
-    rm -rf /tmp/*
+# RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
+#         https://files.pythonhosted.org/packages/5e/3f/5658c38579b41866ba21ee1b5020b8225cec86fe717e4b1c5c972de0a33c/pycuda-2019.1.2.tar.gz && \
+#     tar xzvf pycuda-2019.1.2.tar.gz && \
+#     cd pycuda-2019.1.2 && \
+#     python3 ./configure.py --python-exe=/usr/bin/python3 --cuda-root=/usr/local/cuda --cudadrv-lib-dir=/usr/lib/aarch64-linux-gnu --boost-inc-dir=/usr/include --boost-lib-dir=/usr/lib/aarch64-linux-gnu --boost-python-libname=boost_python3-py36 --boost-thread-libname=boost_thread --no-use-shipped-boost && \
+#     make -j$(nproc) && \
+#     python3 setup.py build && \
+#     python3 setup.py install && \
+#     rm -rf /tmp/*
 
 
 # # 
@@ -271,7 +283,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 
 # 
-# Description: Add Node.js
+# Description: Add Node.js and MongoDB
 # Size: 326MB
 #
 RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \ 
@@ -318,28 +330,81 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 
 
 # 
+# Description: Install ROS2 Projects Link packages
+# Size: 531MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libfreetype6-dev \
+    python3-matplotlib \
+    python3-numba \
+    python3-llvmlite \
+    tcl-dev \
+    tk-dev \
+    python3-tk \
+    protobuf-compiler \
+    libprotoc-dev && \
+    python3 -m pip install --no-cache-dir -U \
+    pyzmq \
+    pycuda==2019.1.2 \
+    filterpy==1.4.5 \
+    scikit-learn==0.24.2 \
+    scikit-image==0.17.2 \
+    scipy==1.5.4 \
+    pandas \
+    pillow \
+    onnx==1.4.1 && \
+    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf ~/.cache/pip
+
+
+# 
+# Description: Install Code-Server
+# Size: 286MB
+#
+RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \ 
+    https://github.com/cdr/code-server/releases/download/v3.11.1/code-server-3.11.1-linux-arm64.tar.gz && \
+    tar -zxvf code-server-3.11.1-linux-arm64.tar.gz && \
+    mv code-server-3.11.1-linux-arm64 ~/code-server && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install BITCQ ROS2 Packages
+# Size: 
+#
+RUN mkdir -p ~/ros2_ws/src
+
+
+# 
 # Description: Add EntryPoint and .bashrc\SSH params.
-# Size: 148KB
+# Size: 151KB
 #
 RUN echo $'#!/bin/bash\n \
     set -e\n \
     /etc/init.d/ssh start\n \
     mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
+    nohup /root/code-server/code-server --port 9999 --host 0.0.0.0 >& /root/code-server/run.log &\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     echo 'source /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
-    echo $'PermitRootLogin yes\nPubkeyAuthentication yes' >> /etc/ssh/sshd_config
+    echo $'PermitRootLogin yes\nPubkeyAuthentication yes' >> /etc/ssh/sshd_config && \
+    echo "root:root" | chpasswd
 
 
-EXPOSE 22
-EXPOSE 8001
-EXPOSE 63029
+# EXPOSE 22
+# EXPOSE 8001
+# EXPOSE 63029
+# EXPOSE 9999
 
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
 
+# sudo docker build -t "9426224/ros-foxy-base" -f Docker . >& build.log &
 # sudo docker volume create mongodbdata
-# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
+# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
 # sudo docker exec -it ros-foxy /bin/bash
