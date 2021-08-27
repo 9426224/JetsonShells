@@ -386,7 +386,8 @@ RUN echo $'#!/bin/bash\n \
     set -e\n \
     /etc/init.d/ssh start\n \
     mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    nohup /root/code-server/code-server --port 9999 --host 0.0.0.0 >& /root/code-server/run.log &\n \
+    export PASSWORD="bitcq"\n \
+    nohup /root/code-server/code-server --port 9999 --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     echo 'source /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
@@ -404,7 +405,11 @@ ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
 
+
+# sudo mount tmpfs /tmp -t tmpfs -o size=8192m
 # sudo docker build -t "9426224/ros-foxy-base" -f Docker . >& build.log &
 # sudo docker volume create mongodbdata
-# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
+# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 -p 12307:12307 -p 63001:63001 -p 8002:8002 -p 9090:9090 -p 63025:63025 -p 63026:63026 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
 # sudo docker exec -it ros-foxy /bin/bash
+# docker save <image>:<tag> | gzip > /path-to/file.tar.gz
+# gunzip -c /path-to/file.tar.gz | docker load
