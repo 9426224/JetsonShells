@@ -1,6 +1,11 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
-FROM ${BASE_IMAGE}
+# ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
 # Size: 631MB
+ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
+# Size: 2.72GB
+#ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
+# Size: 1.96GB
+FROM ${BASE_IMAGE}
+
 
 LABEL maintainer="9426224" \
     version="0.1" \
@@ -16,7 +21,7 @@ WORKDIR /tmp
 
 # 
 # Description: Change the locale from POSIX to UTF-8
-# Size: 3.42MB
+# Size: near by  3.4MB
 #
 RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
@@ -25,7 +30,7 @@ ENV PYTHONIOENCODING=utf-8
 
 # 
 # Description: Install basic packages and Add ROS repo
-# Size: 11.7MB
+# Size: 259MB / 124MB
 #
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -34,43 +39,44 @@ RUN apt-get update && \
         gnupg2 \
         lsb-release \
         ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
-    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
+        build-essential \
+        git \
+        openssh-server \
+        vim \
+        apt-utils \
+        usbutils \
+        iputils-ping \
+        gdb \
+        libtool \
+        autoconf \
+        automake \
+        unzip \
+        tmux && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
     && rm -rf /tmp/*
 
 
 # 
 # Description: Build CMake 3.20.5
-# Size: 120MB
+# Size: 120MB / 120MB
 #
 RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate  \
         https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&\
-    mv ./cmake-3.20.5-linux-aarch64.tar.gz ./cmake-3.20.tar.gz && \
-    tar -zxvf ./cmake-3.20.tar.gz -C /usr/local/share/ && \
-    ln -s /usr/local/share/cmake-3.20 /usr/bin/cmake && \
-    ln -s /usr/local/share/cmake-3.20 /usr/local/bin/cmake && \
+    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake && \
     rm -rf /tmp/*
 
 
 # 
 # Description: Install Development packages
-# Size: 689MB
+# Size: 453MB / 449MB
 #
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential \
-        git \
-        openssh-server \
-        vim \
-        usbutils \
-        libtool \
-        apt-utils \
-        autoconf \
-        automake \
-        unzip \
-        tmux \
         libbullet-dev \
         libpython3-dev \
         python3-colcon-common-extensions \
@@ -128,7 +134,7 @@ RUN pip3 install --upgrade pip && \
 
 # 
 # Description: Link CUDART to ENV
-# Size: 118kB
+# Size: near by 130kB
 #
 RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so /usr/lib/aarch64-linux-gnu/ && \
@@ -162,7 +168,7 @@ RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cp
 
 # 
 # Description: Install OpenCV 4.5.0 with CUDA
-# Size: 466MB
+# Size: 466MB / 452MB
 #
 RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
     mkdir opencv && \
@@ -335,29 +341,52 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 #
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libfreetype6-dev \
-    python3-matplotlib \
-    python3-numba \
-    python3-llvmlite \
-    tcl-dev \
-    tk-dev \
-    python3-tk \
-    protobuf-compiler \
-    libprotoc-dev && \
+        libfreetype6-dev \
+        python3-matplotlib \
+        python3-numba \
+        python3-llvmlite \
+        tcl-dev \
+        tk-dev \
+        python3-tk \
+        protobuf-compiler \
+        libprotoc-dev && \
     python3 -m pip install --no-cache-dir -U \
-    pyzmq \
-    pycuda==2019.1.2 \
-    filterpy==1.4.5 \
-    scikit-learn==0.24.2 \
-    scikit-image==0.17.2 \
-    scipy==1.5.4 \
-    pandas \
-    pillow \
-    onnx==1.4.1 && \
+        pyzmq \
+        pycuda==2019.1.2 \
+        filterpy==1.4.5 \
+        scikit-learn==0.24.2 \
+        scikit-image==0.17.2 \
+        scipy==1.5.4 \
+        pandas \
+        pillow \
+        onnx==1.4.1 && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
     rm -rf ~/.cache/pip
+
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libgstreamer1.0-dev \
+        libgstreamer-plugins-base1.0-dev \
+        libssl1.0.0 \
+        libgstreamer1.0-0 \
+        gstreamer1.0-tools \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-libav \
+        libgstrtspserver-1.0-0 \
+        libjansson4 \
+        libx11-dev \
+        x11-apps \
+        xorg \
+        meson && \
+    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
 
 
 # 
@@ -373,14 +402,18 @@ RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certi
 
 # 
 # Description: Install BITCQ ROS2 Packages
-# Size: 
+# Size: near by 150KB
 #
-RUN mkdir -p ~/ros2_ws/src
+RUN mkdir -p ~/ros2_ws/src && \
+    rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
 
 
 # 
 # Description: Add EntryPoint and .bashrc\SSH params.
-# Size: 151KB
+# Size: near by 160KB
 #
 RUN echo $'#!/bin/bash\n \
     set -e\n \
@@ -391,7 +424,7 @@ RUN echo $'#!/bin/bash\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     echo 'source /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
-    echo $'PermitRootLogin yes\nPubkeyAuthentication yes' >> /etc/ssh/sshd_config && \
+    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes\nport=6622' >> /etc/ssh/sshd_config && \
     echo "root:root" | chpasswd
 
 
@@ -407,9 +440,32 @@ WORKDIR /root/
 
 
 # sudo mount tmpfs /tmp -t tmpfs -o size=8192m
-# sudo docker build -t "9426224/ros-foxy-base" -f Docker . >& build.log &
+# sudo docker build -t "image-name" -f Dockerfile . >& build.log &
 # sudo docker volume create mongodbdata
 # sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 -p 12307:12307 -p 63001:63001 -p 8002:8002 -p 9090:9090 -p 63025:63025 -p 63026:63026 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
+# sudo docker run -itd --net=host --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix --name="deepstream-x11-ros2" --restart=always 9426224/ros-foxy-deepstream-5.1-sample
+# sudo docker run -itd --restart=always --runtime nvidia -e DISPLAY=$DISPLAY --net=host --ipc=host --env="_X11_NO_MITSHM=1" --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority --name="test-ds-x11" 86c2d0e77c62
 # sudo docker exec -it ros-foxy /bin/bash
 # docker save <image>:<tag> | gzip > /path-to/file.tar.gz
 # gunzip -c /path-to/file.tar.gz | docker load
+
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#         libgstreamer1.0-dev \
+#         libgstreamer-plugins-base1.0-dev \
+#         libssl1.0.0 \
+#         libgstreamer1.0-0 \
+#         gstreamer1.0-tools \
+#         gstreamer1.0-plugins-good \
+#         gstreamer1.0-plugins-bad \
+#         gstreamer1.0-plugins-ugly \
+#         gstreamer1.0-libav \
+#         libgstrtspserver-1.0-0 \
+#         libjansson4 \
+#         libx11-dev \
+#         x11-apps \
+#         xorg \
+#         meson && \
+#     rm -rf /tmp/* && \
+#     rm -rf /var/lib/apt/lists/* && \
+#     apt-get clean
