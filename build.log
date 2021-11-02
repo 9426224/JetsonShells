@@ -1,0 +1,440 @@
+Sending build context to Docker daemon  252.9MB
+Step 1/27 : ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
+Step 2/27 : FROM ${BASE_IMAGE}
+ ---> 3b30b2543266
+Step 3/27 : LABEL maintainer="9426224"     version="0.1"     description="A l4t-base dockerfile for ROS2 User"     email="9426224@live.com"
+ ---> Using cache
+ ---> 21dfbee82d54
+Step 4/27 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> 857a8e0c4dfa
+Step 5/27 : ENV SHELL /bin/bash
+ ---> Using cache
+ ---> 19dc05078ac4
+Step 6/27 : SHELL ["/bin/bash", "-c"]
+ ---> Using cache
+ ---> 1b3fe6634241
+Step 7/27 : WORKDIR /tmp
+ ---> Using cache
+ ---> ab8ad8140572
+Step 8/27 : RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 7e55974db42a
+Step 9/27 : ENV LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 53ebd6292802
+Step 10/27 : ENV PYTHONIOENCODING=utf-8
+ ---> Using cache
+ ---> a92dc4e86f49
+Step 11/27 : RUN apt-get update &&     apt-get install -y --no-install-recommends         curl         wget         gnupg2         lsb-release         ca-certificates         build-essential         git         openssh-server         vim         apt-utils         usbutils         iputils-ping         gdb         libtool         autoconf         automake         unzip         tmux &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg &&     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null &&     rm -rf /tmp/*
+ ---> Running in 589103f6b407
+0% [Working]0% [Waiting for headers]                        Hit:1 http://ports.ubuntu.com/ubuntu-ports bionic InRelease
+                        0% [Working]0% [1 InRelease gpgv 242 kB] [Waiting for headers]                                                  Get:2 http://ports.ubuntu.com/ubuntu-ports bionic-updates InRelease [88.7 kB]
+0% [1 InRelease gpgv 242 kB] [2 InRelease 8,497 B/88.7 kB 10%]                                                              0% [2 InRelease 8,497 B/88.7 kB 10%]0% [2 InRelease 58.1 kB/88.7 kB 66%]                                    0% [Working]0% [2 InRelease gpgv 88.7 kB] [Waiting for headers]                                                   0% [Waiting for headers]                        Get:3 http://ports.ubuntu.com/ubuntu-ports bionic-backports InRelease [74.6 kB]
+0% [3 InRelease 2,657 B/74.6 kB 4%]0% [3 InRelease 50.8 kB/74.6 kB 68%]                                    0% [Working]0% [3 InRelease gpgv 74.6 kB] [Waiting for headers]                                                   0% [Waiting for headers]                        Get:4 http://ports.ubuntu.com/ubuntu-ports bionic-security InRelease [88.7 kB]
+0% [4 InRelease 14.3 kB/88.7 kB 16%]0% [4 InRelease 63.1 kB/88.7 kB 71%]                                    0% [Working]0% [4 InRelease gpgv 88.7 kB]                             18% [Waiting for headers]                         Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-updates/restricted arm64 Packages [4,214 B]
+18% [5 Packages 4,214 B/4,214 B 100%]                                     18% [Working]             Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 Packages [1,720 kB]
+25% [6 Packages 590 kB/1,720 kB 34%]25% [5 Packages store 0 B] [6 Packages 598 kB/1,720 kB 35%]                                                           27% [6 Packages 721 kB/1,720 kB 42%]                                    39% [Working]39% [6 Packages store 0 B] [Waiting for headers]                                                40% [Waiting for headers]                         Get:7 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe arm64 Packages [1,970 kB]
+41% [7 Packages 152 kB/1,970 kB 8%]                                   63% [Waiting for headers]                         Get:8 http://ports.ubuntu.com/ubuntu-ports bionic-updates/multiverse arm64 Packages [5,313 B]
+64% [Waiting for headers]                         Get:9 http://ports.ubuntu.com/ubuntu-ports bionic-backports/main arm64 Packages [11.2 kB]
+64% [7 Packages store 0 B] [9 Packages 11.2 kB/11.2 kB 100%]                                                            64% [7 Packages store 0 B] [Waiting for headers]                                                Get:10 http://ports.ubuntu.com/ubuntu-ports bionic-backports/universe arm64 Packages [11.0 kB]
+64% [7 Packages store 0 B] [10 Packages 11.0 kB/11.0 kB 100%]                                                             64% [7 Packages store 0 B]                          Get:11 http://ports.ubuntu.com/ubuntu-ports bionic-security/main arm64 Packages [1,333 kB]
+64% [7 Packages store 0 B] [11 Packages 21.2 kB/1,333 kB 2%]                                                            80% [7 Packages store 0 B]                          Get:12 http://ports.ubuntu.com/ubuntu-ports bionic-security/multiverse arm64 Packages [2,819 B]
+80% [7 Packages store 0 B]                          Get:13 http://ports.ubuntu.com/ubuntu-ports bionic-security/restricted arm64 Packages [3,543 B]
+80% [7 Packages store 0 B] [13 Packages 3,543 B/3,543 B 100%]                                                             80% [7 Packages store 0 B] [Waiting for headers]                                                Get:14 http://ports.ubuntu.com/ubuntu-ports bionic-security/universe arm64 Packages [1,272 kB]
+81% [7 Packages store 0 B] [14 Packages 57.7 kB/1,272 kB 5%]                                                            96% [7 Packages store 0 B]                          96% [Working]96% [8 Packages store 0 B]                          97% [Working]97% [9 Packages store 0 B]                          97% [Working]97% [10 Packages store 0 B]                           98% [Working]98% [11 Packages store 0 B]                           98% [Working]98% [12 Packages store 0 B]                           99% [Working]99% [13 Packages store 0 B]                           99% [Working]99% [14 Packages store 0 B]                           100% [Working]              Fetched 6,586 kB in 5s (1,384 kB/s)
+Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 7%Reading package lists... 7%Reading package lists... 7%Reading package lists... 7%Reading package lists... 47%Reading package lists... 65%Reading package lists... 65%Reading package lists... 66%Reading package lists... 66%Reading package lists... 75%Reading package lists... 75%Reading package lists... 75%Reading package lists... 75%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 92%Reading package lists... 92%Reading package lists... 92%Reading package lists... 92%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 7%Reading package lists... 7%Reading package lists... 7%Reading package lists... 7%Reading package lists... 50%Reading package lists... 65%Reading package lists... 65%Reading package lists... 66%Reading package lists... 66%Reading package lists... 75%Reading package lists... 75%Reading package lists... 75%Reading package lists... 75%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 85%Reading package lists... 92%Reading package lists... 92%Reading package lists... 92%Reading package lists... 92%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... 52%Building dependency tree       
+Reading state information... 0%Reading state information... 0%Reading state information... Done
+wget is already the newest version (1.19.4-1ubuntu2.2).
+The following additional packages will be installed:
+  apt autotools-dev dirmngr distro-info-data file g++ gcc gnupg gnupg-l10n
+  gnupg-utils gpg gpg-agent gpg-wks-client gpg-wks-server gpgconf gpgsm gpgv
+  libapt-pkg5.0 libassuan0 libbabeltrace1 libcurl4 libcurl4-openssl-dev libdw1
+  libevent-2.1-6 libidn11 libksba8 libnpth0 libpython3.6 libpython3.6-minimal
+  libpython3.6-stdlib libsigsegv2 libssl1.0.0 libutempter0 m4 openssh-client
+  openssh-sftp-server pinentry-curses python3.6 python3.6-minimal vim-common
+  vim-runtime xxd
+Suggested packages:
+  apt-doc aptitude | synaptic | wajig powermgmt-base autoconf-archive
+  gnu-standards autoconf-doc gettext dbus-user-session libpam-systemd
+  pinentry-gnome3 tor gcc-multilib manpages-dev flex bison gcc-doc gdb-doc
+  gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-el git-email
+  git-gui gitk gitweb git-cvs git-mediawiki git-svn parcimonie xloadimage
+  scdaemon libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev
+  libssh2-1-dev libssl-dev libtool-doc gfortran | fortran95-compiler gcj-jdk
+  lsb m4-doc keychain libpam-ssh monkeysphere ssh-askpass molly-guard rssh ufw
+  pinentry-doc python3.6-venv python3.6-doc binfmt-support zip ctags vim-doc
+  vim-scripts
+Recommended packages:
+  libc-dbg gdbserver less libltdl-dev xauth libpam-systemd ncurses-term
+  ssh-import-id
+The following NEW packages will be installed:
+  apt-utils autoconf automake autotools-dev build-essential curl dirmngr
+  distro-info-data file g++ gcc gdb gnupg gnupg-l10n gnupg-utils gnupg2 gpg
+  gpg-agent gpg-wks-client gpg-wks-server gpgconf gpgsm iputils-ping
+  libassuan0 libbabeltrace1 libdw1 libevent-2.1-6 libidn11 libksba8 libnpth0
+  libpython3.6 libsigsegv2 libssl1.0.0 libtool libutempter0 lsb-release m4
+  openssh-client openssh-server openssh-sftp-server pinentry-curses tmux unzip
+  usbutils vim vim-common vim-runtime xxd
+The following packages will be upgraded:
+  apt ca-certificates git gpgv libapt-pkg5.0 libcurl4 libcurl4-openssl-dev
+  libpython3.6-minimal libpython3.6-stdlib python3.6 python3.6-minimal
+11 upgraded, 48 newly installed, 0 to remove and 121 not upgraded.
+Need to get 26.3 MB of archives.
+After this operation, 70.8 MB of additional disk space will be used.
+0% [Working]            Get:1 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libapt-pkg5.0 arm64 1.6.14 [769 kB]
+0% [1 libapt-pkg5.0 0 B/769 kB 0%]                                  3% [Working]            Get:2 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpgv arm64 2.2.4-1ubuntu1.4 [167 kB]
+3% [2 gpgv 8,192 B/167 kB 5%]                             4% [Working]4% [Waiting for headers]4% [Waiting for headers]4% [Waiting for headers]4% [Waiting for headers]4% [Waiting for headers]                        Get:3 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 apt arm64 1.6.14 [1,171 kB]
+4% [3 apt 45.9 kB/1,171 kB 4%]7% [3 apt 1,077 kB/1,171 kB 92%]7% [3 apt 1,126 kB/1,171 kB 96%]                                Get:4 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 python3.6 arm64 3.6.9-1~18.04ubuntu1.4 [203 kB]
+8% [4 python3.6 185 kB/203 kB 91%]                                  8% [Working]            Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libpython3.6-stdlib arm64 3.6.9-1~18.04ubuntu1.4 [1,609 kB]
+9% [5 libpython3.6-stdlib 47.6 kB/1,609 kB 3%]12% [5 libpython3.6-stdlib 1,086 kB/1,609 kB 68%]12% [5 libpython3.6-stdlib 1,140 kB/1,609 kB 71%]12% [5 libpython3.6-stdlib 1,228 kB/1,609 kB 76%]12% [5 libpython3.6-stdlib 1,331 kB/1,609 kB 83%]13% [5 libpython3.6-stdlib 1,412 kB/1,609 kB 88%]                  573 kB/s 39s13% [5 libpython3.6-stdlib 1,518 kB/1,609 kB 94%]                  573 kB/s 39s14% [Working]                                                      573 kB/s 39s                                                                               Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 python3.6-minimal arm64 3.6.9-1~18.04ubuntu1.4 [1,327 kB]
+14% [6 python3.6-minimal 65.5 kB/1,327 kB 5%]                      573 kB/s 38s17% [6 python3.6-minimal 1,077 kB/1,327 kB 81%]                    573 kB/s 37s17% [6 python3.6-minimal 1,117 kB/1,327 kB 84%]                    573 kB/s 37s17% [6 python3.6-minimal 1,185 kB/1,327 kB 89%]                    573 kB/s 36s17% [6 python3.6-minimal 1,261 kB/1,327 kB 95%]                    573 kB/s 36s18% [Working]                                                      573 kB/s 36s                                                                               Get:7 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libpython3.6-minimal arm64 3.6.9-1~18.04ubuntu1.4 [528 kB]
+18% [7 libpython3.6-minimal 60.5 kB/528 kB 11%]                    573 kB/s 36s20% [Waiting for headers]                                          573 kB/s 35s                                                                               Get:8 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 apt-utils arm64 1.6.14 [201 kB]
+20% [8 apt-utils 56.3 kB/201 kB 28%]                               573 kB/s 35s21% [Working]                                                      573 kB/s 35s                                                                               Get:9 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 ca-certificates all 20210119~18.04.2 [145 kB]
+21% [9 ca-certificates 51.3 kB/145 kB 35%]                         573 kB/s 35s22% [Waiting for headers]                                          573 kB/s 35s                                                                               Get:10 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 distro-info-data all 0.37ubuntu0.13 [4,656 B]
+22% [10 distro-info-data 4,656 B/4,656 B 100%]                     573 kB/s 35s22% [Waiting for headers]                                          573 kB/s 35s                                                                               Get:11 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 file arm64 1:5.32-2ubuntu0.4 [21.7 kB]
+22% [11 file 21.7 kB/21.7 kB 100%]                                 573 kB/s 35s22% [Waiting for headers]                                          573 kB/s 35s                                                                               Get:12 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libidn11 arm64 1.33-2.1ubuntu1.2 [44.0 kB]
+23% [12 libidn11 44.0 kB/44.0 kB 100%]                             573 kB/s 35s23% [Working]                                                      573 kB/s 35s                                                                               Get:13 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 iputils-ping arm64 3:20161105-1ubuntu3 [51.9 kB]
+23% [13 iputils-ping 30.8 kB/51.9 kB 59%]                          573 kB/s 35s23% [Working]                                                      573 kB/s 34s                                                                               Get:14 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 lsb-release all 9.20170808ubuntu1 [11.0 kB]
+23% [14 lsb-release 11.0 kB/11.0 kB 100%]                          573 kB/s 34s24% [Waiting for headers]                                          573 kB/s 34s                                                                               Get:15 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 xxd arm64 2:8.0.1453-1ubuntu1.6 [48.5 kB]
+24% [15 xxd 32.8 kB/48.5 kB 68%]                                   573 kB/s 34s24% [Waiting for headers]                                          573 kB/s 34s                                                                               Get:16 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim-common all 2:8.0.1453-1ubuntu1.6 [70.6 kB]
+24% [16 vim-common 8,192 B/70.6 kB 12%]                            573 kB/s 34s25% [Waiting for headers]                                          573 kB/s 34s                                                                               Get:17 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libssl1.0.0 arm64 1.0.2n-1ubuntu5.7 [725 kB]
+25% [17 libssl1.0.0 24.6 kB/725 kB 3%]                             573 kB/s 34s27% [Working]                                                      573 kB/s 33s                                                                               Get:18 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 git arm64 1:2.17.1-1ubuntu0.9 [2,939 kB]
+28% [18 git 65.5 kB/2,939 kB 2%]                                   573 kB/s 33s31% [18 git 1,088 kB/2,939 kB 37%]                                 573 kB/s 31s31% [18 git 1,199 kB/2,939 kB 41%]                                 573 kB/s 31s31% [18 git 1,289 kB/2,939 kB 44%]                                 573 kB/s 31s32% [18 git 1,431 kB/2,939 kB 49%]                                 573 kB/s 30s32% [18 git 1,575 kB/2,939 kB 54%]                                 815 kB/s 21s32% [18 git 1,672 kB/2,939 kB 57%]                                 815 kB/s 21s33% [18 git 1,816 kB/2,939 kB 62%]                                 815 kB/s 21s33% [18 git 1,958 kB/2,939 kB 67%]                                 815 kB/s 21s34% [18 git 2,099 kB/2,939 kB 71%]                                 815 kB/s 20s34% [18 git 2,205 kB/2,939 kB 75%]                                 815 kB/s 20s35% [18 git 2,353 kB/2,939 kB 80%]                                 815 kB/s 20s35% [18 git 2,516 kB/2,939 kB 86%]                                 815 kB/s 20s35% [18 git 2,640 kB/2,939 kB 90%]                                 815 kB/s 20s36% [18 git 2,829 kB/2,939 kB 96%]                                 815 kB/s 20s37% [Waiting for headers]                                          815 kB/s 19s                                                                               Get:19 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 openssh-client arm64 1:7.6p1-4ubuntu0.5 [527 kB]
+37% [19 openssh-client 49.6 kB/527 kB 9%]                          815 kB/s 19s39% [Working]                                                      815 kB/s 19s                                                                               Get:20 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 usbutils arm64 1:007-4build1 [202 kB]
+39% [20 usbutils 46.2 kB/202 kB 23%]                               815 kB/s 19s40% [Working]                                                      815 kB/s 19s                                                                               Get:21 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libsigsegv2 arm64 2.12-1 [14.1 kB]
+40% [21 libsigsegv2 14.1 kB/14.1 kB 100%]                          815 kB/s 18s40% [Working]                                                      815 kB/s 18s                                                                               Get:22 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 m4 arm64 1.4.18-1 [185 kB]
+40% [22 m4 25.5 kB/185 kB 14%]                                     815 kB/s 18s41% [Working]                                                      815 kB/s 18s                                                                               Get:23 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 autoconf all 2.69-11 [322 kB]
+41% [23 autoconf 36.5 kB/322 kB 11%]                               815 kB/s 18s42% [Waiting for headers]                                          815 kB/s 18s                                                                               Get:24 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 autotools-dev all 20180224.1 [39.6 kB]
+42% [24 autotools-dev 39.6 kB/39.6 kB 100%]                        815 kB/s 18s43% [Working]                                                      815 kB/s 18s                                                                               Get:25 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 automake all 1:1.15.1-3ubuntu2 [509 kB]
+43% [25 automake 2,277 B/509 kB 0%]                                815 kB/s 18s45% [Working]                                                      815 kB/s 17s                                                                               Get:26 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gcc arm64 4:7.4.0-1ubuntu2.3 [5,208 B]
+45% [26 gcc 5,208 B/5,208 B 100%]                                  815 kB/s 17s45% [Waiting for headers]                                          815 kB/s 17s                                                                               Get:27 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 g++ arm64 4:7.4.0-1ubuntu2.3 [1,552 B]
+45% [27 g++ 1,552 B/1,552 B 100%]                                  815 kB/s 17s45% [Working]                                                      815 kB/s 17s                                                                               Get:28 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 build-essential arm64 12.4ubuntu1 [4,754 B]
+45% [28 build-essential 4,754 B/4,754 B 100%]                      815 kB/s 17s46% [Working]                                                      815 kB/s 17s46% [Waiting for headers]                                          815 kB/s 17s                                                                               Get:29 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libcurl4-openssl-dev arm64 7.58.0-2ubuntu3.16 [275 kB]
+46% [29 libcurl4-openssl-dev 197 kB/275 kB 72%]                    815 kB/s 17s47% [Waiting for headers]                                          815 kB/s 17s                                                                               Get:30 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libcurl4 arm64 7.58.0-2ubuntu3.16 [184 kB]
+47% [30 libcurl4 57.1 kB/184 kB 31%]                               815 kB/s 17s48% [Working]                                                      815 kB/s 17s                                                                               Get:31 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 curl arm64 7.58.0-2ubuntu3.16 [152 kB]
+48% [31 curl 3,706 B/152 kB 2%]                                    815 kB/s 17s48% [Working]                                                      815 kB/s 16s                                                                               Get:32 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libassuan0 arm64 2.5.1-2 [28.9 kB]
+49% [32 libassuan0 28.9 kB/28.9 kB 100%]                           815 kB/s 16s49% [Working]                                                      815 kB/s 16s                                                                               Get:33 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpgconf arm64 2.2.4-1ubuntu1.4 [107 kB]
+49% [33 gpgconf 18.8 kB/107 kB 18%]                                815 kB/s 16s50% [Waiting for headers]                                          815 kB/s 16s                                                                               Get:34 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libksba8 arm64 1.3.5-2 [77.4 kB]
+50% [34 libksba8 42.7 kB/77.4 kB 55%]                              815 kB/s 16s50% [Working]                                                      815 kB/s 16s                                                                               Get:35 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libnpth0 arm64 1.5-3 [6,844 B]
+50% [35 libnpth0 6,844 B/6,844 B 100%]                             815 kB/s 16s50% [Waiting for headers]                                          815 kB/s 16s                                                                               Get:36 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 dirmngr arm64 2.2.4-1ubuntu1.4 [276 kB]
+51% [36 dirmngr 23.3 kB/276 kB 8%]                                 815 kB/s 16s52% [Working]                                                      815 kB/s 16s                                                                               Get:37 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libdw1 arm64 0.170-0.4ubuntu0.1 [179 kB]
+52% [37 libdw1 65.5 kB/179 kB 37%]                                 815 kB/s 16s53% [Waiting for headers]                                          815 kB/s 16s                                                                               Get:38 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libbabeltrace1 arm64 1.5.5-1 [128 kB]
+53% [38 libbabeltrace1 65.5 kB/128 kB 51%]                         815 kB/s 16s53% [Working]                                                      815 kB/s 15s                                                                               Get:39 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libpython3.6 arm64 3.6.9-1~18.04ubuntu1.4 [1,306 kB]
+53% [39 libpython3.6 8,192 B/1,306 kB 1%]                          815 kB/s 15s56% [39 libpython3.6 1,058 kB/1,306 kB 81%]                        880 kB/s 13s57% [39 libpython3.6 1,168 kB/1,306 kB 89%]                        880 kB/s 13s58% [Waiting for headers]                                          880 kB/s 13s                                                                               Get:40 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gdb arm64 8.1.1-0ubuntu1 [2,912 kB]
+58% [40 gdb 8,192 B/2,912 kB 0%]                                   880 kB/s 13s61% [40 gdb 1,127 kB/2,912 kB 39%]                                 880 kB/s 12s61% [40 gdb 1,243 kB/2,912 kB 43%]                                 880 kB/s 11s62% [40 gdb 1,433 kB/2,912 kB 49%]                                 880 kB/s 11s63% [40 gdb 1,655 kB/2,912 kB 57%]                                 880 kB/s 11s63% [40 gdb 1,913 kB/2,912 kB 66%]                                 880 kB/s 11s64% [40 gdb 2,104 kB/2,912 kB 72%]                                 880 kB/s 10s65% [40 gdb 2,432 kB/2,912 kB 84%]                                 880 kB/s 10s66% [40 gdb 2,812 kB/2,912 kB 97%]                                 880 kB/s 10s67% [Working]                                                       880 kB/s 9s                                                                               Get:41 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gnupg-l10n all 2.2.4-1ubuntu1.4 [49.8 kB]
+67% [41 gnupg-l10n 49.8 kB/49.8 kB 100%]                            880 kB/s 9s67% [Working]                                                       880 kB/s 9s                                                                               Get:42 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gnupg-utils arm64 2.2.4-1ubuntu1.4 [108 kB]
+67% [42 gnupg-utils 0 B/108 kB 0%]                                  880 kB/s 9s68% [Working]                                                       880 kB/s 9s                                                                               Get:43 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpg arm64 2.2.4-1ubuntu1.4 [400 kB]
+68% [43 gpg 42.8 kB/400 kB 11%]                                     880 kB/s 9s70% [Working]                                                       880 kB/s 9s                                                                               Get:44 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 pinentry-curses arm64 1.1.0-1 [32.4 kB]
+70% [44 pinentry-curses 32.4 kB/32.4 kB 100%]                       880 kB/s 9s70% [Working]                                                       880 kB/s 9s                                                                               Get:45 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpg-agent arm64 2.2.4-1ubuntu1.4 [189 kB]
+70% [45 gpg-agent 65.5 kB/189 kB 35%]                               880 kB/s 9s71% [Working]                                                       880 kB/s 9s                                                                               Get:46 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpg-wks-client arm64 2.2.4-1ubuntu1.4 [76.6 kB]
+71% [46 gpg-wks-client 65.5 kB/76.6 kB 86%]                         880 kB/s 9s71% [Working]                                                       880 kB/s 9s                                                                               Get:47 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpg-wks-server arm64 2.2.4-1ubuntu1.4 [71.5 kB]
+72% [47 gpg-wks-server 64.0 kB/71.5 kB 90%]                         880 kB/s 8s72% [Working]                                                       880 kB/s 8s                                                                               Get:48 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gpgsm arm64 2.2.4-1ubuntu1.4 [182 kB]
+72% [48 gpgsm 57.7 kB/182 kB 32%]                                   880 kB/s 8s73% [Waiting for headers]                                           880 kB/s 8s                                                                               Get:49 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 gnupg arm64 2.2.4-1ubuntu1.4 [249 kB]
+73% [49 gnupg 65.5 kB/249 kB 26%]                                   880 kB/s 8s74% [Working]                                                       880 kB/s 8s                                                                               Get:50 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libevent-2.1-6 arm64 2.1.8-stable-4build1 [109 kB]
+74% [50 libevent-2.1-6 65.5 kB/109 kB 60%]                          880 kB/s 8s75% [Waiting for headers]                                           880 kB/s 8s                                                                               Get:51 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libtool all 2.4.6-2 [194 kB]
+75% [51 libtool 41.2 kB/194 kB 21%]                                 880 kB/s 8s76% [Working]                                                       880 kB/s 8s                                                                               Get:52 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libutempter0 arm64 1.1.6-3 [7,904 B]
+76% [52 libutempter0 7,904 B/7,904 B 100%]                          880 kB/s 8s76% [Working]                                                       880 kB/s 8s                                                                               Get:53 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 openssh-sftp-server arm64 1:7.6p1-4ubuntu0.5 [38.9 kB]
+76% [53 openssh-sftp-server 8,192 B/38.9 kB 21%]                    880 kB/s 8s76% [Working]                                                       880 kB/s 8s                                                                               Get:54 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 openssh-server arm64 1:7.6p1-4ubuntu0.5 [291 kB]
+76% [54 openssh-server 8,192 B/291 kB 3%]                           880 kB/s 8s78% [Working]                                                       880 kB/s 7s                                                                               Get:55 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 tmux arm64 2.6-3ubuntu0.2 [212 kB]
+78% [55 tmux 32.5 kB/212 kB 15%]                                    880 kB/s 7s79% [Waiting for headers]                                           880 kB/s 7s                                                                               Get:56 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 unzip arm64 6.0-21ubuntu1.1 [158 kB]
+79% [56 unzip 17.0 kB/158 kB 11%]                                   880 kB/s 7s79% [Working]                                                       880 kB/s 7s                                                                               Get:57 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim-runtime all 2:8.0.1453-1ubuntu1.6 [5,436 kB]
+79% [57 vim-runtime 8,192 B/5,436 kB 0%]                            880 kB/s 7s83% [57 vim-runtime 1,070 kB/5,436 kB 20%]                        1,031 kB/s 5s84% [57 vim-runtime 1,374 kB/5,436 kB 25%]                        1,031 kB/s 4s85% [57 vim-runtime 1,800 kB/5,436 kB 33%]                        1,031 kB/s 4s86% [57 vim-runtime 2,161 kB/5,436 kB 40%]                        1,031 kB/s 4s88% [57 vim-runtime 2,736 kB/5,436 kB 50%]                        1,031 kB/s 3s90% [57 vim-runtime 3,373 kB/5,436 kB 62%]                        1,031 kB/s 2s91% [57 vim-runtime 3,838 kB/5,436 kB 71%]                        1,031 kB/s 2s93% [57 vim-runtime 4,319 kB/5,436 kB 79%]                        1,031 kB/s 2s93% [57 vim-runtime 4,561 kB/5,436 kB 84%]                        1,031 kB/s 1s95% [57 vim-runtime 5,022 kB/5,436 kB 92%]                        1,031 kB/s 1s96% [Working]                                                     1,031 kB/s 0s                                                                               Get:58 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim arm64 2:8.0.1453-1ubuntu1.6 [980 kB]
+96% [58 vim 4,096 B/980 kB 0%]                                    1,031 kB/s 0s100% [Working]                                                    1,031 kB/s 0s                                                                               Get:59 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe arm64 gnupg2 all 2.2.4-1ubuntu1.4 [5,292 B]
+100% [59 gnupg2 5,292 B/5,292 B 100%]                             1,031 kB/s 0s100% [Working]                                                    1,031 kB/s 0s                                                                               Fetched 26.3 MB in 30s (865 kB/s)
+debconf: delaying package configuration, since apt-utils is not installed
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 37686 files and directories currently installed.)
+Preparing to unpack .../libapt-pkg5.0_1.6.14_arm64.deb ...
+Unpacking libapt-pkg5.0:arm64 (1.6.14) over (1.6.12) ...
+Setting up libapt-pkg5.0:arm64 (1.6.14) ...
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 37686 files and directories currently installed.)
+Preparing to unpack .../gpgv_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpgv (2.2.4-1ubuntu1.4) over (2.2.4-1ubuntu1.2) ...
+Setting up gpgv (2.2.4-1ubuntu1.4) ...
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 37686 files and directories currently installed.)
+Preparing to unpack .../archives/apt_1.6.14_arm64.deb ...
+Unpacking apt (1.6.14) over (1.6.12) ...
+Setting up apt (1.6.14) ...
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 37686 files and directories currently installed.)
+Preparing to unpack .../00-python3.6_3.6.9-1~18.04ubuntu1.4_arm64.deb ...
+Unpacking python3.6 (3.6.9-1~18.04ubuntu1.4) over (3.6.9-1~18.04ubuntu1) ...
+Preparing to unpack .../01-libpython3.6-stdlib_3.6.9-1~18.04ubuntu1.4_arm64.deb ...
+Unpacking libpython3.6-stdlib:arm64 (3.6.9-1~18.04ubuntu1.4) over (3.6.9-1~18.04ubuntu1) ...
+Preparing to unpack .../02-python3.6-minimal_3.6.9-1~18.04ubuntu1.4_arm64.deb ...
+Unpacking python3.6-minimal (3.6.9-1~18.04ubuntu1.4) over (3.6.9-1~18.04ubuntu1) ...
+Preparing to unpack .../03-libpython3.6-minimal_3.6.9-1~18.04ubuntu1.4_arm64.deb ...
+Unpacking libpython3.6-minimal:arm64 (3.6.9-1~18.04ubuntu1.4) over (3.6.9-1~18.04ubuntu1) ...
+Selecting previously unselected package apt-utils.
+Preparing to unpack .../04-apt-utils_1.6.14_arm64.deb ...
+Unpacking apt-utils (1.6.14) ...
+Preparing to unpack .../05-ca-certificates_20210119~18.04.2_all.deb ...
+Unpacking ca-certificates (20210119~18.04.2) over (20190110~18.04.1) ...
+Selecting previously unselected package distro-info-data.
+Preparing to unpack .../06-distro-info-data_0.37ubuntu0.13_all.deb ...
+Unpacking distro-info-data (0.37ubuntu0.13) ...
+Selecting previously unselected package file.
+Preparing to unpack .../07-file_1%3a5.32-2ubuntu0.4_arm64.deb ...
+Unpacking file (1:5.32-2ubuntu0.4) ...
+Selecting previously unselected package libidn11:arm64.
+Preparing to unpack .../08-libidn11_1.33-2.1ubuntu1.2_arm64.deb ...
+Unpacking libidn11:arm64 (1.33-2.1ubuntu1.2) ...
+Selecting previously unselected package iputils-ping.
+Preparing to unpack .../09-iputils-ping_3%3a20161105-1ubuntu3_arm64.deb ...
+Unpacking iputils-ping (3:20161105-1ubuntu3) ...
+Selecting previously unselected package lsb-release.
+Preparing to unpack .../10-lsb-release_9.20170808ubuntu1_all.deb ...
+Unpacking lsb-release (9.20170808ubuntu1) ...
+Selecting previously unselected package xxd.
+Preparing to unpack .../11-xxd_2%3a8.0.1453-1ubuntu1.6_arm64.deb ...
+Unpacking xxd (2:8.0.1453-1ubuntu1.6) ...
+Selecting previously unselected package vim-common.
+Preparing to unpack .../12-vim-common_2%3a8.0.1453-1ubuntu1.6_all.deb ...
+Unpacking vim-common (2:8.0.1453-1ubuntu1.6) ...
+Selecting previously unselected package libssl1.0.0:arm64.
+Preparing to unpack .../13-libssl1.0.0_1.0.2n-1ubuntu5.7_arm64.deb ...
+Unpacking libssl1.0.0:arm64 (1.0.2n-1ubuntu5.7) ...
+Preparing to unpack .../14-git_1%3a2.17.1-1ubuntu0.9_arm64.deb ...
+Unpacking git (1:2.17.1-1ubuntu0.9) over (1:2.17.1-1ubuntu0.7) ...
+Selecting previously unselected package openssh-client.
+Preparing to unpack .../15-openssh-client_1%3a7.6p1-4ubuntu0.5_arm64.deb ...
+Unpacking openssh-client (1:7.6p1-4ubuntu0.5) ...
+Selecting previously unselected package usbutils.
+Preparing to unpack .../16-usbutils_1%3a007-4build1_arm64.deb ...
+Unpacking usbutils (1:007-4build1) ...
+Selecting previously unselected package libsigsegv2:arm64.
+Preparing to unpack .../17-libsigsegv2_2.12-1_arm64.deb ...
+Unpacking libsigsegv2:arm64 (2.12-1) ...
+Selecting previously unselected package m4.
+Preparing to unpack .../18-m4_1.4.18-1_arm64.deb ...
+Unpacking m4 (1.4.18-1) ...
+Selecting previously unselected package autoconf.
+Preparing to unpack .../19-autoconf_2.69-11_all.deb ...
+Unpacking autoconf (2.69-11) ...
+Selecting previously unselected package autotools-dev.
+Preparing to unpack .../20-autotools-dev_20180224.1_all.deb ...
+Unpacking autotools-dev (20180224.1) ...
+Selecting previously unselected package automake.
+Preparing to unpack .../21-automake_1%3a1.15.1-3ubuntu2_all.deb ...
+Unpacking automake (1:1.15.1-3ubuntu2) ...
+Selecting previously unselected package gcc.
+Preparing to unpack .../22-gcc_4%3a7.4.0-1ubuntu2.3_arm64.deb ...
+Unpacking gcc (4:7.4.0-1ubuntu2.3) ...
+Selecting previously unselected package g++.
+Preparing to unpack .../23-g++_4%3a7.4.0-1ubuntu2.3_arm64.deb ...
+Unpacking g++ (4:7.4.0-1ubuntu2.3) ...
+Selecting previously unselected package build-essential.
+Preparing to unpack .../24-build-essential_12.4ubuntu1_arm64.deb ...
+Unpacking build-essential (12.4ubuntu1) ...
+Preparing to unpack .../25-libcurl4-openssl-dev_7.58.0-2ubuntu3.16_arm64.deb ...
+Unpacking libcurl4-openssl-dev:arm64 (7.58.0-2ubuntu3.16) over (7.58.0-2ubuntu3.10) ...
+Preparing to unpack .../26-libcurl4_7.58.0-2ubuntu3.16_arm64.deb ...
+Unpacking libcurl4:arm64 (7.58.0-2ubuntu3.16) over (7.58.0-2ubuntu3.10) ...
+Selecting previously unselected package curl.
+Preparing to unpack .../27-curl_7.58.0-2ubuntu3.16_arm64.deb ...
+Unpacking curl (7.58.0-2ubuntu3.16) ...
+Selecting previously unselected package libassuan0:arm64.
+Preparing to unpack .../28-libassuan0_2.5.1-2_arm64.deb ...
+Unpacking libassuan0:arm64 (2.5.1-2) ...
+Selecting previously unselected package gpgconf.
+Preparing to unpack .../29-gpgconf_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpgconf (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package libksba8:arm64.
+Preparing to unpack .../30-libksba8_1.3.5-2_arm64.deb ...
+Unpacking libksba8:arm64 (1.3.5-2) ...
+Selecting previously unselected package libnpth0:arm64.
+Preparing to unpack .../31-libnpth0_1.5-3_arm64.deb ...
+Unpacking libnpth0:arm64 (1.5-3) ...
+Selecting previously unselected package dirmngr.
+Preparing to unpack .../32-dirmngr_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking dirmngr (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package libdw1:arm64.
+Preparing to unpack .../33-libdw1_0.170-0.4ubuntu0.1_arm64.deb ...
+Unpacking libdw1:arm64 (0.170-0.4ubuntu0.1) ...
+Selecting previously unselected package libbabeltrace1:arm64.
+Preparing to unpack .../34-libbabeltrace1_1.5.5-1_arm64.deb ...
+Unpacking libbabeltrace1:arm64 (1.5.5-1) ...
+Selecting previously unselected package libpython3.6:arm64.
+Preparing to unpack .../35-libpython3.6_3.6.9-1~18.04ubuntu1.4_arm64.deb ...
+Unpacking libpython3.6:arm64 (3.6.9-1~18.04ubuntu1.4) ...
+Selecting previously unselected package gdb.
+Preparing to unpack .../36-gdb_8.1.1-0ubuntu1_arm64.deb ...
+Unpacking gdb (8.1.1-0ubuntu1) ...
+Selecting previously unselected package gnupg-l10n.
+Preparing to unpack .../37-gnupg-l10n_2.2.4-1ubuntu1.4_all.deb ...
+Unpacking gnupg-l10n (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gnupg-utils.
+Preparing to unpack .../38-gnupg-utils_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gnupg-utils (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gpg.
+Preparing to unpack .../39-gpg_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpg (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package pinentry-curses.
+Preparing to unpack .../40-pinentry-curses_1.1.0-1_arm64.deb ...
+Unpacking pinentry-curses (1.1.0-1) ...
+Selecting previously unselected package gpg-agent.
+Preparing to unpack .../41-gpg-agent_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpg-agent (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gpg-wks-client.
+Preparing to unpack .../42-gpg-wks-client_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpg-wks-client (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gpg-wks-server.
+Preparing to unpack .../43-gpg-wks-server_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpg-wks-server (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gpgsm.
+Preparing to unpack .../44-gpgsm_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gpgsm (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package gnupg.
+Preparing to unpack .../45-gnupg_2.2.4-1ubuntu1.4_arm64.deb ...
+Unpacking gnupg (2.2.4-1ubuntu1.4) ...
+Selecting previously unselected package libevent-2.1-6:arm64.
+Preparing to unpack .../46-libevent-2.1-6_2.1.8-stable-4build1_arm64.deb ...
+Unpacking libevent-2.1-6:arm64 (2.1.8-stable-4build1) ...
+Selecting previously unselected package libtool.
+Preparing to unpack .../47-libtool_2.4.6-2_all.deb ...
+Unpacking libtool (2.4.6-2) ...
+Selecting previously unselected package libutempter0:arm64.
+Preparing to unpack .../48-libutempter0_1.1.6-3_arm64.deb ...
+Unpacking libutempter0:arm64 (1.1.6-3) ...
+Selecting previously unselected package openssh-sftp-server.
+Preparing to unpack .../49-openssh-sftp-server_1%3a7.6p1-4ubuntu0.5_arm64.deb ...
+Unpacking openssh-sftp-server (1:7.6p1-4ubuntu0.5) ...
+Selecting previously unselected package openssh-server.
+Preparing to unpack .../50-openssh-server_1%3a7.6p1-4ubuntu0.5_arm64.deb ...
+Unpacking openssh-server (1:7.6p1-4ubuntu0.5) ...
+Selecting previously unselected package tmux.
+Preparing to unpack .../51-tmux_2.6-3ubuntu0.2_arm64.deb ...
+Unpacking tmux (2.6-3ubuntu0.2) ...
+Selecting previously unselected package unzip.
+Preparing to unpack .../52-unzip_6.0-21ubuntu1.1_arm64.deb ...
+Unpacking unzip (6.0-21ubuntu1.1) ...
+Selecting previously unselected package vim-runtime.
+Preparing to unpack .../53-vim-runtime_2%3a8.0.1453-1ubuntu1.6_all.deb ...
+Adding 'diversion of /usr/share/vim/vim80/doc/help.txt to /usr/share/vim/vim80/doc/help.txt.vim-tiny by vim-runtime'
+Adding 'diversion of /usr/share/vim/vim80/doc/tags to /usr/share/vim/vim80/doc/tags.vim-tiny by vim-runtime'
+Unpacking vim-runtime (2:8.0.1453-1ubuntu1.6) ...
+Selecting previously unselected package vim.
+Preparing to unpack .../54-vim_2%3a8.0.1453-1ubuntu1.6_arm64.deb ...
+Unpacking vim (2:8.0.1453-1ubuntu1.6) ...
+Selecting previously unselected package gnupg2.
+Preparing to unpack .../55-gnupg2_2.2.4-1ubuntu1.4_all.deb ...
+Unpacking gnupg2 (2.2.4-1ubuntu1.4) ...
+Setting up libnpth0:arm64 (1.5-3) ...
+Setting up libevent-2.1-6:arm64 (2.1.8-stable-4build1) ...
+Setting up libssl1.0.0:arm64 (1.0.2n-1ubuntu5.7) ...
+Setting up xxd (2:8.0.1453-1ubuntu1.6) ...
+Setting up libdw1:arm64 (0.170-0.4ubuntu0.1) ...
+Setting up libsigsegv2:arm64 (2.12-1) ...
+Setting up apt-utils (1.6.14) ...
+Setting up libcurl4:arm64 (7.58.0-2ubuntu3.16) ...
+Setting up unzip (6.0-21ubuntu1.1) ...
+Setting up distro-info-data (0.37ubuntu0.13) ...
+Setting up libksba8:arm64 (1.3.5-2) ...
+Setting up gcc (4:7.4.0-1ubuntu2.3) ...
+Setting up m4 (1.4.18-1) ...
+Setting up lsb-release (9.20170808ubuntu1) ...
+Setting up file (1:5.32-2ubuntu0.4) ...
+Setting up usbutils (1:007-4build1) ...
+Setting up libutempter0:arm64 (1.1.6-3) ...
+Setting up gnupg-l10n (2.2.4-1ubuntu1.4) ...
+Setting up libpython3.6-minimal:arm64 (3.6.9-1~18.04ubuntu1.4) ...
+Setting up autotools-dev (20180224.1) ...
+Setting up vim-common (2:8.0.1453-1ubuntu1.6) ...
+Setting up tmux (2.6-3ubuntu0.2) ...
+Setting up g++ (4:7.4.0-1ubuntu2.3) ...
+update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/c++.1.gz because associated file /usr/share/man/man1/g++.1.gz (of link group c++) doesn't exist
+Setting up vim-runtime (2:8.0.1453-1ubuntu1.6) ...
+Setting up ca-certificates (20210119~18.04.2) ...
+Updating certificates in /etc/ssl/certs...
+21 added, 20 removed; done.
+Setting up openssh-client (1:7.6p1-4ubuntu0.5) ...
+Setting up libassuan0:arm64 (2.5.1-2) ...
+Setting up libcurl4-openssl-dev:arm64 (7.58.0-2ubuntu3.16) ...
+Setting up git (1:2.17.1-1ubuntu0.9) ...
+Setting up libbabeltrace1:arm64 (1.5.5-1) ...
+Setting up libidn11:arm64 (1.33-2.1ubuntu1.2) ...
+Setting up iputils-ping (3:20161105-1ubuntu3) ...
+Setting up libtool (2.4.6-2) ...
+Setting up libpython3.6-stdlib:arm64 (3.6.9-1~18.04ubuntu1.4) ...
+Setting up curl (7.58.0-2ubuntu3.16) ...
+Setting up build-essential (12.4ubuntu1) ...
+Setting up gpgconf (2.2.4-1ubuntu1.4) ...
+Setting up python3.6-minimal (3.6.9-1~18.04ubuntu1.4) ...
+Setting up autoconf (2.69-11) ...
+Setting up openssh-sftp-server (1:7.6p1-4ubuntu0.5) ...
+Setting up gpgsm (2.2.4-1ubuntu1.4) ...
+Setting up automake (1:1.15.1-3ubuntu2) ...
+update-alternatives: using /usr/bin/automake-1.15 to provide /usr/bin/automake (automake) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/automake.1.gz because associated file /usr/share/man/man1/automake-1.15.1.gz (of link group automake) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/aclocal.1.gz because associated file /usr/share/man/man1/aclocal-1.15.1.gz (of link group automake) doesn't exist
+Setting up gnupg-utils (2.2.4-1ubuntu1.4) ...
+Setting up pinentry-curses (1.1.0-1) ...
+Setting up dirmngr (2.2.4-1ubuntu1.4) ...
+Setting up gpg (2.2.4-1ubuntu1.4) ...
+Setting up libpython3.6:arm64 (3.6.9-1~18.04ubuntu1.4) ...
+Setting up python3.6 (3.6.9-1~18.04ubuntu1.4) ...
+Setting up vim (2:8.0.1453-1ubuntu1.6) ...
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vim (vim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vimdiff (vimdiff) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rvim (rvim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rview (rview) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vi (vi) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/vi.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/vi.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/vi.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/vi.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/vi.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/vi.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/view (view) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/view.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/view.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/view.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/view.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/view.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/view.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/ex (ex) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/ex.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/ex.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/ex.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/ex.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/ex.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/ex.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/editor (editor) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/editor.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/editor.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/editor.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/editor.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/editor.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/editor.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group editor) doesn't exist
+Setting up gpg-agent (2.2.4-1ubuntu1.4) ...
+Setting up gpg-wks-server (2.2.4-1ubuntu1.4) ...
+Setting up gpg-wks-client (2.2.4-1ubuntu1.4) ...
+Setting up openssh-server (1:7.6p1-4ubuntu0.5) ...
+
+Creating config file /etc/ssh/sshd_config with new version
+Creating SSH2 RSA key; this may take some time ...
+2048 SHA256:44RD6dRMlC4MQuoObh+Eh24u+PQY596Kfuku9r7Xa68 root@74d542009bec (RSA)
+Creating SSH2 ECDSA key; this may take some time ...
+256 SHA256:ljuvc++mRbT90xwb2g1+p70ydr0jmeeDFrUzWt/iBL0 root@74d542009bec (ECDSA)
+Creating SSH2 ED25519 key; this may take some time ...
+256 SHA256:Q1PR+hu2yhfC8zGx74eo0LCkVJHiBT4SSTkaMiZ55t4 root@74d542009bec (ED25519)
+invoke-rc.d: could not determine current runlevel
+invoke-rc.d: policy-rc.d denied execution of start.
+Setting up gdb (8.1.1-0ubuntu1) ...
+Setting up gnupg (2.2.4-1ubuntu1.4) ...
+Setting up gnupg2 (2.2.4-1ubuntu1.4) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Processing triggers for mime-support (3.60ubuntu1) ...
+Processing triggers for libc-bin (2.27-3ubuntu1) ...
+Processing triggers for ca-certificates (20210119~18.04.2) ...
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+Removing intermediate container 589103f6b407
+ ---> c7fc08767f4b
+Step 12/27 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate          https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake &&     rm -rf /tmp/*
+ ---> Running in 8c26516a0cac
+cmake-3.20.5-linux-   0%[                    ]       0  --.-KB/s               cmake-3.20.5-linux-   0%[                    ]  23.94K  65.4KB/s               cmake-3.20.5-linux-   0%[                    ]  44.32K  78.2KB/s               cmake-3.20.5-linux-   0%[                    ]  69.82K  76.3KB/s               cmake-3.20.5-linux-   0%[                    ] 101.08K  79.2KB/s               cmake-3.20.5-linux-   0%[                    ] 130.60K  87.1KB/s               cmake-3.20.5-linux-   0%[                    ] 165.18K  90.9KB/s               cmake-3.20.5-linux-   0%[                    ] 197.18K  96.4KB/s               cmake-3.20.5-linux-   0%[                    ] 229.18K  96.2KB/s               cmake-3.20.5-linux-   0%[                    ] 265.18K   102KB/s               cmake-3.20.5-linux-   0%[                    ] 307.92K   106KB/s               cmake-3.20.5-linux-   0%[                    ] 348.18K   111KB/s    eta 6m 34s cmake-3.20.5-linux-   0%[                    ] 412.18K   118KB/s    eta 6m 34s cmake-3.20.5-linux-   1%[                    ] 481.18K   129KB/s    eta 6m 34s cmake-3.20.5-linux-   1%[                    ] 545.18K   142KB/s    eta 6m 34s cmake-3.20.5-linux-   1%[                    ] 621.18K   154KB/s    eta 5m 4s  cmake-3.20.5-linux-   1%[                    ] 685.18K   169KB/s    eta 5m 4s  cmake-3.20.5-linux-   1%[                    ] 781.18K   189KB/s    eta 5m 4s  cmake-3.20.5-linux-   2%[                    ] 898.92K   214KB/s    eta 5m 4s  cmake-3.20.5-linux-   2%[                    ]   1.00M   240KB/s    eta 5m 4s  cmake-3.20.5-linux-   2%[                    ]   1.16M   274KB/s    eta 3m 24s cmake-3.20.5-linux-   3%[                    ]   1.31M   309KB/s    eta 3m 24s cmake-3.20.5-linux-   3%[                    ]   1.52M   360KB/s    eta 3m 24s cmake-3.20.5-linux-   3%[                    ]   1.71M   400KB/s    eta 3m 24s cmake-3.20.5-linux-   4%[                    ]   1.88M   435KB/s    eta 3m 24s cmake-3.20.5-linux-   5%[>                   ]   2.16M   511KB/s    eta 2m 11s cmake-3.20.5-linux-   5%[>                   ]   2.41M   570KB/s    eta 2m 11s cmake-3.20.5-linux-   6%[>                   ]   2.63M   610KB/s    eta 2m 11s cmake-3.20.5-linux-   6%[>                   ]   2.91M   671KB/s    eta 2m 11s cmake-3.20.5-linux-   7%[>                   ]   3.27M   770KB/s    eta 2m 11s cmake-3.20.5-linux-   8%[>                   ]   3.56M   833KB/s    eta 89s    cmake-3.20.5-linux-   9%[>                   ]   3.89M   903KB/s    eta 89s    cmake-3.20.5-linux-   9%[>                   ]   4.27M   977KB/s    eta 89s    cmake-3.20.5-linux-  10%[=>                  ]   4.69M  1.04MB/s    eta 89s    cmake-3.20.5-linux-  11%[=>                  ]   5.13M  1.16MB/s    eta 89s    cmake-3.20.5-linux-  13%[=>                  ]   5.63M  1.26MB/s    eta 60s    cmake-3.20.5-linux-  13%[=>                  ]   5.81M  1.26MB/s    eta 60s    cmake-3.20.5-linux-  15%[==>                 ]   6.80M  1.49MB/s    eta 60s    cmake-3.20.5-linux-  16%[==>                 ]   7.14M  1.54MB/s    eta 60s    cmake-3.20.5-linux-  17%[==>                 ]   7.52M  1.60MB/s    eta 60s    cmake-3.20.5-linux-  18%[==>                 ]   7.89M  1.68MB/s    eta 46s    cmake-3.20.5-linux-  19%[==>                 ]   8.30M  1.73MB/s    eta 46s    cmake-3.20.5-linux-  20%[===>                ]   8.71M  1.76MB/s    eta 46s    cmake-3.20.5-linux-  21%[===>                ]   9.16M  1.82MB/s    eta 46s    cmake-3.20.5-linux-  22%[===>                ]   9.66M  1.93MB/s    eta 46s    cmake-3.20.5-linux-  23%[===>                ]  10.10M  1.95MB/s    eta 37s    cmake-3.20.5-linux-  24%[===>                ]  10.56M  1.98MB/s    eta 37s    cmake-3.20.5-linux-  25%[====>               ]  11.03M  2.03MB/s    eta 37s    cmake-3.20.5-linux-  26%[====>               ]  11.49M  2.04MB/s    eta 37s    cmake-3.20.5-linux-  27%[====>               ]  11.99M  2.06MB/s    eta 37s    cmake-3.20.5-linux-  29%[====>               ]  12.56M  2.13MB/s    eta 30s    cmake-3.20.5-linux-  30%[=====>              ]  13.02M  2.14MB/s    eta 30s    cmake-3.20.5-linux-  31%[=====>              ]  13.47M  2.29MB/s    eta 30s    

@@ -1,0 +1,354 @@
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
+# Size: MB
+ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+# Size: 631MB
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
+# Size: 2.72GB
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
+# Size: 1.96GB
+FROM ${BASE_IMAGE}
+
+ARG ROS_PKG=ros_base
+ENV ROS_DISTRO=melodic
+ENV ROS_ROOT=/opt/ros/${ROS_DISTRO}
+
+LABEL maintainer="9426224" \
+    version="0.1" \
+    description="A l4t-base dockerfile for ROS1 User" \
+    email="9426224@live.com"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV SHELL /bin/bash
+SHELL ["/bin/bash", "-c"] 
+
+WORKDIR /tmp
+
+# 
+# Description: Change the locale from POSIX to UTF-8
+# Size: near by  3.4MB
+#
+RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
+
+# 
+# Description: Install basic packages and Add ROS repo
+# Size: 259MB / 124MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        gnupg2 \
+        lsb-release \
+        ca-certificates \
+        build-essential \
+        git \
+        openssh-server \
+        vim \
+        apt-utils \
+        usbutils \
+        iputils-ping \
+        gdb \
+        libtool \
+        autoconf \
+        automake \
+        unzip \
+        tmux && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
+    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Build CMake 3.20.5
+# Size: 120MB / 120MB
+#
+RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate  \
+        https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&\
+    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install Development packages
+# Size: 453MB / 449MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libbullet-dev \
+        libpython3-dev \
+        python3-colcon-common-extensions \
+        python3-flake8 \
+        python3-pip \
+        python3-numpy \
+        python3-pytest-cov \
+        libasio-dev \
+        libtinyxml2-dev \
+        libcunit1-dev \
+        libopenblas-base \
+        libopenmpi-dev \
+        libopenblas-dev \
+        libatlas-base-dev \
+        gfortran \
+        liblapack-dev \
+        libboost-python-dev \
+        libboost-thread-dev \
+        libcurl4-openssl-dev \
+        libfreetype6-dev \
+        python3-matplotlib \
+        python3-numba \
+        python3-llvmlite \
+        tcl-dev \
+        tk-dev \
+        python3-tk \
+        protobuf-compiler \
+        libprotoc-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install Python Environment
+# Size: 76.2MB
+#
+RUN pip3 install --upgrade pip && \
+    python3 -m pip install --no-cache-dir -U \
+        wheel \
+        Cython \
+        setuptools \
+        numpy==1.19.3 && \
+    python3 -m pip install --no-cache-dir -U \
+        argcomplete \  
+        flake8-blind-except \
+        flake8-builtins \
+        flake8-class-newline \
+        flake8-comprehensions \
+        flake8-deprecated \
+        flake8-docstrings \
+        flake8-import-order \
+        flake8-quotes \
+        pytest-repeat \
+        pytest-rerunfailures \
+        pytest \
+        pyzmq \
+        pycuda==2019.1.2 \
+        filterpy==1.4.5 \
+        scikit-learn==0.24.2 \
+        scikit-image==0.17.2 \
+        scipy==1.5.4 \
+        pandas \
+        pillow \
+        onnx==1.4.1 && \
+    rm -rf /tmp/* && \
+    rm -rf ~/.cache/pip
+
+
+# 
+# Description: Link CUDART to ENV
+# Size: near by 130kB
+#
+RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ && \
+    ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ && \
+    ln -s $(which nvcc) /sbin/nvcc && \
+    rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
+
+
+# 
+# Description: Install yaml-cpp and jsoncpp
+# Size: 6.16MB
+#
+RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 && \
+    cd yaml-cpp-0.7 && \
+    mkdir build && \
+    cd build && \
+    cmake -DBUILD_SHARED_LIBS=ON .. && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \ 
+    git clone https://github.com/open-source-parsers/jsoncpp.git && \
+    cd jsoncpp && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \ 
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install OpenCV 3.4.14
+# Size: 
+#
+RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libgtk2.0-dev \
+        libavcodec-dev \
+        libavformat-dev \
+        libjpeg-dev \
+        libtiff-dev \
+        libswscale-dev && \
+    mkdir opencv && \
+    cd opencv && \
+    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://codeload.github.com/opencv/opencv/tar.gz/refs/tags/3.4.14 -O opencv-3.4.14.tar.gz && \
+    tar -zxf opencv-3.4.14.tar.gz && \
+    cd ./opencv-3.4.14 && \
+    mkdir -p build && \ 
+    cd build && \
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTS=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_FAST_MATH=1 -DCUDA_ARCH_BIN=7.5 -DWITH_CUBLAS=1 -DENABLE_FAST_MATH=1 -DWITH_TBB=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DWITH_V4L=ON -DBUILD_TIFF=ON -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_EXAMPLES=OFF -DWITH_GSTREAMER=ON -DWITH_GTK=ON -DWITH_GTHREAD=ON -DWITH_QT=OFF -DWITH_OPENGL=ON -DWITH_FFMPEG=ON -DWITH_LIBV4L=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DHAVE_opencv_python3=ON -DBUILD_EXAMPLES=OFF .. && \
+    make -j $(nproc) .. && \
+    make -j $(nproc) install && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install LibTorch 1.7.0
+# Size: 620MB
+#
+RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
+        https://nvidia.box.com/shared/static/cs3xn3td6sfgtene6jdvsxlr366m2dhq.whl -O torch-1.7.0-cp36-cp36m-linux_aarch64.whl && \
+    pip3 install --no-cache-dir torch-1.7.0-cp36-cp36m-linux_aarch64.whl && \
+    rm -rf ~/.cache/pip && \
+    rm -rf /tmp/*
+
+
+# 
+# install ROS packages
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+		ros-melodic-`echo "${ROS_PKG}" | tr '_' '-'` \
+		ros-melodic-image-transport \
+		ros-melodic-vision-msgs \
+          python-rosdep \
+          python-rosinstall \
+          python-rosinstall-generator \
+          python-wstool \
+          python-catkin-tools \
+    && rm -rf /var/lib/apt/lists/* && \
+    apt-get update && \
+    cd ${ROS_ROOT} && \
+    rosdep init && \
+    rosdep update && \
+    rm -rf /var/lib/apt/lists/*
+
+
+# 
+# install cv_bridge
+#
+RUN pip3 install rospkg catkin_pkg && \
+    cd ~ && \
+    wget https://github.com/ros-perception/vision_opencv/archive/refs/tags/1.13.0.zip -O vision_opencv-1.13.0.zip && \
+    unzip vision_opencv-1.13.0.zip && \
+    mkdir -p ~/cv_bridge_workspace && cd ~/cv_bridge_workspace && \
+    mkdir -p build src install build devel logs && \
+    mv ~/vision_opencv-1.13.0/cv_bridge ~/cv_bridge_workspace/src && \
+    cd ~/cv_bridge_workspace && \
+    source /opt/ros/melodic/setup.sh && \
+    chown -R root:root ~/cv_bridge_workspace && \
+    catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so && \
+    catkin config --install && \
+    catkin build && \
+    rm -rf ~/vision_opencv-1.13.0.zip && \
+    rm -rf vision_opencv-1.13.0 && \
+    rm -rf /var/lib/apt/lists/*
+
+
+# 
+# Description: Add Node.js and MongoDB
+# Size: 326MB
+#
+RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \ 
+        https://nodejs.org/dist/v14.17.5/node-v14.17.5-linux-arm64.tar.xz && \
+    tar -xvf node-v14.17.5-linux-arm64.tar.xz && \
+    mv node-v14.17.5-linux-arm64 /opt/node && \
+    ln -s /opt/node/bin/node /usr/local/bin/node && \
+    ln -s /opt/node/bin/npm /usr/local/bin/npm && \
+    npm install -g pm2 && \
+    ln -s /opt/node/bin/pm2 /usr/local/bin/ && \
+    # wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \  
+    #     http://downloads.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
+    # tar -zxvf mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
+    # mv mongodb-linux-aarch64-ubuntu1804-4.4.5 /usr/local/mongodb && \
+    # echo "export PATH=/usr/local/mongodb/bin:\$PATH" >> /etc/profile && \
+    # source /etc/profile && \
+    # mkdir -p /usr/local/mongodb/data/db && \
+    # touch /usr/local/mongodb/data/log && \
+    # chmod 777 -R /usr/local/mongodb/data && \
+    # ln -s /usr/local/mongodb/bin/mongod /usr/bin/mongod && \
+    # ln -s /usr/local/mongodb/bin/mongo /usr/bin/mongo && \
+    # touch /usr/local/mongodb/bin/mongodb.conf && \
+    # echo $'dbpath = /usr/local/mongodb/data/db\n \
+    # logpath = /usr/local/mongodb/data/log\n \
+    # logappend = true\n \
+    # port = 27017\n \
+    # fork = true\n \
+    # bind_ip = 0.0.0.0\n \
+    # quiet = true\n \
+    # auth = false' > /usr/local/mongodb/bin/mongodb.conf && \
+    # touch /usr/local/mongodb/db-install.js && \
+    # echo $'var url = "mongodb://localhost:27017/admin"\n \
+    # var db = connect(url)\n \
+    # db.createUser({user:"bitcq",pwd:"bitcqpwd",roles: [ { role: "root", db: "admin" } ]})\n \
+    # var url1 = "mongodb://localhost:27017/ecu_db"\n \
+    # var db1 = connect(url1)\n \
+    # db1.users.insert({"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","authority":1});\n \
+    # db1.users.ensureIndex({ username: 1 }, { unique: true })\n \
+    # var url2 = "mongodb://localhost:27017/mec_db"\n \
+    # var db2 = connect(url2)\n \
+    # db2.users.insert({ "username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "authority": 1 });\n \
+    # db2.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install Code-Server
+# Size: 286MB
+#
+RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \ 
+    https://github.com/cdr/code-server/releases/download/v3.11.1/code-server-3.11.1-linux-arm64.tar.gz && \
+    tar -zxvf code-server-3.11.1-linux-arm64.tar.gz && \
+    mv code-server-3.11.1-linux-arm64 ~/code-server && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Add EntryPoint and .bashrc\SSH params.
+# Size: near by 160KB
+#
+RUN echo $'#!/bin/bash\n \
+    set -e\n \
+    echo "root:$rootpwd" | chpasswd\n \
+    /etc/init.d/ssh start\n \
+    #mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
+    export PASSWORD=$cspwd\n \
+    echo port=${sshport} >> /etc/ssh/sshd_config\n \
+    /etc/init.d/ssh restart\n \
+    nohup /root/code-server/code-server --port $csport --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
+    exec "$@"' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh && \
+    echo $'export DISPLAY=:0.0\nexport XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/melodic/setup.bash' >> ~/.bashrc && \    
+    echo "source ~/cv_bridge_workspace/install/setup.bash --extend" >> ~/.bashrc && \
+    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config
+    
+
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bash"]
+WORKDIR /

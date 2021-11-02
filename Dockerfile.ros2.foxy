@@ -1,6 +1,8 @@
+ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
+# Size: MB
 # ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
 # Size: 631MB
-ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
 # Size: 2.72GB
 #ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
 # Size: 1.96GB
@@ -54,9 +56,9 @@ RUN apt-get update && \
         tmux && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
-    && rm -rf /tmp/*
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
+    rm -rf /tmp/*
 
 
 # 
@@ -100,9 +102,33 @@ RUN apt-get update && \
         libboost-python-dev \
         libboost-thread-dev \
         libcurl4-openssl-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
-    && rm -rf /tmp/*
+        libgstreamer1.0-dev \
+        libgstreamer-plugins-base1.0-dev \
+        libssl1.0.0 \
+        libgstreamer1.0-0 \
+        gstreamer1.0-tools \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-libav \
+        libgstrtspserver-1.0-0 \
+        libjansson4 \
+        libx11-dev \
+        x11-apps \
+        xorg \
+        meson \
+        libfreetype6-dev \
+        python3-matplotlib \
+        python3-numba \
+        python3-llvmlite \
+        tcl-dev \
+        tk-dev \
+        python3-tk \
+        protobuf-compiler \
+        libprotoc-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
 
 
 # 
@@ -127,7 +153,16 @@ RUN pip3 install --upgrade pip && \
         flake8-quotes \
         pytest-repeat \
         pytest-rerunfailures \
-        pytest && \
+        pytest \
+        pyzmq \
+        pycuda==2019.1.2 \
+        filterpy==1.4.5 \
+        scikit-learn==0.24.2 \
+        scikit-image==0.17.2 \
+        scipy==1.5.4 \
+        pandas \
+        pillow \
+        onnx==1.4.1 && \
     rm -rf /tmp/* && \
     rm -rf ~/.cache/pip
 
@@ -142,7 +177,11 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ && \
-    ln -s $(which nvcc) /sbin/nvcc
+    ln -s $(which nvcc) /sbin/nvcc && \
+    rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
+    ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
 
 
 # 
@@ -195,47 +234,6 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     pip3 install --no-cache-dir torch-1.7.0-cp36-cp36m-linux_aarch64.whl && \
     rm -rf ~/.cache/pip && \
     rm -rf /tmp/*
-
-
-# 
-# Description: Install Protobuf 3.8.0
-# Size: 307MB
-#
-# RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-#         https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip && \
-#     wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-#         https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip && \
-#     unzip protobuf-python-3.8.0.zip && \
-#     unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0 && \
-#     cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc && \
-#     export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp && \
-#     cd protobuf-3.8.0/ && \
-#     ./autogen.sh && \
-#     ./configure --prefix=/usr/local && \
-#     make -j $(nproc) && \
-#     make check && \
-#     make -j $(nproc) install && \
-#     ldconfig && \
-#     cd python/ && \
-#     python3 setup.py build --cpp_implementation && \
-#     python3 setup.py test --cpp_implementation && \
-#     sudo python3 setup.py install --cpp_implementation && \
-#     rm -rf /tmp/*
-
-
-# 
-# Description: Install PyCuda 2019.1.2
-# Size: 26.3MB
-#
-# RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \
-#         https://files.pythonhosted.org/packages/5e/3f/5658c38579b41866ba21ee1b5020b8225cec86fe717e4b1c5c972de0a33c/pycuda-2019.1.2.tar.gz && \
-#     tar xzvf pycuda-2019.1.2.tar.gz && \
-#     cd pycuda-2019.1.2 && \
-#     python3 ./configure.py --python-exe=/usr/bin/python3 --cuda-root=/usr/local/cuda --cudadrv-lib-dir=/usr/lib/aarch64-linux-gnu --boost-inc-dir=/usr/include --boost-lib-dir=/usr/lib/aarch64-linux-gnu --boost-python-libname=boost_python3-py36 --boost-thread-libname=boost_thread --no-use-shipped-boost && \
-#     make -j$(nproc) && \
-#     python3 setup.py build && \
-#     python3 setup.py install && \
-#     rm -rf /tmp/*
 
 
 # # 
@@ -300,93 +298,39 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     ln -s /opt/node/bin/npm /usr/local/bin/npm && \
     npm install -g pm2 && \
     ln -s /opt/node/bin/pm2 /usr/local/bin/ && \
-    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \  
-        http://downloads.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
-    tar -zxvf mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
-    mv mongodb-linux-aarch64-ubuntu1804-4.4.5 /usr/local/mongodb && \
-    echo "export PATH=/usr/local/mongodb/bin:\$PATH" >> /etc/profile && \
-    source /etc/profile && \
-    mkdir -p /usr/local/mongodb/data/db && \
-    touch /usr/local/mongodb/data/log && \
-    chmod 777 -R /usr/local/mongodb/data && \
-    ln -s /usr/local/mongodb/bin/mongod /usr/bin/mongod && \
-    ln -s /usr/local/mongodb/bin/mongo /usr/bin/mongo && \
-    touch /usr/local/mongodb/bin/mongodb.conf && \
-    echo $'dbpath = /usr/local/mongodb/data/db\n \
-    logpath = /usr/local/mongodb/data/log\n \
-    logappend = true\n \
-    port = 27017\n \
-    fork = true\n \
-    bind_ip = 0.0.0.0\n \
-    quiet = true\n \
-    auth = false' > /usr/local/mongodb/bin/mongodb.conf && \
-    touch /usr/local/mongodb/db-install.js && \
-    echo $'var url = "mongodb://localhost:27017/admin"\n \
-    var db = connect(url)\n \
-    db.createUser({user:"bitcq",pwd:"bitcqpwd",roles: [ { role: "root", db: "admin" } ]})\n \
-    var url1 = "mongodb://localhost:27017/ecu_db"\n \
-    var db1 = connect(url1)\n \
-    db1.users.insert({"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","authority":1});\n \
-    db1.users.ensureIndex({ username: 1 }, { unique: true })\n \
-    var url2 = "mongodb://localhost:27017/mec_db"\n \
-    var db2 = connect(url2)\n \
-    db2.users.insert({ "username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "authority": 1 });\n \
-    db2.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
+    # wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate \  
+    #     http://downloads.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
+    # tar -zxvf mongodb-linux-aarch64-ubuntu1804-4.4.5.tgz && \
+    # mv mongodb-linux-aarch64-ubuntu1804-4.4.5 /usr/local/mongodb && \
+    # echo "export PATH=/usr/local/mongodb/bin:\$PATH" >> /etc/profile && \
+    # source /etc/profile && \
+    # mkdir -p /usr/local/mongodb/data/db && \
+    # touch /usr/local/mongodb/data/log && \
+    # chmod 777 -R /usr/local/mongodb/data && \
+    # ln -s /usr/local/mongodb/bin/mongod /usr/bin/mongod && \
+    # ln -s /usr/local/mongodb/bin/mongo /usr/bin/mongo && \
+    # touch /usr/local/mongodb/bin/mongodb.conf && \
+    # echo $'dbpath = /usr/local/mongodb/data/db\n \
+    # logpath = /usr/local/mongodb/data/log\n \
+    # logappend = true\n \
+    # port = 27017\n \
+    # fork = true\n \
+    # bind_ip = 0.0.0.0\n \
+    # quiet = true\n \
+    # auth = false' > /usr/local/mongodb/bin/mongodb.conf && \
+    # touch /usr/local/mongodb/db-install.js && \
+    # echo $'var url = "mongodb://localhost:27017/admin"\n \
+    # var db = connect(url)\n \
+    # db.createUser({user:"bitcq",pwd:"bitcqpwd",roles: [ { role: "root", db: "admin" } ]})\n \
+    # var url1 = "mongodb://localhost:27017/ecu_db"\n \
+    # var db1 = connect(url1)\n \
+    # db1.users.insert({"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","authority":1});\n \
+    # db1.users.ensureIndex({ username: 1 }, { unique: true })\n \
+    # var url2 = "mongodb://localhost:27017/mec_db"\n \
+    # var db2 = connect(url2)\n \
+    # db2.users.insert({ "username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "authority": 1 });\n \
+    # db2.users.ensureIndex({ username: 1 }, { unique: true })' > /usr/local/mongodb/db-install.js && \
     rm -rf /tmp/*
-
-
-# 
-# Description: Install ROS2 Projects Link packages
-# Size: 531MB
-#
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libfreetype6-dev \
-        python3-matplotlib \
-        python3-numba \
-        python3-llvmlite \
-        tcl-dev \
-        tk-dev \
-        python3-tk \
-        protobuf-compiler \
-        libprotoc-dev && \
-    python3 -m pip install --no-cache-dir -U \
-        pyzmq \
-        pycuda==2019.1.2 \
-        filterpy==1.4.5 \
-        scikit-learn==0.24.2 \
-        scikit-image==0.17.2 \
-        scipy==1.5.4 \
-        pandas \
-        pillow \
-        onnx==1.4.1 && \
-    rm -rf /tmp/* && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean && \
-    rm -rf ~/.cache/pip
-
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libgstreamer1.0-dev \
-        libgstreamer-plugins-base1.0-dev \
-        libssl1.0.0 \
-        libgstreamer1.0-0 \
-        gstreamer1.0-tools \
-        gstreamer1.0-plugins-good \
-        gstreamer1.0-plugins-bad \
-        gstreamer1.0-plugins-ugly \
-        gstreamer1.0-libav \
-        libgstrtspserver-1.0-0 \
-        libjansson4 \
-        libx11-dev \
-        x11-apps \
-        xorg \
-        meson && \
-    rm -rf /tmp/* && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean
-
 
 
 # 
@@ -401,71 +345,31 @@ RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certi
 
 
 # 
-# Description: Install BITCQ ROS2 Packages
-# Size: near by 150KB
-#
-RUN mkdir -p ~/ros2_ws/src && \
-    rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
-    ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
-    rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
-    ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
-
-
-# 
 # Description: Add EntryPoint and .bashrc\SSH params.
 # Size: near by 160KB
 #
 RUN echo $'#!/bin/bash\n \
     set -e\n \
+    echo "root:$rootpwd" | chpasswd\n \
     /etc/init.d/ssh start\n \
-    mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
-    export PASSWORD="bitcq"\n \
-    nohup /root/code-server/code-server --port 9999 --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
+    #mongod --config /usr/local/mongodb/bin/mongodb.conf\n \
+    export PASSWORD=$cspwd\n \
+    echo port=${sshport} >> /etc/ssh/sshd_config\n \
+    /etc/init.d/ssh restart\n \
+    nohup /root/code-server/code-server --port $csport --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
-    echo 'source /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
-    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes\nport=6622' >> /etc/ssh/sshd_config && \
-    echo "root:root" | chpasswd
+    echo $'export DISPLAY=:0.0\nexport XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/foxy/install/setup.bash' >> /root/.bashrc && \
+    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config
 
 
-# EXPOSE 22
-# EXPOSE 8001
-# EXPOSE 63029
-# EXPOSE 9999
+# 
+# Description: Install BITCQ ROS2 Packages
+# Size: near by 150KB
+#
+RUN mkdir -p ~/ros2_ws/src
 
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
-
-
-# sudo mount tmpfs /tmp -t tmpfs -o size=8192m
-# sudo docker build -t "image-name" -f Dockerfile . >& build.log &
-# sudo docker volume create mongodbdata
-# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 -p 12307:12307 -p 63001:63001 -p 8002:8002 -p 9090:9090 -p 63025:63025 -p 63026:63026 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
-# sudo docker run -itd --net=host --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix --name="deepstream-x11-ros2" --restart=always 9426224/ros-foxy-deepstream-5.1-sample
-# sudo docker run -itd --restart=always --runtime nvidia -e DISPLAY=$DISPLAY --net=host --ipc=host --env="_X11_NO_MITSHM=1" --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority --name="test-ds-x11" 86c2d0e77c62
-# sudo docker exec -it ros-foxy /bin/bash
-# docker save <image>:<tag> | gzip > /path-to/file.tar.gz
-# gunzip -c /path-to/file.tar.gz | docker load
-
-# RUN apt-get update && \
-#     apt-get install -y --no-install-recommends \
-#         libgstreamer1.0-dev \
-#         libgstreamer-plugins-base1.0-dev \
-#         libssl1.0.0 \
-#         libgstreamer1.0-0 \
-#         gstreamer1.0-tools \
-#         gstreamer1.0-plugins-good \
-#         gstreamer1.0-plugins-bad \
-#         gstreamer1.0-plugins-ugly \
-#         gstreamer1.0-libav \
-#         libgstrtspserver-1.0-0 \
-#         libjansson4 \
-#         libx11-dev \
-#         x11-apps \
-#         xorg \
-#         meson && \
-#     rm -rf /tmp/* && \
-#     rm -rf /var/lib/apt/lists/* && \
-#     apt-get clean
