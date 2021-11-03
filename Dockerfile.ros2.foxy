@@ -1,10 +1,10 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
 # Size: MB
-# ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
 # Size: 631MB
 # ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
 # Size: 2.72GB
-#ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
+# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
 # Size: 1.96GB
 FROM ${BASE_IMAGE}
 
