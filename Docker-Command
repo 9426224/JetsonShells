@@ -11,3 +11,25 @@
 sudo docker run -itd --runtime nvidia --restart=always --net=host --ipc=host --privileged --env="_X11_NO_MITSHM=1" -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority -e cspwd=bitcq -e csport=9990 -e sshport=6630 -e rootpwd=root 9426224/ros-melodic-l4t-base:latest
 
 sudo docker run -itd --runtime nvidia --restart=always --net=host --privileged -e cspwd=bitcq -e csport=9990 -e sshport=6630 -e rootpwd=root 9426224/ros-melodic-l4t-base:latest
+
+sudo docker run -d --restart=always --privileged=true --name registry -p 5000:5000 -e REGISTRY_HTTP_HOST=https://vps.9426224.xyz:8502 -v /myregistry:/var/lib/registry registry
+
+sudo docker run -itd \
+    --runtime nvidia \
+    --restart=always \
+    --net=host \
+    --ipc=host \
+    --privileged \
+    -v /tmp/.X11-unix/:/tmp/.X11-unix \
+    -v $HOME/.Xauthority:/tmp/.XAuthority \
+    -v /usr/local/bitcq_config:/usr/local/bitcq_config \
+    -v /etc/localtime:/etc/localtime:ro \
+    -v /mnt/media/capture:/home/ecuNodeServer/public/images/capture \
+    --env="_X11_NO_MITSHM=1" \
+    -e XAUTHORITY=/tmp/.XAuthority \
+    -e DISPLAY=$DISPLAY \
+    -e cspwd=bitcq123 \
+    -e csport=9999 \
+    -e sshport=6622 \
+    -e rootpwd=bitcq123 \
+    vps.9426224.xyz:8502/ros-melodic-l4t-base:latest
