@@ -1,20 +1,17 @@
-# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
+ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-samples
 # Size: MB
-ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+#ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
 # Size: 631MB
-# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
+#ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.1-21.02-samples
 # Size: 2.72GB
-# ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
+#ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0-20.07-samples
 # Size: 1.96GB
 FROM ${BASE_IMAGE}
 
-ARG ROS_PKG=ros_base
-ENV ROS_DISTRO=melodic
-ENV ROS_ROOT=/opt/ros/${ROS_DISTRO}
 
 LABEL maintainer="9426224" \
     version="0.1" \
-    description="A l4t-base dockerfile for ROS1 User" \
+    description="A l4t-base dockerfile for ROS2 User" \
     email="9426224@live.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -59,8 +56,8 @@ RUN apt-get update && \
         tmux && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-    sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
-    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
     rm -rf /tmp/*
 
 
@@ -89,6 +86,10 @@ RUN apt-get update && \
         python3-pip \
         python3-numpy \
         python3-pytest-cov \
+        python3-rosdep \
+        python3-setuptools \
+        python3-vcstool \
+        python3-rosinstall-generator \
         libasio-dev \
         libtinyxml2-dev \
         libcunit1-dev \
@@ -101,6 +102,21 @@ RUN apt-get update && \
         libboost-python-dev \
         libboost-thread-dev \
         libcurl4-openssl-dev \
+        libgstreamer1.0-dev \
+        libgstreamer-plugins-base1.0-dev \
+        libssl1.0.0 \
+        libgstreamer1.0-0 \
+        gstreamer1.0-tools \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-libav \
+        libgstrtspserver-1.0-0 \
+        libjansson4 \
+        libx11-dev \
+        x11-apps \
+        xorg \
+        meson \
         libfreetype6-dev \
         python3-matplotlib \
         python3-numba \
@@ -161,11 +177,12 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ && \
     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ && \
-    ln -s $(which nvcc) /sbin/nvcc && \
-    rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
-    ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
-    rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
-    ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
+    ln -s $(which nvcc) /sbin/nvcc 
+    # && \
+    # rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    # ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+    # rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
+    # ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
 
 
 # 
@@ -190,31 +207,23 @@ RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cp
 
 
 # 
-# Description: Install OpenCV 3.4.14
-# Size: 
+# Description: Install OpenCV 4.5.0 with CUDA
+# Size: 466MB / 452MB
 #
 RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libgtk2.0-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libjpeg-dev \
-        libtiff-dev \
-        libswscale-dev && \
     mkdir opencv && \
     cd opencv && \
-    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://codeload.github.com/opencv/opencv/tar.gz/refs/tags/3.4.14 -O opencv-3.4.14.tar.gz && \
-    tar -zxf opencv-3.4.14.tar.gz && \
-    cd ./opencv-3.4.14 && \
-    mkdir -p build && \ 
-    cd build && \
-    cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTS=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_FAST_MATH=1 -DCUDA_ARCH_BIN=7.5 -DWITH_CUBLAS=1 -DENABLE_FAST_MATH=1 -DWITH_TBB=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DWITH_V4L=ON -DBUILD_TIFF=ON -DINSTALL_C_EXAMPLES=OFF -DINSTALL_PYTHON_EXAMPLES=OFF -DBUILD_EXAMPLES=OFF -DWITH_GSTREAMER=ON -DWITH_GTK=ON -DWITH_GTHREAD=ON -DWITH_QT=OFF -DWITH_OPENGL=ON -DWITH_FFMPEG=ON -DWITH_LIBV4L=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DHAVE_opencv_python3=ON -DBUILD_EXAMPLES=OFF .. && \
-    make -j $(nproc) .. && \
-    make -j $(nproc) install && \
+    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
+    tar -xzvf OpenCV-4.5.0-aarch64.tar.gz && \
+    dpkg -i --force-depends *.deb && \
+    apt-get update && \
+    apt-get install -y -f --no-install-recommends && \
+    dpkg -i *.deb && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-    rm -rf /tmp/*
+    rm -rf /tmp/* && \
+    cp -r /usr/include/opencv4 /usr/local/include/opencv4 && \
+    cp -r /usr/lib/python3.6/dist-packages/cv2 /usr/local/lib/python3.6/dist-packages/cv2
 
 
 # 
@@ -228,46 +237,54 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
     rm -rf /tmp/*
 
 
-# 
-# install ROS packages
-#
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-		ros-melodic-`echo "${ROS_PKG}" | tr '_' '-'` \
-		ros-melodic-image-transport \
-		ros-melodic-vision-msgs \
-          python-rosdep \
-          python-rosinstall \
-          python-rosinstall-generator \
-          python-wstool \
-          python-catkin-tools \
-    && rm -rf /var/lib/apt/lists/* && \
+# # 
+# # Description: Install ROS2 Foxy (Build from Ubuntu 18.04 Source)
+# # Size: 729MB
+# #
+RUN mkdir -p /opt/ros/foxy/src && \
+    cd /opt/ros/foxy && \
+    rosinstall_generator --deps --rosdistro foxy ros_base \
+        launch_xml \
+        launch_yaml \
+        launch_testing \
+        launch_testing_ament_cmake \
+        demo_nodes_cpp \
+        demo_nodes_py \
+        example_interfaces \
+        camera_calibration_parsers \
+        camera_info_manager \
+        cv_bridge \
+        v4l2_camera \
+        vision_opencv \
+        vision_msgs \
+        image_geometry \
+        image_pipeline \
+        image_transport \
+        compressed_image_transport \
+        compressed_depth_image_transport \
+    > ros2.foxy.ros_base.rosinstall && \
+    cat ros2.foxy.ros_base.rosinstall && \
+    vcs import src < ros2.foxy.ros_base.rosinstall && \
+    rm ./src/libyaml_vendor/CMakeLists.txt && \
+    wget --no-check-certificate https://raw.githubusercontent.com/ros2/libyaml_vendor/master/CMakeLists.txt -P ./src/libyaml_vendor/ && \
     apt-get update && \
-    cd ${ROS_ROOT} && \
+    cd /opt/ros/foxy && \
     rosdep init && \
     rosdep update && \
-    rm -rf /var/lib/apt/lists/*
-
-
-# 
-# install cv_bridge
-#
-RUN pip3 install rospkg catkin_pkg && \
-    cd ~ && \
-    wget https://github.com/ros-perception/vision_opencv/archive/refs/tags/1.13.0.zip -O vision_opencv-1.13.0.zip && \
-    unzip vision_opencv-1.13.0.zip && \
-    mkdir -p ~/cv_bridge_workspace && cd ~/cv_bridge_workspace && \
-    mkdir -p build src install build devel logs && \
-    mv ~/vision_opencv-1.13.0/cv_bridge ~/cv_bridge_workspace/src && \
-    cd ~/cv_bridge_workspace && \
-    source /opt/ros/melodic/setup.sh && \
-    chown -R root:root ~/cv_bridge_workspace && \
-    catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so && \
-    catkin config --install && \
-    catkin build && \
-    rm -rf ~/vision_opencv-1.13.0.zip && \
-    rm -rf vision_opencv-1.13.0 && \
-    rm -rf /var/lib/apt/lists/*
+    rosdep install -y \
+        --ignore-src \
+        --from-paths src \
+        --rosdistro foxy \
+        --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" && \
+    colcon build --merge-install && \
+    rm -rf /opt/ros/foxy/src && \
+    rm -rf /opt/ros/foxy/log && \
+    rm -rf /opt/ros/foxy/build && \
+    rm /opt/ros/foxy/*.rosinstall && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 
 # 
@@ -327,6 +344,14 @@ RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certi
     mv code-server-3.11.1-linux-arm64 ~/code-server && \
     rm -rf /tmp/*
 
+# 
+# Description: Fix cuda lib link # For deepstream 5.1
+# Size: 
+#
+# RUN rm /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+#     ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 && \
+#     rm /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18 && \
+#     ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.3 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
 
 # 
 # Description: Add EntryPoint and .bashrc\SSH params.
@@ -341,14 +366,20 @@ RUN echo $'#!/bin/bash\n \
     echo port=${sshport} >> /etc/ssh/sshd_config\n \
     /etc/init.d/ssh restart\n \
     nohup /root/code-server/code-server --port $csport --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
-    exec "$@"' > /entrypoint.sh && \
-    chmod +x /entrypoint.sh && \
-    echo $'export DISPLAY=:0.0\nexport XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/melodic/setup.bash' >> ~/.bashrc && \    
-    echo "source ~/cv_bridge_workspace/install/setup.bash --extend" >> ~/.bashrc && \
+    echo -e export\tDISPLAY=$DISPLAY >> /root/.bashrc\n \
+    exec "$@"' > /ros_entrypoint.sh && \
+    chmod +x /ros_entrypoint.sh && \
+    echo $'export XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/foxy/install/setup.bash\nsource /ros2_ws/install/setup.bash' >> /root/.bashrc && \
     echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config
-    
 
 
-ENTRYPOINT ["/entrypoint.sh"]
+# 
+# Description: Install BITCQ ROS2 Packages
+# Size: near by 150KB
+#
+RUN mkdir -p ~/ros2_ws/src
+
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
-WORKDIR /
+WORKDIR /root/
