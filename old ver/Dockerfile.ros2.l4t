@@ -265,8 +265,6 @@ RUN mkdir -p /opt/ros/foxy/src && \
     > ros2.foxy.ros_base.rosinstall && \
     cat ros2.foxy.ros_base.rosinstall && \
     vcs import src < ros2.foxy.ros_base.rosinstall && \
-    rm ./src/libyaml_vendor/CMakeLists.txt && \
-    wget --no-check-certificate https://raw.githubusercontent.com/ros2/libyaml_vendor/master/CMakeLists.txt -P ./src/libyaml_vendor/ && \
     apt-get update && \
     cd /opt/ros/foxy && \
     rosdep init && \
