@@ -10,7 +10,7 @@ git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c19
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git
 cd ..
 
-sudo docker run -d \
+sudo docker run -itd \
     --runtime nvidia \
     --restart=always \
     --net=host \
