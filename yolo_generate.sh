@@ -10,7 +10,7 @@ git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c19
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git
 cd ..
 
-sudo docker run -id \
+sudo docker run -d \
     --runtime nvidia \
     --restart=always \
     --net=host \
@@ -27,7 +27,7 @@ sleep 5
 
 sudo docker cp src galactic:/root/ros2_ws/
 
-sudo docker exec -it galactic /root/ros2_ws/src/yolov4_trt/shell/generate_release.sh $1
+sudo docker exec galactic /root/ros2_ws/src/yolov4_trt/shell/generate_release.sh $1
 
 sudo docker cp galactic:/root/ros2_ws/yolov4-trt_$1_arm64.deb ./docker-release-pack/yolo_release/
 
