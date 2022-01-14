@@ -1,8 +1,8 @@
 # 
-# Description: nvidia l4t base container
+# Description: nvidia deepstream-l4t 5.0.1 base container
 # Size: 631MB
 #
-ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+ARG BASE_IMAGE=nvcr.io/nvidia/deepstream-l4t:5.0.1-20.09-base
 FROM ${BASE_IMAGE}
 
 LABEL maintainer="9426224" \

@@ -82,7 +82,7 @@ sudo docker run -itd \
     --net=host \
     --ipc=host \
     --privileged \
-    -e ROS_DOMAIN_ID=188 \
+    -e ROS_DOMAIN_ID=40 \
     -v /dev/bus:/dev/bus \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
@@ -100,8 +100,8 @@ sudo docker run -itd \
     -v /dev/bus:/dev/bus \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/media/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
-    -e ROS_DOMAIN_ID=44 \
+    -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
+    -e ROS_DOMAIN_ID=272 \
     -e cspwd=bitcq190423 \
     -e csport=9990 \
     -e sshport=6630 \
@@ -122,12 +122,22 @@ sudo docker run -itd \
     -v /tmp/.X11-unix/:/tmp/.X11-unix \
     -v $XAUTHORITY:/tmp/.XAuthority \
     -e XAUTHORITY=/tmp/.XAuthority \
+    -v /dev/bus:/dev/bus \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/media/capture:/home/ecuNodeServer/public/images/capture \
-    -e cspwd=bitcq123 \
+    -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
+    -e ROS_DOMAIN_ID=30 \
+    -e cspwd=bitcq190423 \
     -e csport=9990 \
     -e sshport=6630 \
-    -e rootpwd=root \
-    --name="test" \
-    vps.9426224.xyz:8502/ros-foxy-deepstream-5.1-sample:latest
+    -e rootpwd=bitcq190423 \
+    --name="galactic-6630-9990" \
+    9426224/ros-galactic-deepstream
+
+
+Develop for jenkins:
+sudo docker run -itd \
+    --rm \
+    --runtime nvidia \
+    --name="galactic" \
+    9426224/ros-galactic-develop

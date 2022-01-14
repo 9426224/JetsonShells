@@ -1,102 +1,1239 @@
-Sending build context to Docker daemon  17.07MB
-Step 1/32 : ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
-Step 2/32 : FROM ${BASE_IMAGE}
+Sending build context to Docker daemon  6.472MB
+Step 1/41 : ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+Step 2/41 : FROM ${BASE_IMAGE}
  ---> c93fc89026d9
-Step 3/32 : LABEL maintainer="9426224"     version="0.1"     description="A l4t-base dockerfile for ROS2 User"     email="9426224@live.com"
+Step 3/41 : LABEL maintainer="9426224"     version="0.1"     description="A l4t-base dockerfile for ROS2 User"     email="9426224@live.com"
  ---> Using cache
  ---> 527469b77af4
-Step 4/32 : ENV DEBIAN_FRONTEND=noninteractive
+Step 4/41 : ENV DEBIAN_FRONTEND=noninteractive
  ---> Using cache
  ---> 75e57f9db35b
-Step 5/32 : ENV SHELL /bin/bash
+Step 5/41 : ENV SHELL /bin/bash
  ---> Using cache
  ---> 08858c301704
-Step 6/32 : SHELL ["/bin/bash", "-c"]
+Step 6/41 : SHELL ["/bin/bash", "-c"]
  ---> Using cache
  ---> 2ca9ea6e5cc9
-Step 7/32 : WORKDIR /tmp
+Step 7/41 : WORKDIR /tmp
  ---> Using cache
  ---> 8ee6f00d9e88
-Step 8/32 : RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+Step 8/41 : RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
  ---> Using cache
  ---> 666daecebb26
-Step 9/32 : ENV LANG=en_US.UTF-8
+Step 9/41 : ENV LANG=en_US.UTF-8
  ---> Using cache
  ---> bd63880483ef
-Step 10/32 : ENV PYTHONIOENCODING=utf-8
+Step 10/41 : ENV PYTHONIOENCODING=utf-8
  ---> Using cache
  ---> e75aea031624
-Step 11/32 : RUN apt-get update &&     apt-get install -y --no-install-recommends         curl         wget         gnupg2         lsb-release         ca-certificates &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+Step 11/41 : RUN apt-get update &&     apt-get install -y --no-install-recommends         curl         wget         gnupg2         lsb-release         ca-certificates &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
  ---> Using cache
  ---> 6fdb8d8b2c02
-Step 12/32 : RUN apt-get update &&     apt-get install -y --no-install-recommends         build-essential         git         apt-utils         usbutils         iputils-ping         gdb         libtool         autoconf         automake &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+Step 12/41 : RUN apt-get update &&     apt-get install -y --no-install-recommends         build-essential         git         apt-utils         usbutils         iputils-ping         gdb         libtool         autoconf         automake &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
  ---> Using cache
  ---> a8b645fa8831
-Step 13/32 : RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg &&     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+Step 13/41 : RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg &&     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
  ---> Using cache
  ---> 7828ddf8e7ba
-Step 14/32 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate          https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake &&     rm -rf /tmp/*
+Step 14/41 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate          https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake &&     rm -rf /tmp/*
  ---> Using cache
  ---> 39fe00fac62b
-Step 15/32 : RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" &&     mkdir opencv &&     cd opencv &&     wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz &&     tar -xzvf OpenCV-4.5.0-aarch64.tar.gz &&     dpkg -i --force-depends *.deb &&     apt-get update &&     apt-get install -y -f --no-install-recommends &&     dpkg -i *.deb &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/* &&     cp -r /usr/include/opencv4 /usr/local/include/opencv4 &&     cp -r /usr/lib/python3.6/dist-packages/cv2 /usr/local/lib/python3.6/dist-packages/cv2
+Step 15/41 : RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" &&     mkdir opencv &&     cd opencv &&     wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz &&     tar -xzvf OpenCV-4.5.0-aarch64.tar.gz &&     dpkg -i --force-depends *.deb &&     apt-get update &&     apt-get install -y -f --no-install-recommends &&     dpkg -i *.deb &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/* &&     cp -r /usr/include/opencv4 /usr/local/include/opencv4 &&     cp -r /usr/lib/python3.6/dist-packages/cv2 /usr/local/lib/python3.6/dist-packages/cv2
  ---> Using cache
  ---> b997392b3c29
-Step 16/32 : RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 &&     cd yaml-cpp-0.7 &&     mkdir build &&     cd build &&     cmake -DBUILD_SHARED_LIBS=ON .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     git clone --branch 1.9.5 https://github.com/open-source-parsers/jsoncpp.git &&     cd jsoncpp &&     mkdir build &&     cd build &&     cmake .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     rm -rf /tmp/*
+Step 16/41 : RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 &&     cd yaml-cpp-0.7 &&     mkdir build &&     cd build &&     cmake -DBUILD_SHARED_LIBS=ON .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     git clone --branch 1.9.5 https://github.com/open-source-parsers/jsoncpp.git &&     cd jsoncpp &&     mkdir build &&     cd build &&     cmake .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     rm -rf /tmp/*
  ---> Using cache
  ---> 41ad2b86cf65
-Step 17/32 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libpython3-dev         python3-colcon-common-extensions         python3-pip         python3-numpy         python3-rosdep         python3-setuptools         python3-vcstool         python3-rosinstall-generator         libtinyxml2-dev &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+Step 17/41 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libpython3-dev         python3-colcon-common-extensions         python3-pip         python3-numpy         python3-rosdep         python3-setuptools         python3-vcstool         python3-rosinstall-generator         libtinyxml2-dev &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
  ---> Using cache
  ---> a041ec22c2cc
-Step 18/32 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libeigen3-dev         libconsole-bridge-dev         libzstd-dev         python3-autobahn         python3-tornado         python3-twisted         libogg-dev         libtheora-dev         pydocstyle         libspdlog-dev         python3-lark-parser         libboost-dev         libboost-python-dev         libboost-python1.65.1         libcppunit-dev         libsqlite3-dev         python3-lxml         libtinyxml-dev         libbenchmark-dev         ffmpeg         libavcodec-dev         libavformat-dev         libavutil-dev         libswscale-dev         uncrustify         cppcheck         acl         libacl1-dev         python3-flake8         libbullet-dev         python3-websocket         libssl-dev         libboost-all-dev         libgtest-dev         python3-bson         libasio-dev         python3-ifcfg         python3-pytest-mock         python3-mypy         libxml2-utils         python3-mock         libcunit1-dev         bison         libyaml-dev         graphviz         rti-connext-dds-5.3.1         python3-netifaces         python3-packaging         google-mock &&     pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         importlib-resources         importlib-metadata &&     rm -rf ~/.cache/pip &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+Step 18/41 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libeigen3-dev         libconsole-bridge-dev         libzstd-dev         python3-autobahn         python3-tornado         python3-twisted         libogg-dev         libtheora-dev         pydocstyle         libspdlog-dev         python3-lark-parser         libboost-dev         libboost-python-dev         libboost-python1.65.1         libcppunit-dev         libsqlite3-dev         python3-lxml         libtinyxml-dev         libbenchmark-dev         ffmpeg         libavcodec-dev         libavformat-dev         libavutil-dev         libswscale-dev         uncrustify         cppcheck         acl         libacl1-dev         python3-flake8         libbullet-dev         python3-websocket         libssl-dev         libboost-all-dev         libgtest-dev         python3-bson         libasio-dev         python3-ifcfg         python3-pytest-mock         python3-mypy         libxml2-utils         python3-mock         libcunit1-dev         bison         libyaml-dev         graphviz         rti-connext-dds-5.3.1         python3-netifaces         python3-packaging         google-mock &&     pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         importlib-resources         importlib-metadata &&     rm -rf ~/.cache/pip &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
  ---> Using cache
  ---> 608642b9c54e
-Step 19/32 : RUN mkdir -p /opt/ros/galactic/src &&     cd /opt/ros/galactic &&     rosinstall_generator --deps --rosdistro galactic ros_base         launch_xml         launch_yaml         launch_testing         launch_testing_ament_cmake         example_interfaces         cv_bridge         v4l2_camera         vision_opencv         vision_msgs         image_transport         compressed_image_transport         compressed_depth_image_transport         image_transport_plugins         rosbridge_suite         async_web_server_cpp     > ros2.galactic.ros_base.rosinstall &&     cat ros2.galactic.ros_base.rosinstall &&     vcs import src < ros2.galactic.ros_base.rosinstall &&     cd /opt/ros/galactic/src && git clone --branch ros2 https://github.com/RobotWebTools/web_video_server.git &&     cd web_video_server && sed -i '3i set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)' ./CMakeLists.txt &&     cd /opt/ros/galactic/src/async_web_server_cpp && sed -i 's/@Boost_VERSION@/1.65/g' ./find_dependencies.cmake.in &&     cd /opt/ros/galactic &&     apt-get update &&     rosdep init &&     rosdep update &&     rosdep install -y         --ignore-src         --from-paths src         --rosdistro galactic         --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" &&     colcon build --merge-install &&     rm -rf /opt/ros/galactic/src &&     rm -rf /opt/ros/galactic/log &&     rm -rf /opt/ros/galactic/build &&     rm /opt/ros/galactic/*.rosinstall &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+Step 19/41 : RUN mkdir -p /opt/ros/galactic/src &&     cd /opt/ros/galactic &&     rosinstall_generator --deps --rosdistro galactic ros_base         launch_xml         launch_yaml         launch_testing         launch_testing_ament_cmake         example_interfaces         cv_bridge         v4l2_camera         vision_opencv         vision_msgs         image_transport         compressed_image_transport         compressed_depth_image_transport         image_transport_plugins         rosbridge_suite         async_web_server_cpp     > ros2.galactic.ros_base.rosinstall &&     cat ros2.galactic.ros_base.rosinstall &&     vcs import src < ros2.galactic.ros_base.rosinstall &&     cd /opt/ros/galactic/src && git clone --branch ros2 https://github.com/RobotWebTools/web_video_server.git &&     cd web_video_server && sed -i '3i set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)' ./CMakeLists.txt &&     cd /opt/ros/galactic/src/async_web_server_cpp && sed -i 's/@Boost_VERSION@/1.65/g' ./find_dependencies.cmake.in &&     cd /opt/ros/galactic &&     apt-get update &&     rosdep init &&     rosdep update &&     rosdep install -y         --ignore-src         --from-paths src         --rosdistro galactic         --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" &&     colcon build --merge-install &&     rm -rf /opt/ros/galactic/src &&     rm -rf /opt/ros/galactic/log &&     rm -rf /opt/ros/galactic/build &&     rm /opt/ros/galactic/*.rosinstall &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
  ---> Using cache
  ---> 30eb71abd3ce
-Step 20/32 : ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+Step 20/41 : ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
  ---> Using cache
  ---> f7db1c63b803
-Step 21/32 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate         https://nodejs.org/dist/v14.17.5/node-v14.17.5-linux-arm64.tar.xz &&     tar -xvf node-v14.17.5-linux-arm64.tar.xz &&     mv node-v14.17.5-linux-arm64 /opt/node &&     ln -s /opt/node/bin/node /usr/local/bin/node &&     ln -s /opt/node/bin/npm /usr/local/bin/npm &&     npm install -g pm2 &&     ln -s /opt/node/bin/pm2 /usr/local/bin/ &&     rm -rf /tmp/*
+Step 21/41 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate         https://nodejs.org/dist/v14.17.5/node-v14.17.5-linux-arm64.tar.xz &&     tar -xvf node-v14.17.5-linux-arm64.tar.xz &&     mv node-v14.17.5-linux-arm64 /opt/node &&     ln -s /opt/node/bin/node /usr/local/bin/node &&     ln -s /opt/node/bin/npm /usr/local/bin/npm &&     npm install -g pm2 &&     ln -s /opt/node/bin/pm2 /usr/local/bin/ &&     rm -rf /tmp/*
  ---> Using cache
  ---> 62ce995744b6
-Step 22/32 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate         https://nvidia.box.com/shared/static/cs3xn3td6sfgtene6jdvsxlr366m2dhq.whl -O torch-1.7.0-cp36-cp36m-linux_aarch64.whl &&     pip3 install --no-cache-dir torch-1.7.0-cp36-cp36m-linux_aarch64.whl &&     rm -rf ~/.cache/pip &&     rm -rf /tmp/*
+Step 22/41 : RUN pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         wheel         setuptools         numpy==1.19.3 &&     python3 -m pip install --no-cache-dir -U         argcomplete         pyzmq         filterpy==1.4.5         scikit-learn==0.24.2         scikit-image==0.17.2         scipy==1.5.4         pandas         requests         pillow &&     rm -rf /tmp/* &&     rm -rf ~/.cache/pip
  ---> Using cache
- ---> 3c867919b948
-Step 23/32 : RUN apt-get update &&     apt-get install -y --no-install-recommends         build-essential         git         openssh-server         vim         apt-utils         unzip         tmux         python3-matplotlib         python3-numba         libcurl4-openssl-dev         python3-llvmlite         libgstreamer1.0-dev         libgstreamer-plugins-base1.0-dev         libssl1.0.0         libgstreamer1.0-0         gstreamer1.0-tools         gstreamer1.0-plugins-good         gstreamer1.0-plugins-bad         gstreamer1.0-plugins-ugly         gstreamer1.0-libav         libgstrtspserver-1.0-0         libjansson4         libx11-dev         x11-apps         xorg         meson         libfreetype6-dev         tcl-dev         tk-dev         python3-tk         protobuf-compiler         libprotoc-dev &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
- ---> Using cache
- ---> 786afaec8b56
-Step 24/32 : RUN pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         wheel         setuptools         numpy==1.19.3 &&     python3 -m pip install --no-cache-dir -U         argcomplete         pyzmq         filterpy==1.4.5         scikit-learn==0.24.2         scikit-image==0.17.2         scipy==1.5.4         pandas         pillow         flake8-blind-except         flake8-builtins         flake8-class-newline         flake8-comprehensions         flake8-deprecated         flake8-docstrings         flake8-import-order         flake8-quotes         pytest-repeat         pytest-rerunfailures         pytest         pycuda==2019.1.2         onnx==1.4.1 &&     rm -rf /tmp/* &&     rm -rf ~/.cache/pip
- ---> Using cache
- ---> b54a93b9b052
-Step 25/32 : RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcufft.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcufftw.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcuing64.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcupti.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcusolver.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcusparse.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvperf_host.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvgraph.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvperf_target.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvToolsExt.so /usr/lib/aarch64-linux-gnu/ &&     ln -s $(which nvcc) /sbin/nvcc
- ---> Using cache
- ---> 79a72c5ddd3d
-Step 26/32 : RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate     https://github.com/cdr/code-server/releases/download/v3.11.1/code-server-3.11.1-linux-arm64.tar.gz &&     tar -zxvf code-server-3.11.1-linux-arm64.tar.gz &&     mv code-server-3.11.1-linux-arm64 ~/code-server &&     rm -rf /tmp/*
- ---> Using cache
- ---> f981ee21ef64
-Step 27/32 : RUN echo $'#!/bin/bash\n source /opt/ros/galactic/install/setup.bash\n mkdir -p ~/ros2_ws/src\n cd ~/ros2_ws/src\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git\n git clone --branch ros_foxy https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git\n git clone --branch ros_foxy https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git\n git clone --branch ros2_foxy https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git\n git clone --branch ros_foxy https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_camera.git\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git\n git clone --branch foxy https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git\n cd ~/ros2_ws\n colcon build --packages-select bitcq_msg\n source install/setup.bash\n colcon build\n cd ~/\n git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/ecu_web.git\n cd ecu_web\n chmod +x build.sh\n sudo ./build.sh\n mv ecuNodeServer /home\n rm -rf ~/ecu_web\n cd /home/ecuNodeServer\n chmod +x /home/ecuNodeServer/server/start.sh\n rm -f ~/pull_all_repo.sh\n source /root/ros2_ws/install/setup.bash\n /home/ecuNodeServer/server/start.sh' > /root/pull_all_repo.sh &&     chmod +x /root/pull_all_repo.sh
- ---> Running in f20c6fb3b528
-Removing intermediate container f20c6fb3b528
- ---> e754bb63dda8
-Step 28/32 : RUN echo $'#!/bin/bash\n     set -e\n     echo "root:$rootpwd" | chpasswd\n     /etc/init.d/ssh start\n     export PASSWORD=$cspwd\n     echo port=${sshport} >> /etc/ssh/sshd_config\n     /etc/init.d/ssh restart\n     nohup /root/code-server/code-server --port $csport --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n     echo -e export\tDISPLAY=$DISPLAY >> /root/.bashrc\n     exec "$@"' > /ros_entrypoint.sh &&     chmod +x /ros_entrypoint.sh &&     echo $'export XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash' >> /root/.bashrc &&     echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config
- ---> Running in f4aad5e205d2
-Removing intermediate container f4aad5e205d2
- ---> 664d043df476
-Step 29/32 : RUN mkdir -p ~/ros2_ws/src
- ---> Running in 941d44b3779c
-Removing intermediate container 941d44b3779c
- ---> c4d1826b0a9a
-Step 30/32 : ENTRYPOINT ["/ros_entrypoint.sh"]
- ---> Running in 069a3947b17b
-Removing intermediate container 069a3947b17b
- ---> a538cde4c2fa
-Step 31/32 : CMD ["bash"]
- ---> Running in fb0aef9f5f81
-Removing intermediate container fb0aef9f5f81
- ---> f2e785722ac6
-Step 32/32 : WORKDIR /root/
- ---> Running in a4355a4c9aec
-Removing intermediate container a4355a4c9aec
- ---> d63bf94402f0
-Successfully built d63bf94402f0
-Successfully tagged 9426224/ros-galactic-develop:latest
+ ---> c1ac4fcd101d
+Step 23/41 : RUN apt-get update &&     apt-get install -y --no-install-recommends         vim         python3-matplotlib         python3-numba         libcurl4-openssl-dev         python3-llvmlite &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Running in cfe82c759600
+Get:1 http://packages.ros.org/ros2/ubuntu bionic InRelease [4,680 B]
+Get:2 http://ports.ubuntu.com/ubuntu-ports bionic InRelease [242 kB]
+Get:3 http://packages.ros.org/ros2/ubuntu bionic/main arm64 Packages [658 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports bionic-updates InRelease [88.7 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-backports InRelease [74.6 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-security InRelease [88.7 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 Packages [1,285 kB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports bionic/multiverse arm64 Packages [153 kB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 Packages [11.0 MB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports bionic/restricted arm64 Packages [572 B]
+Get:11 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe arm64 Packages [1,995 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 Packages [1,765 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports bionic-updates/restricted arm64 Packages [4,421 B]
+Get:14 http://ports.ubuntu.com/ubuntu-ports bionic-updates/multiverse arm64 Packages [5,318 B]
+Get:15 http://ports.ubuntu.com/ubuntu-ports bionic-backports/main arm64 Packages [11.6 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports bionic-backports/universe arm64 Packages [12.2 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports bionic-security/universe arm64 Packages [1,298 kB]
+Get:18 http://ports.ubuntu.com/ubuntu-ports bionic-security/restricted arm64 Packages [3,747 B]
+Get:19 http://ports.ubuntu.com/ubuntu-ports bionic-security/main arm64 Packages [1,377 kB]
+Get:20 http://ports.ubuntu.com/ubuntu-ports bionic-security/multiverse arm64 Packages [2,822 B]
+Fetched 20.1 MB in 12s (1,634 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  binfmt-support fonts-lyx libjs-jquery-ui libllvm4.0 libpipeline1 llvm-4.0
+  llvm-4.0-runtime python-matplotlib-data python3-cycler python3-tz
+  ttf-bitstream-vera vim-common vim-runtime xxd
+Suggested packages:
+  libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev
+  libjs-jquery-ui-docs llvm-4.0-doc python-cycler-doc dvipng gir1.2-gtk-3.0
+  ghostscript inkscape ipython3 python-matplotlib-doc python3-cairocffi
+  python3-gi python3-gi-cairo python3-gobject python3-nose python3-pyqt4
+  python3-scipy python3-sip texlive-extra-utils texlive-latex-extra
+  ttf-staypuft ctags vim-doc vim-scripts
+Recommended packages:
+  javascript-common llvm-4.0-dev llvmlite-doc python3-tk numba-doc
+The following NEW packages will be installed:
+  binfmt-support fonts-lyx libcurl4-openssl-dev libjs-jquery-ui libllvm4.0
+  libpipeline1 llvm-4.0 llvm-4.0-runtime python-matplotlib-data python3-cycler
+  python3-llvmlite python3-matplotlib python3-numba python3-tz
+  ttf-bitstream-vera vim vim-common vim-runtime xxd
+0 upgraded, 19 newly installed, 0 to remove and 101 not upgraded.
+Need to get 30.3 MB of archives.
+After this operation, 124 MB of additional disk space will be used.
+Get:1 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 xxd arm64 2:8.0.1453-1ubuntu1.7 [48.7 kB]
+Get:2 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim-common all 2:8.0.1453-1ubuntu1.7 [70.8 kB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 libpipeline1 arm64 1.5.0-1 [22.0 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 binfmt-support arm64 2.1.8-2 [44.8 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe arm64 fonts-lyx all 2.2.4-0ubuntu0.18.04.1 [155 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 libcurl4-openssl-dev arm64 7.58.0-2ubuntu3.16 [275 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 libjs-jquery-ui all 1.12.1+dfsg-5 [232 kB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 libllvm4.0 arm64 1:4.0.1-10 [10.7 MB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 llvm-4.0-runtime arm64 1:4.0.1-10 [157 kB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 llvm-4.0 arm64 1:4.0.1-10 [3,268 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 ttf-bitstream-vera all 1.10-8 [352 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 python-matplotlib-data all 2.1.1-2ubuntu3 [3,774 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 python3-cycler all 0.10.0-1 [7,622 B]
+Get:14 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 python3-llvmlite arm64 0.19.0-2 [78.1 kB]
+Get:15 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 python3-tz all 2018.3-2 [25.1 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 python3-matplotlib arm64 2.1.1-2ubuntu3 [3,859 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 python3-numba arm64 0.34.0-3 [882 kB]
+Get:18 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim-runtime all 2:8.0.1453-1ubuntu1.7 [5,435 kB]
+Get:19 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 vim arm64 2:8.0.1453-1ubuntu1.7 [981 kB]
+Fetched 30.3 MB in 0s (66.0 MB/s)
+Selecting previously unselected package xxd.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 66567 files and directories currently installed.)
+Preparing to unpack .../00-xxd_2%3a8.0.1453-1ubuntu1.7_arm64.deb ...
+Unpacking xxd (2:8.0.1453-1ubuntu1.7) ...
+Selecting previously unselected package vim-common.
+Preparing to unpack .../01-vim-common_2%3a8.0.1453-1ubuntu1.7_all.deb ...
+Unpacking vim-common (2:8.0.1453-1ubuntu1.7) ...
+Selecting previously unselected package libpipeline1:arm64.
+Preparing to unpack .../02-libpipeline1_1.5.0-1_arm64.deb ...
+Unpacking libpipeline1:arm64 (1.5.0-1) ...
+Selecting previously unselected package binfmt-support.
+Preparing to unpack .../03-binfmt-support_2.1.8-2_arm64.deb ...
+Unpacking binfmt-support (2.1.8-2) ...
+Selecting previously unselected package fonts-lyx.
+Preparing to unpack .../04-fonts-lyx_2.2.4-0ubuntu0.18.04.1_all.deb ...
+Unpacking fonts-lyx (2.2.4-0ubuntu0.18.04.1) ...
+Selecting previously unselected package libcurl4-openssl-dev:arm64.
+Preparing to unpack .../05-libcurl4-openssl-dev_7.58.0-2ubuntu3.16_arm64.deb ...
+Unpacking libcurl4-openssl-dev:arm64 (7.58.0-2ubuntu3.16) ...
+Selecting previously unselected package libjs-jquery-ui.
+Preparing to unpack .../06-libjs-jquery-ui_1.12.1+dfsg-5_all.deb ...
+Unpacking libjs-jquery-ui (1.12.1+dfsg-5) ...
+Selecting previously unselected package libllvm4.0:arm64.
+Preparing to unpack .../07-libllvm4.0_1%3a4.0.1-10_arm64.deb ...
+Unpacking libllvm4.0:arm64 (1:4.0.1-10) ...
+Selecting previously unselected package llvm-4.0-runtime.
+Preparing to unpack .../08-llvm-4.0-runtime_1%3a4.0.1-10_arm64.deb ...
+Unpacking llvm-4.0-runtime (1:4.0.1-10) ...
+Selecting previously unselected package llvm-4.0.
+Preparing to unpack .../09-llvm-4.0_1%3a4.0.1-10_arm64.deb ...
+Unpacking llvm-4.0 (1:4.0.1-10) ...
+Selecting previously unselected package ttf-bitstream-vera.
+Preparing to unpack .../10-ttf-bitstream-vera_1.10-8_all.deb ...
+Unpacking ttf-bitstream-vera (1.10-8) ...
+Selecting previously unselected package python-matplotlib-data.
+Preparing to unpack .../11-python-matplotlib-data_2.1.1-2ubuntu3_all.deb ...
+Unpacking python-matplotlib-data (2.1.1-2ubuntu3) ...
+Selecting previously unselected package python3-cycler.
+Preparing to unpack .../12-python3-cycler_0.10.0-1_all.deb ...
+Unpacking python3-cycler (0.10.0-1) ...
+Selecting previously unselected package python3-llvmlite.
+Preparing to unpack .../13-python3-llvmlite_0.19.0-2_arm64.deb ...
+Unpacking python3-llvmlite (0.19.0-2) ...
+Selecting previously unselected package python3-tz.
+Preparing to unpack .../14-python3-tz_2018.3-2_all.deb ...
+Unpacking python3-tz (2018.3-2) ...
+Selecting previously unselected package python3-matplotlib.
+Preparing to unpack .../15-python3-matplotlib_2.1.1-2ubuntu3_arm64.deb ...
+Unpacking python3-matplotlib (2.1.1-2ubuntu3) ...
+Selecting previously unselected package python3-numba.
+Preparing to unpack .../16-python3-numba_0.34.0-3_arm64.deb ...
+Unpacking python3-numba (0.34.0-3) ...
+Selecting previously unselected package vim-runtime.
+Preparing to unpack .../17-vim-runtime_2%3a8.0.1453-1ubuntu1.7_all.deb ...
+Adding 'diversion of /usr/share/vim/vim80/doc/help.txt to /usr/share/vim/vim80/doc/help.txt.vim-tiny by vim-runtime'
+Adding 'diversion of /usr/share/vim/vim80/doc/tags to /usr/share/vim/vim80/doc/tags.vim-tiny by vim-runtime'
+Unpacking vim-runtime (2:8.0.1453-1ubuntu1.7) ...
+Selecting previously unselected package vim.
+Preparing to unpack .../18-vim_2%3a8.0.1453-1ubuntu1.7_arm64.deb ...
+Unpacking vim (2:8.0.1453-1ubuntu1.7) ...
+Setting up xxd (2:8.0.1453-1ubuntu1.7) ...
+Setting up python3-cycler (0.10.0-1) ...
+Setting up libpipeline1:arm64 (1.5.0-1) ...
+Setting up libllvm4.0:arm64 (1:4.0.1-10) ...
+Setting up libjs-jquery-ui (1.12.1+dfsg-5) ...
+Setting up vim-common (2:8.0.1453-1ubuntu1.7) ...
+Setting up ttf-bitstream-vera (1.10-8) ...
+Setting up vim-runtime (2:8.0.1453-1ubuntu1.7) ...
+Setting up python3-tz (2018.3-2) ...
+Setting up libcurl4-openssl-dev:arm64 (7.58.0-2ubuntu3.16) ...
+Setting up fonts-lyx (2.2.4-0ubuntu0.18.04.1) ...
+Setting up binfmt-support (2.1.8-2) ...
+mount: /proc/sys/fs/binfmt_misc: permission denied.
+update-binfmts: warning: Couldn't mount the binfmt_misc filesystem on /proc/sys/fs/binfmt_misc.
+mount: /proc/sys/fs/binfmt_misc: permission denied.
+update-binfmts: warning: Couldn't mount the binfmt_misc filesystem on /proc/sys/fs/binfmt_misc.
+mount: /proc/sys/fs/binfmt_misc: permission denied.
+update-binfmts: warning: Couldn't mount the binfmt_misc filesystem on /proc/sys/fs/binfmt_misc.
+invoke-rc.d: could not determine current runlevel
+invoke-rc.d: policy-rc.d denied execution of start.
+Setting up python-matplotlib-data (2.1.1-2ubuntu3) ...
+Setting up vim (2:8.0.1453-1ubuntu1.7) ...
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vim (vim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vimdiff (vimdiff) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rvim (rvim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rview (rview) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vi (vi) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/vi.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/vi.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/vi.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/vi.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/vi.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/vi.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group vi) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/view (view) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/view.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/view.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/view.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/view.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/view.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/view.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group view) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/ex (ex) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/ex.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/ex.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/ex.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/ex.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/ex.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/ex.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group ex) doesn't exist
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/editor (editor) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/fr/man1/editor.1.gz because associated file /usr/share/man/fr/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/it/man1/editor.1.gz because associated file /usr/share/man/it/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/pl/man1/editor.1.gz because associated file /usr/share/man/pl/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ru/man1/editor.1.gz because associated file /usr/share/man/ru/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/ja/man1/editor.1.gz because associated file /usr/share/man/ja/man1/vim.1.gz (of link group editor) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/editor.1.gz because associated file /usr/share/man/man1/vim.1.gz (of link group editor) doesn't exist
+Setting up llvm-4.0-runtime (1:4.0.1-10) ...
+mount: /proc/sys/fs/binfmt_misc: permission denied.
+update-binfmts: warning: Couldn't mount the binfmt_misc filesystem on /proc/sys/fs/binfmt_misc.
+Setting up python3-matplotlib (2.1.1-2ubuntu3) ...
+Setting up llvm-4.0 (1:4.0.1-10) ...
+Setting up python3-llvmlite (0.19.0-2) ...
+Setting up python3-numba (0.34.0-3) ...
+update-alternatives: using /usr/share/python3-numba/numba to provide /usr/bin/numba (numba) in auto mode
+Processing triggers for fontconfig (2.12.6-0ubuntu2) ...
+Processing triggers for mime-support (3.60ubuntu1) ...
+Processing triggers for libc-bin (2.27-3ubuntu1) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Removing intermediate container cfe82c759600
+ ---> e0a2574fbeb5
+Step 24/41 : RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcufft.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcufftw.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcuing64.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcupti.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcusolver.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcusparse.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvperf_host.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvgraph.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvperf_target.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvToolsExt.so /usr/lib/aarch64-linux-gnu/ &&     ln -s $(which nvcc) /sbin/nvcc
+ ---> Running in 6c037a7d2ae0
+Removing intermediate container 6c037a7d2ae0
+ ---> 8e3c77d658a1
+Step 25/41 : WORKDIR /tmp
+ ---> Running in 2dacd37c508b
+Removing intermediate container 2dacd37c508b
+ ---> 36e3898e4b3b
+Step 26/41 : RUN git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/ecu_web.git &&     cd /tmp/ecu_web &&     chmod +x build.sh &&     sudo ./build.sh &&     mv ecuNodeServer /home/ &&     rm -rf /tmp/* ~/.npm/* ~/.cache/*
+ ---> Running in 8219e0e870fd
+[91mCloning into 'ecu_web'...
+[0m[91mnpm [0m[91mWARN deprecated node-uuid@1.4.8: Use uuid module instead
+[0m[91mnpm WARN deprecated loadsh@0.0.4: This is a typosquat on the popular Lodash package. This is not maintained nor is the original Lodash package.
+[0m[91mnpm WARN deprecated @types/bson@4.2.0: This is a stub types definition. bson provides its own type definitions, so you do not need this installed.
+[0m[91mnpm[0m[91m notice created a lockfile as package-lock.json. You should commit this file.
+[0m[91mnpm [0m[91mWARN ecu-server@1.0.0 No description
+[0m[91mnpm [0m[91mWARN ecu-server@1.0.0 No repository field.
+[0m[91m
+[0madded 203 packages from 243 contributors and audited 204 packages in 29.391s
+
+10 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+[91mnpm[0m[91m WARN deprecated request-promise-native@1.0.9: request-promise-native has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
+[0m[91mnpm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+[0m[91mnpm WARN deprecated @formatjs/intl-unified-numberformat@3.3.7: We have renamed the package to @formatjs/intl-numberformat
+[0m[91mnpm WARN deprecated intl-messageformat-parser@3.6.4: We've written a new parser that's 6x faster and is backwards compatible. Please use @formatjs/icu-messageformat-parser
+[0m[91mnpm[0m[91m WARN deprecated sane@4.1.0: some dependency vulnerabilities fixed, support for node < 10 dropped, and newer ECMAScript syntax/features added
+[0m[91mnpm WARN deprecated har-validator@5.1.5: this library is no longer supported
+[0m[91mnpm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+[0m[91mnpm WARN deprecated flatten@1.0.3: flatten is deprecated in favor of utility frameworks such as lodash.
+[0m[91mnpm WARN deprecated core-js@2.6.12: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
+[0m[91mnpm WARN deprecated react-native-swipeout@2.3.6: Package no longer supported. Use at your own risk or consider using https://github.com/software-mansion/react-native-gesture-handler
+[0m[91mnpm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+[0m[91mnpm[0m[91m WARN deprecated fsevents@1.2.13: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
+[0m[91mnpm WARN deprecated core-js@1.2.7: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
+[0m[91mnpm WARN deprecated source-map-resolve@0.5.3: See https://github.com/lydell/source-map-resolve#deprecated
+[0m[91mnpm WARN deprecated resolve-url@0.2.1: https://github.com/lydell/resolve-url#deprecated
+[0m[91mnpm WARN deprecated source-map-url@0.4.1: See https://github.com/lydell/source-map-url#deprecated
+[0m[91mnpm WARN deprecated urix@0.1.0: Please see https://github.com/lydell/urix#deprecated
+[0m
+> yorkie@2.0.0 install /tmp/ecu_web/html/node_modules/yorkie
+> node bin/install.js
+
+setting up Git hooks
+can't find .git directory, skipping Git hooks installation
+
+> core-js@3.6.5 postinstall /tmp/ecu_web/html/node_modules/@umijs/babel-plugin-lock-core-js-3/node_modules/core-js
+> node -e "try{require('./postinstall')}catch(e){}"
+
+[96mThank you for using core-js ([94m https://github.com/zloirock/core-js [96m) for polyfilling JavaScript standard library![0m
+
+[96mThe project needs your help! Please consider supporting of core-js on Open Collective or Patreon: [0m
+[96m>[94m https://opencollective.com/core-js [0m
+[96m>[94m https://www.patreon.com/zloirock [0m
+
+[96mAlso, the author of core-js ([94m https://github.com/zloirock [96m) is looking for a good job -)[0m
+
+
+> core-js@3.6.5 postinstall /tmp/ecu_web/html/node_modules/@umijs/preset-built-in/node_modules/core-js
+> node -e "try{require('./postinstall')}catch(e){}"
+
+[96mThank you for using core-js ([94m https://github.com/zloirock/core-js [96m) for polyfilling JavaScript standard library![0m
+
+[96mThe project needs your help! Please consider supporting of core-js on Open Collective or Patreon: [0m
+[96m>[94m https://opencollective.com/core-js [0m
+[96m>[94m https://www.patreon.com/zloirock [0m
+
+[96mAlso, the author of core-js ([94m https://github.com/zloirock [96m) is looking for a good job -)[0m
+
+
+> core-js@3.8.2 postinstall /tmp/ecu_web/html/node_modules/@umijs/test/node_modules/core-js
+> node -e "try{require('./postinstall')}catch(e){}"
+
+[96mThank you for using core-js ([94m https://github.com/zloirock/core-js [96m) for polyfilling JavaScript standard library![0m
+
+[96mThe project needs your help! Please consider supporting of core-js on Open Collective or Patreon: [0m
+[96m>[94m https://opencollective.com/core-js [0m
+[96m>[94m https://www.patreon.com/zloirock [0m
+
+[96mAlso, the author of core-js ([94m https://github.com/zloirock [96m) is looking for a good job -)[0m
+
+
+> core-js@2.6.12 postinstall /tmp/ecu_web/html/node_modules/core-js
+> node -e "try{require('./postinstall')}catch(e){}"
+
+[96mThank you for using core-js ([94m https://github.com/zloirock/core-js [96m) for polyfilling JavaScript standard library![0m
+
+[96mThe project needs your help! Please consider supporting of core-js on Open Collective or Patreon: [0m
+[96m>[94m https://opencollective.com/core-js [0m
+[96m>[94m https://www.patreon.com/zloirock [0m
+
+[96mAlso, the author of core-js ([94m https://github.com/zloirock [96m) is looking for a good job -)[0m
+
+
+> core-js-pure@3.20.2 postinstall /tmp/ecu_web/html/node_modules/core-js-pure
+> node -e "try{require('./postinstall')}catch(e){}"
+
+[96mThank you for using core-js ([94m https://github.com/zloirock/core-js [96m) for polyfilling JavaScript standard library![0m
+
+[96mThe project needs your help! Please consider supporting of core-js:[0m
+[96m>[94m https://opencollective.com/core-js [0m
+[96m>[94m https://patreon.com/zloirock [0m
+[96m>[94m https://paypal.me/zloirock [0m
+[96m>[94m bitcoin: bc1qlea7544qtsmj2rayg0lthvza9fau63ux0fstcz [0m
+
+[96mAlso, the author of core-js ([94m https://github.com/zloirock [96m) is looking for a good job -)[0m
+
+
+> esbuild@0.12.15 postinstall /tmp/ecu_web/html/node_modules/esbuild
+> node install.js
+
+[91mnpm WARN lifecycle undefined~postinstall: cannot run in wd undefined umi generate tmp (wd=/tmp/ecu_web/html)
+[0m[91mnpm notice created a lockfile as package-lock.json. You should commit this file.
+[0m[91mnpm WARN optional[0m[91m SKIPPING OPTIONAL DEPENDENCY: fsevents@~2.3.1 (node_modules/chokidar/node_modules/fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.2: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"arm64"})
+[0m[91mnpm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@^1.2.7 (node_modules/jest-environment-jsdom-fourteen/node_modules/jest-haste-map/node_modules/fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.13: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"arm64"})
+[0m[91mnpm WARN babel-plugin-dva-hmr@0.4.2 requires a peer of redbox-react@1.x but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN dva@2.6.0-beta.22 requires a peer of react@^16.8.4 but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN dva@2.6.0-beta.22 requires a peer of react-dom@^16.8.4 but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN dva-immer@0.5.2 requires a peer of dva@^2.5.0-0 but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN dva-loading@3.0.22 requires a peer of dva-core@^1.1.0 | ^1.5.0-0 | ^1.6.0-0 but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN connected-react-router@6.5.2 requires a peer of react@^16.4.0 but none is installed. You must install peer dependencies yourself.
+[0m[91mnpm WARN react-intl@3.12.1 requires a peer of react@^16.3.0 but none is installed. You must install peer dependencies yourself.
+[0m[91m
+[0madded 1520 packages from 986 contributors and audited 1528 packages in 151.786s
+
+113 packages are looking for funding
+  run `npm fund` for details
+
+found 15 vulnerabilities (2 low, 9 moderate, 3 high, 1 critical)
+  run `npm audit fix` to fix them, or `npm audit` for details
+
+> @ build /tmp/ecu_web/html
+> cross-env UMI_ENV=pro umi build
+
+[91mBrowserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why you should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+[0m生产环境 production
+生产环境 production
+ℹ Compiling Webpack
+[91mBrowserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why you should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+[0m✔ Webpack: Compiled successfully in 2.25m
+ DONE  Compiled successfully in 134926ms2:08:28 AM
+
+ File                                         Size           Gzipped
+
+ ../server/dist/p__calibration.js             1001.2 KB      302.7 KB
+ ../server/dist/p__dataView.js                704.3 KB       236.4 KB
+ ../server/dist/umi.js                        634.6 KB       203.4 KB
+ ../server/dist/p__captureData.js             390.5 KB       119.3 KB
+ ../server/dist/p__historyData.js             361.1 KB       108.7 KB
+ ../server/dist/p__password.js                242.7 KB       80.4 KB
+ ../server/dist/p__generateRoad.js            203.8 KB       62.6 KB
+ ../server/dist/vendors~p__rewind.js          187.9 KB       59.0 KB
+ ../server/dist/layouts__index.js             162.2 KB       54.1 KB
+ ../server/dist/p__setting.js                 160.8 KB       52.5 KB
+ ../server/dist/p__userInfo.js                145.8 KB       45.3 KB
+ ../server/dist/p__login.js                   143.5 KB       46.5 KB
+ ../server/dist/p__overlie.js                 86.8 KB        26.1 KB
+ ../server/dist/p__modalPage.js               82.7 KB        27.1 KB
+ ../server/dist/p__network.js                 70.8 KB        22.2 KB
+ ../server/dist/vendors~p__calibration~p      67.7 KB        22.1 KB
+ __captureData~p__generateRoad~p__histor
+ yData~p__network~p__password~p__setting
+ .js
+ ../server/dist/vendors~layouts__index~p      62.9 KB        21.5 KB
+ __calibration~p__captureData~p__generat
+ eRoad~p__historyData~p__login~p__netw~2
+ 2b47d48.js
+ ../server/dist/vendors~p__dataView~p__m      59.2 KB        18.9 KB
+ odalPage~p__rewind~p__userInfo.js
+ ../server/dist/p__rewind.js                  37.9 KB        19.2 KB
+ ../server/dist/vendors~p__modalPage.js       31.0 KB        10.5 KB
+ ../server/dist/vendors~layouts__index~p      13.5 KB        4.5 KB
+ __login~p__modalPage.js
+ ../server/dist/vendors~p__dataView~p__o      12.8 KB        4.1 KB
+ verlie~p__rewind.js
+ ../server/dist/vendors~layouts__index~p      10.5 KB        4.0 KB
+ __calibration~p__captureData~p__dataVie
+ w~p__generateRoad~p__historyData~p__l~a
+ 69b62b2.js
+ ../server/dist/vendors~layouts__index~p      7.8 KB         2.5 KB
+ __calibration~p__captureData~p__dataVie
+ w~p__generateRoad~p__historyData~p__l~6
+ 1778c36.js
+ ../server/dist/p__calibration.chunk.css      306.1 KB       40.4 KB
+ ../server/dist/p__generateRoad.chunk.cs      195.6 KB       25.6 KB
+ s
+ ../server/dist/p__historyData.chunk.css      139.0 KB       17.3 KB
+ ../server/dist/p__network.chunk.css          124.9 KB       15.1 KB
+ ../server/dist/p__login.chunk.css            123.6 KB       15.4 KB
+ ../server/dist/p__password.chunk.css         123.3 KB       15.2 KB
+ ../server/dist/p__captureData.chunk.css      115.0 KB       14.9 KB
+ ../server/dist/p__overlie.chunk.css          101.2 KB       12.7 KB
+ ../server/dist/layouts__index.chunk.css      52.9 KB        7.5 KB
+ ../server/dist/p__setting.chunk.css          43.1 KB        6.2 KB
+ ../server/dist/p__userInfo.chunk.css         41.7 KB        6.4 KB
+ ../server/dist/vendors~layouts__index~p      37.2 KB        3.5 KB
+ __calibration~p__captureData~p__dataVie
+ w~p__generateRoad~p__historyData~p__l~a
+ 69b62b2.chunk.css
+ ../server/dist/umi.css                       29.5 KB        5.1 KB
+ ../server/dist/vendors~p__calibration~p      17.5 KB        2.8 KB
+ __captureData~p__generateRoad~p__histor
+ yData~p__network~p__password~p__setting
+ .chunk.css
+ ../server/dist/p__dataView.chunk.css         17.4 KB        3.7 KB
+ ../server/dist/vendors~p__modalPage.chu      11.2 KB        2.4 KB
+ nk.css
+ ../server/dist/p__rewind.chunk.css           6.3 KB         2.6 KB
+ ../server/dist/p__modalPage.chunk.css        2.8 KB         793.0 B
+
+  Images and other types of assets omitted.
+
+Removing intermediate container 8219e0e870fd
+ ---> 8ffe05c4d66f
+Step 27/41 : RUN mkdir -p ~/ros2_ws/src
+ ---> Running in 6377683e674e
+Removing intermediate container 6377683e674e
+ ---> e0f564645047
+Step 28/41 : WORKDIR /root/ros2_ws
+ ---> Running in ee5ba6e0402f
+Removing intermediate container ee5ba6e0402f
+ ---> 6670e22ff700
+Step 29/41 : RUN source /opt/ros/galactic/install/setup.bash &&     cd src &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_camera.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git &&     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git &&     cd /root/ros2_ws &&     colcon build --packages-select bitcq_msg &&     source install/setup.bash &&     colcon build &&     rm -rf ./src ./build ./log
+ ---> Running in 530dda811e6d
+[91mCloning into 'bitcq_msg'...
+[0m[91mCloning into 'radar'...
+[0m[91mCloning into 'tiandy_camera'...
+[0m[91mCloning into 'sort_track'...
+[0m[91mCloning into 'traffic_count'...
+[0m[91mCloning into 'camera_radar_publisher'...
+[0m[91mCloning into 'bitcq_camera'...
+[0m[91mCloning into 'demo_view'...
+[0m[91mCloning into 'sensor_fusion'...
+[0mStarting >>> bitcq_msg
+[Processing: bitcq_msg]
+Finished <<< bitcq_msg [44.7s]
+
+Summary: 1 package finished [45.1s]
+Starting >>> bitcq_msg
+Starting >>> bitcq_camera
+Starting >>> camera_radar_publisher
+Starting >>> demo_view
+Starting >>> tiandy_camera
+Finished <<< bitcq_msg [4.00s]
+Starting >>> radar
+Starting >>> sensor_fusion
+Starting >>> sort_track
+Starting >>> traffic_count
+[91m/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'install-scripts' will not be supported in future versions. Please use the underscore name 'install_scripts' instead
+  % (opt, underscore_opt)
+[0m[91m/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'install-scripts' will not be supported in future versions. Please use the underscore name 'install_scripts' instead
+  % (opt, underscore_opt)
+[0m[91m--- stderr: sensor_fusion
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'install-scripts' will not be supported in future versions. Please use the underscore name 'install_scripts' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/command/install.py:37: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  setuptools.SetuptoolsDeprecationWarning,
+---
+[0mFinished <<< sensor_fusion [4.37s]
+[91m--- stderr: traffic_count
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/dist.py:726: UserWarning: Usage of dash-separated 'install-scripts' will not be supported in future versions. Please use the underscore name 'install_scripts' instead
+  % (opt, underscore_opt)
+/usr/local/lib/python3.6/dist-packages/setuptools/command/install.py:37: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  setuptools.SetuptoolsDeprecationWarning,
+---
+[0mFinished <<< traffic_count [4.43s]
+[91m--- stderr: tiandy_camera
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In function ‘void MainNotify(int, long int, void*, void*)’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:515:9: warning: unused variable ‘param’ [-Wunused-variable]
+     int param = HIWORD(wParam);
+         ^~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = std::__cxx11::basic_string<char>; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:21:65:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:621:100:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = double; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:622:106:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = float; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:623:104:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = bool; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:625:102:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp: In instantiation of ‘bool tiandy_camera::getParameter(std::__cxx11::string, T&) [with T = unsigned int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:626:118:   required from here
+/root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:606:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/tiandy_camera/include/tiandy_camera.h:1,
+                 from /root/ros2_ws/src/tiandy_camera/src/tiandy_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+---
+[0m[Processing: bitcq_camera, camera_radar_publisher, demo_view, radar, sort_track, tiandy_camera]
+Finished <<< tiandy_camera [42.7s]
+Finished <<< radar [44.6s]
+[91m--- stderr: radar
+/root/ros2_ws/src/radar/src/send_radar.cpp: In function ‘void* sendSection(void*)’:
+/root/ros2_ws/src/radar/src/send_radar.cpp:345:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+/root/ros2_ws/src/radar/src/send_radar.cpp: In function ‘void* sendArea(void*)’:
+/root/ros2_ws/src/radar/src/send_radar.cpp:365:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+/root/ros2_ws/src/radar/src/send_radar.cpp: In function ‘void* sendQueue(void*)’:
+/root/ros2_ws/src/radar/src/send_radar.cpp:385:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+/root/ros2_ws/src/radar/nodes/radar_node.cpp: In function ‘int main(int, char**)’:
+/root/ros2_ws/src/radar/nodes/radar_node.cpp:11:46: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     node->declare_parameter("radar_yaml_path");
+                                              ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/radar/include/send_radar.h:31,
+                 from /root/ros2_ws/src/radar/nodes/radar_node.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/radar/nodes/radar_node.cpp:76:13: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+         int ret = pthread_create(&thrd1, NULL, recvsocket, &param1);
+             ^~~
+---
+[0mFinished <<< demo_view [49.3s]
+[91m--- stderr: demo_view
+/root/ros2_ws/src/demo_view/src/http_stream.cpp: In member function ‘bool MJPG_sender::write(const cv::Mat&)’:
+/root/ros2_ws/src/demo_view/src/http_stream.cpp:216:113: warning: format ‘%zu’ expects argument of type ‘size_t’, but argument 3 has type ‘int’ [-Wformat=]
+                 sprintf(head, "--mjpegstream\r\nContent-Type: image/jpeg\r\nContent-Length: %zu\r\n\r\n", outlen);
+                                                                                                                 ^
+/root/ros2_ws/src/demo_view/src/demo_view.cpp: In constructor ‘DemoView::DemoView(const rclcpp::NodeOptions&)’:
+/root/ros2_ws/src/demo_view/src/demo_view.cpp:27:41: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("topic_name");
+                                         ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/demo_view/include/demo_view.h:26,
+                 from /root/ros2_ws/src/demo_view/src/demo_view.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/demo_view/src/demo_view.cpp:29:41: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("image_type");
+                                         ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/demo_view/include/demo_view.h:26,
+                 from /root/ros2_ws/src/demo_view/src/demo_view.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+---
+[0mFinished <<< bitcq_camera [56.4s]
+[91m--- stderr: bitcq_camera
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = std::__cxx11::basic_string<char>; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:7:50:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:149:99:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = double; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:150:105:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = float; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:151:103:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = bool; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:153:101:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp: In instantiation of ‘bool bitcq_camera::getParameter(std::__cxx11::string, T&) [with T = unsigned int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:154:117:   required from here
+/root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:134:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/bitcq_camera/include/bitcq_camera.h:1,
+                 from /root/ros2_ws/src/bitcq_camera/src/bitcq_camera.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+---
+[0m[91m--- stderr: sort_track
+In file included from /root/ros2_ws/src/sort_track/include/track.h:13:0,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/image_transport/subscriber_filter.h:41:91: note: #pragma message: Warning: This header is deprecated. Use 'subscriber_filter.hpp' instead
+ #pragma message ("Warning: This header is deprecated. Use 'subscriber_filter.hpp' instead")
+                                                                                           ^
+In file included from /root/ros2_ws/src/sort_track/src/sort.cpp:1:0:
+/root/ros2_ws/src/sort_track/include/sort.h: In constructor ‘Sort::Sort(int, int)’:
+/root/ros2_ws/src/sort_track/include/sort.h:58:9: warning: ‘Sort::max_age’ will be initialized after [-Wreorder]
+     int max_age;
+         ^~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:57:9: warning:   ‘int Sort::min_hits’ [-Wreorder]
+     int min_hits;
+         ^~~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:59:5: warning:   when initialized here [-Wreorder]
+     Sort(int age=1,int  hits=3):max_age(age),min_hits(hits) {
+     ^~~~
+/root/ros2_ws/src/sort_track/src/sort.cpp: In member function ‘void Sort::update(std::vector<RetVec>&, const std::vector<Detect>&)’:
+/root/ros2_ws/src/sort_track/src/sort.cpp:57:43: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+         if(((*rit).time_since_update < 1) && (((*rit).hit_streak >= min_hits)) || (frame_count <= min_hits)) {
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /root/ros2_ws/src/sort_track/include/track.h:32:0,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/root/ros2_ws/src/sort_track/include/sort.h: In constructor ‘Sort::Sort(int, int)’:
+/root/ros2_ws/src/sort_track/include/sort.h:58:9: warning: ‘Sort::max_age’ will be initialized after [-Wreorder]
+     int max_age;
+         ^~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:57:9: warning:   ‘int Sort::min_hits’ [-Wreorder]
+     int min_hits;
+         ^~~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:59:5: warning:   when initialized here [-Wreorder]
+     Sort(int age=1,int  hits=3):max_age(age),min_hits(hits) {
+     ^~~~
+In file included from /root/ros2_ws/src/sort_track/include/track.h:34:0,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/root/ros2_ws/src/sort_track/include/camera_tools.h: In member function ‘virtual void IntrinsicTools::camera_projection2radar(double&, double&, double, double, double, double, double)’:
+/root/ros2_ws/src/sort_track/include/camera_tools.h:156:18: warning: statement has no effect [-Wunused-value]
+     rt_matrix_inv;
+                  ^
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = std::__cxx11::basic_string<char>; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:9:46:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:10:42:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = bool; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:11:46:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = float; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:25:66:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = double; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:222:102:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/sort_track/src/track.cpp: In instantiation of ‘bool SortTrack::getParameter(std::__cxx11::string, T&) [with T = unsigned int; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+/root/ros2_ws/src/sort_track/src/track.cpp:226:114:   required from here
+/root/ros2_ws/src/sort_track/src/track.cpp:206:28: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter(param_path);
+     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/sort_track/include/track.h:9,
+                 from /root/ros2_ws/src/sort_track/src/track.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+In file included from /root/ros2_ws/src/sort_track/include/track.h:13:0,
+                 from /root/ros2_ws/src/sort_track/nodes/sort_track_node.cpp:1:
+/opt/ros/galactic/install/include/image_transport/subscriber_filter.h:41:91: note: #pragma message: Warning: This header is deprecated. Use 'subscriber_filter.hpp' instead
+ #pragma message ("Warning: This header is deprecated. Use 'subscriber_filter.hpp' instead")
+                                                                                           ^
+In file included from /root/ros2_ws/src/sort_track/include/track.h:32:0,
+                 from /root/ros2_ws/src/sort_track/nodes/sort_track_node.cpp:1:
+/root/ros2_ws/src/sort_track/include/sort.h: In constructor ‘Sort::Sort(int, int)’:
+/root/ros2_ws/src/sort_track/include/sort.h:58:9: warning: ‘Sort::max_age’ will be initialized after [-Wreorder]
+     int max_age;
+         ^~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:57:9: warning:   ‘int Sort::min_hits’ [-Wreorder]
+     int min_hits;
+         ^~~~~~~~
+/root/ros2_ws/src/sort_track/include/sort.h:59:5: warning:   when initialized here [-Wreorder]
+     Sort(int age=1,int  hits=3):max_age(age),min_hits(hits) {
+     ^~~~
+In file included from /root/ros2_ws/src/sort_track/include/track.h:34:0,
+                 from /root/ros2_ws/src/sort_track/nodes/sort_track_node.cpp:1:
+/root/ros2_ws/src/sort_track/include/camera_tools.h: In member function ‘virtual void IntrinsicTools::camera_projection2radar(double&, double&, double, double, double, double, double)’:
+/root/ros2_ws/src/sort_track/include/camera_tools.h:156:18: warning: statement has no effect [-Wunused-value]
+     rt_matrix_inv;
+                  ^
+---
+[0mFinished <<< sort_track [1min 14s]
+[91m--- stderr: camera_radar_publisher
+/root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp: In constructor ‘camera_radar_publisher::camera_radar_publisher(const rclcpp::NodeOptions&)’:
+/root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:7:44: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("image_quality");
+                                            ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/camera_radar_publisher/include/camera_radar_publisher.h:33,
+                 from /root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:9:47: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("radar_topic_name");
+                                               ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/camera_radar_publisher/include/camera_radar_publisher.h:33,
+                 from /root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:11:48: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("camera_topic_name");
+                                                ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/camera_radar_publisher/include/camera_radar_publisher.h:33,
+                 from /root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+/root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:13:43: warning: ‘const rclcpp::ParameterValue& rclcpp::Node::declare_parameter(const string&)’ is deprecated: declare_parameter() with only a name is deprecated and will be deleted in the future.
+If you want to declare a parameter that won't change type without a default value use:
+`node->declare_parameter<ParameterT>(name)`, where e.g. ParameterT=int64_t.
+
+If you want to declare a parameter that can dynamically change type use:
+```
+rcl_interfaces::msg::ParameterDescriptor descriptor;
+descriptor.dynamic_typing = true;
+node->declare_parameter(name, rclcpp::ParameterValue{}, descriptor);
+``` [-Wdeprecated-declarations]
+     this->declare_parameter("image_is_raw");
+                                           ^
+In file included from /opt/ros/galactic/install/include/rclcpp/executors/single_threaded_executor.hpp:28:0,
+                 from /opt/ros/galactic/install/include/rclcpp/executors.hpp:22,
+                 from /opt/ros/galactic/install/include/rclcpp/rclcpp.hpp:156,
+                 from /root/ros2_ws/src/camera_radar_publisher/include/camera_radar_publisher.h:33,
+                 from /root/ros2_ws/src/camera_radar_publisher/src/camera_radar_publisher.cpp:1:
+/opt/ros/galactic/install/include/rclcpp/node.hpp:422:3: note: declared here
+   declare_parameter(const std::string & name);
+   ^~~~~~~~~~~~~~~~~
+---
+[0mFinished <<< camera_radar_publisher [1min 22s]
+
+Summary: 9 packages finished [1min 22s]
+  8 packages had stderr output: bitcq_camera camera_radar_publisher demo_view radar sensor_fusion sort_track tiandy_camera traffic_count
+Removing intermediate container 530dda811e6d
+ ---> 5599bf02325d
+Step 30/41 : WORKDIR /tmp
+ ---> Running in d119f88cfe3b
+Removing intermediate container d119f88cfe3b
+ ---> 88a23a950c2b
+Step 31/41 : COPY ./docker-release-pack/yolo_release/yolov4-trt_1.0.6_arm64.deb /tmp/
+ ---> 791595be92e6
+Step 32/41 : RUN dpkg -i yolov4-trt_1.0.6_arm64.deb &&     mkdir -p /root/sample
+ ---> Running in 25992b8e2b23
+Selecting previously unselected package yolov4-trt.
+(Reading database ... 70305 files and directories currently installed.)
+Preparing to unpack yolov4-trt_1.0.6_arm64.deb ...
+Unpacking yolov4-trt (1.0.6) ...
+Setting up yolov4-trt (1.0.6) ...
+Removing intermediate container 25992b8e2b23
+ ---> 5d351f2725f0
+Step 33/41 : COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
+ ---> 013b013c965e
+Step 34/41 : COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
+ ---> f278aa3aa794
+Step 35/41 : COPY ./docker-release-pack/sample/libcqbit_target2mas.so /root/sample
+ ---> 5f11a875c276
+Step 36/41 : COPY ./fastrtps.xml /root/
+ ---> 9e2dcd8020dd
+Step 37/41 : RUN ln -s /root/sample/libcjson.so.1.7.14 /root/sample/libcjson.so.1 &&     ln -s /root/sample/libcjson.so.1 /root/sample/libcjson.so &&     chmod +x /root/sample/*
+ ---> Running in 82effc41644e
+Removing intermediate container 82effc41644e
+ ---> 5016670e79d6
+Step 38/41 : RUN echo $'#!/bin/bash\n     set -e\n     source /opt/ros/galactic/install/setup.bash\n     source ~/ros2_ws/install/setup.bash\n     export LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH\n     export OPENBLAS_NUM_THREADS=1\n     export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\n     export RMW_FASTRTPS_USE_QOS_FROM_XML=1\n     export FASTRTPS_DEFAULT_PROFILES_FILE=/root/fastrtps.xml\n     /home/ecuNodeServer/server/start.sh\n     ros2 launch sensor_fusion run_all.launch.py\n     exec "$@"' > /ros_entrypoint.sh &&     chmod +x /ros_entrypoint.sh &&     chmod +x /home/ecuNodeServer/server/start.sh &&     echo $'source /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash\nexport LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH' >> /root/.bashrc &&     echo $'export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\nexport RMW_FASTRTPS_USE_QOS_FROM_XML=1\nexport FASTRTPS_DEFAULT_PROFILES_FILE=/root/fastrtps.xml\nexport OPENBLAS_NUM_THREADS=1' >> /root/.bashrc
+ ---> Running in 03d4574fe13e
+Removing intermediate container 03d4574fe13e
+ ---> 012fa8bdd179
+Step 39/41 : ENTRYPOINT ["/ros_entrypoint.sh"]
+ ---> Running in 18c7f91de5b8
+Removing intermediate container 18c7f91de5b8
+ ---> 1ff5d22bee18
+Step 40/41 : CMD ["bash"]
+ ---> Running in c03d975f9458
+Removing intermediate container c03d975f9458
+ ---> a1dabe15ad01
+Step 41/41 : WORKDIR /root/
+ ---> Running in 40c822010ef6
+Removing intermediate container 40c822010ef6
+ ---> 8f156c38a0b0
+Successfully built 8f156c38a0b0
+Successfully tagged 9426224/ros-galactic-deploy:latest
