@@ -137,7 +137,14 @@ sudo docker run -itd \
 
 Develop for jenkins:
 sudo docker run -itd \
-    --rm \
     --runtime nvidia \
+    --restart=always \
+    --net=host \
+    --ipc=host \
+    --privileged \
+    -e cspwd=bitcq \
+    -e csport=60001 \
+    -e sshport=60000 \
+    -e rootpwd=root \
     --name="galactic" \
     9426224/ros-galactic-develop
