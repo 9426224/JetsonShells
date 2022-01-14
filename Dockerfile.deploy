@@ -86,12 +86,20 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 # Description: Install OpenCV 4.5.0 with CUDA
 # Size: 477MB
 #
-#RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
-RUN mkdir opencv && \
+RUN echo "purge old version opencv" && \
+    apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
+    mkdir opencv && \
     cd opencv && \
-    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
+    echo "start get opencv deb packages" && \
+    wget https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz && \
+    echo "change file's name" && \
+    mv 5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz OpenCV-4.5.0-aarch64.tar.gz && \
+    echo "start unzip deb packages" && \
+    #wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
     tar -xzvf OpenCV-4.5.0-aarch64.tar.gz && \
+    echo "force find depends" && \
     dpkg -i --force-depends *.deb && \
+    echo "install depends" && \
     apt-get update && \
     apt-get install -y -f --no-install-recommends && \
     dpkg -i *.deb && \
