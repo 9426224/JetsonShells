@@ -24,7 +24,7 @@ WORKDIR /tmp
 RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV PYTHONIOENCODING=utf-8
-
+ARG build-tag
 
 # 
 # Description: Install basic packages
@@ -330,10 +330,7 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
 
 
 WORKDIR /root
-RUN tag=$build-tag && \
-    mkdir $tag && \
-    rm -rf $tag && \
-    echo $tag >> build-tag
+RUN echo $build-tag >> build-tag
 
 # 
 # Description: Install ecu_web Packages
