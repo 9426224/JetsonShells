@@ -329,6 +329,12 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
     ln -s $(which nvcc) /sbin/nvcc 
 
 
+WORKDIR /root
+RUN tag=$build-tag && \
+    mkdir $tag && \
+    rm -rf $tag && \
+    echo $tag >> build-tag
+
 # 
 # Description: Install ecu_web Packages
 # Size: 34.5MB
