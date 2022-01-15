@@ -86,10 +86,10 @@ RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certif
 # Description: Install OpenCV 4.5.0 with CUDA
 # Size: 477MB
 #
-WORKDIR /tmp
-COPY ./docker-release-pack/opencv/OpenCV-4.5.0-aarch64.tar.gz /tmp/
+#WORKDIR /tmp
+#COPY ./docker-release-pack/opencv/OpenCV-4.5.0-aarch64.tar.gz /tmp/
 RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
-    #wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
+    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
     tar -xzvf OpenCV-4.5.0-aarch64.tar.gz && \
     dpkg -i --force-depends *.deb && \
     apt-get update && \
