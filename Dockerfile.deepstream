@@ -463,6 +463,11 @@ RUN echo $'#!/bin/bash\n \
 RUN mkdir -p ~/ros2_ws/src
 
 
+ARG build-tag
+WORKDIR /root
+RUN echo $build-tag >> build-tag
+
+
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
