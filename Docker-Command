@@ -1,78 +1,10 @@
 # sudo mount tmpfs /tmp -t tmpfs -o size=8192m
 # sudo docker build -t "image-name" -f Dockerfile . >& build.log &
 # sudo docker volume create mongodbdata
-# sudo docker run -itd -p 6622:22 -p 8001:8001 -p 63029:63029 -p 9999:9999 -p 12307:12307 -p 63001:63001 -p 8002:8002 -p 9090:9090 -p 63025:63025 -p 63026:63026 --privileged -v mongodbdata:/usr/local/mongodb/data --name="ros-foxy" --restart=always 9426224/ros-foxy-base:latest
-# sudo docker run -itd --net=host --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix --name="deepstream-x11-ros2" --restart=always 9426224/ros-foxy-deepstream-5.1-sample
-# sudo docker run -itd --restart=always --runtime nvidia -e DISPLAY=$DISPLAY --net=host --ipc=host --env="_X11_NO_MITSHM=1" --privileged -v mongodbdata:/usr/local/mongodb/data -v /tmp/.X11-unix/:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority --name="test-ds-x11" 86c2d0e77c62
 # sudo docker exec -it ros-foxy /bin/bash
 # docker save <image>:<tag> | gzip > /path-to/file.tar.gz
 # gunzip -c /path-to/file.tar.gz | docker load
-
-sudo docker run -itd --runtime nvidia --restart=always --net=host --ipc=host --privileged --env="_X11_NO_MITSHM=1" -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority -e cspwd=bitcq -e csport=9990 -e sshport=6630 -e rootpwd=root 9426224/ros-melodic-l4t-base:latest
-
-sudo docker run -itd --runtime nvidia --restart=always --net=host --privileged -e cspwd=bitcq -e csport=9990 -e sshport=6630 -e rootpwd=root 9426224/ros-melodic-l4t-base:latest
-
-sudo docker run -d --restart=always --privileged=true --name registry -p 5000:5000 -e REGISTRY_HTTP_HOST=https://vps.9426224.xyz:8502 -v /myregistry:/var/lib/registry registry
-
-sudo docker run -itd \
-    --runtime nvidia \
-    --restart=always \
-    --net=host \
-    --ipc=host \
-    --privileged \
-    -v /tmp/.X11-unix/:/tmp/.X11-unix \
-    -v $HOME/.Xauthority:/tmp/.XAuthority \
-    -v /usr/local/bitcq_config:/usr/local/bitcq_config \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/media/capture:/home/ecuNodeServer/public/images/capture \
-    --env="_X11_NO_MITSHM=1" \
-    -e XAUTHORITY=/tmp/.XAuthority \
-    -e DISPLAY=$DISPLAY \
-    -e cspwd=bitcq123 \
-    -e csport=9999 \
-    -e sshport=6622 \
-    -e rootpwd=bitcq123 \
-    vps.9426224.xyz:8502/ros-melodic-l4t-base:latest
-
-sudo docker run -itd \
-    --runtime nvidia \
-    --restart=always \
-    --net=host \
-    --ipc=host \
-    --privileged \
-    --env="_X11_NO_MITSHM=1" \
-    -e DISPLAY=$DISPLAY \
-    -v /tmp/.X11-unix/:/tmp/.X11-unix \
-    -v $XAUTHORITY:/tmp/.XAuthority \
-    -e XAUTHORITY=/tmp/.XAuthority \
-    -v /usr/local/bitcq_config:/usr/local/bitcq_config \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/media/capture:/home/ecuNodeServer/public/images/capture \
-    -e cspwd=bitcq123 \
-    -e csport=9990 \
-    -e sshport=6630 \
-    -e rootpwd=root \
-    --name="test" \
-    vps.9426224.xyz:8502/ros-foxy-deepstream-5.1-sample:latest
-
-sudo docker run -itd \
-    --runtime nvidia \
-    --restart=always \
-    --net=host \
-    --ipc=host \
-    --privileged \
-    -v /dev/bus:/dev/bus \
-    -v /usr/local/bitcq_config:/usr/local/bitcq_config \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/media/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
-    -e cspwd=bitcq123 \
-    -e csport=9995 \
-    -e sshport=6635 \
-    -e rootpwd=root \
-    --name="test-galac" \
-    ros-galactic-base
-
-
+docker rmi $(docker images --filter “dangling=true” -q --no-trunc)
 
 
 Deploy:
@@ -82,7 +14,7 @@ sudo docker run -itd \
     --net=host \
     --ipc=host \
     --privileged \
-    -e ROS_DOMAIN_ID=40 \
+    -e ROS_DOMAIN_ID=20 \
     -v /dev/bus:/dev/bus \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
@@ -101,7 +33,7 @@ sudo docker run -itd \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
     -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
-    -e ROS_DOMAIN_ID=272 \
+    -e ROS_DOMAIN_ID=50 \
     -e cspwd=bitcq190423 \
     -e csport=9990 \
     -e sshport=6630 \
@@ -148,3 +80,5 @@ sudo docker run -itd \
     -e rootpwd=root \
     --name="galactic" \
     9426224/ros-galactic-develop
+
+
