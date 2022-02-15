@@ -328,9 +328,9 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
     ln -s $(which nvcc) /sbin/nvcc 
 
 
-ARG build-tag
+ARG buildtag
 WORKDIR /root
-RUN echo $build-tag >> build-tag
+RUN echo $buildtag >> build-tag
 
 # 
 # Description: Install ecu_web Packages
