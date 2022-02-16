@@ -6,6 +6,8 @@
 # gunzip -c /path-to/file.tar.gz | docker load
 docker rmi $(docker images --filter “dangling=true” -q --no-trunc)
 
+OTA:
+nsenter --mount=/host/proc/1/ns/mnt sh -c "sudo docker rmi $(docker images -f 'dangling=true' -q)  && sudo docker pull 9426224/ros-galactic-deploy && sudo docker rm -f galactic"
 
 Deploy:
 sudo docker run -itd \
@@ -16,9 +18,11 @@ sudo docker run -itd \
     --privileged \
     -e ROS_DOMAIN_ID=20 \
     -v /dev/bus:/dev/bus \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /usr/bin/docker:/usr/bin/docker \
+    -v /proc:/host/proc \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
     --name="galactic" \
     9426224/ros-galactic-deploy
 
@@ -30,14 +34,16 @@ sudo docker run -itd \
     --ipc=host \
     --privileged \
     -v /dev/bus:/dev/bus \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /usr/bin/docker:/usr/bin/docker \
+    -v /proc:/host/proc \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
     -e ROS_DOMAIN_ID=50 \
     -e cspwd=bitcq190423 \
     -e csport=9990 \
     -e sshport=6630 \
-    -e rootpwd=bitcq190423 \
+    -e rootpwd=root \
     --name="galactic-6630-9990" \
     9426224/ros-galactic-develop
 
@@ -49,16 +55,13 @@ sudo docker run -itd \
     --net=host \
     --ipc=host \
     --privileged \
-    --env="_X11_NO_MITSHM=1" \
-    -e DISPLAY=$DISPLAY \
-    -v /tmp/.X11-unix/:/tmp/.X11-unix \
-    -v $XAUTHORITY:/tmp/.XAuthority \
-    -e XAUTHORITY=/tmp/.XAuthority \
     -v /dev/bus:/dev/bus \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /usr/bin/docker:/usr/bin/docker \
+    -v /proc:/host/proc \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /mnt/nfs/capture:/usr/local/bitcq_config/ecu_web/public/images/capture \
-    -e ROS_DOMAIN_ID=30 \
+    -e ROS_DOMAIN_ID=50 \
     -e cspwd=bitcq190423 \
     -e csport=9990 \
     -e sshport=6630 \
@@ -66,6 +69,11 @@ sudo docker run -itd \
     --name="galactic-6630-9990" \
     9426224/ros-galactic-deepstream
 
+    # --env="_X11_NO_MITSHM=1" \
+    # -e DISPLAY=$DISPLAY \
+    # -v /tmp/.X11-unix/:/tmp/.X11-unix \
+    # -e XAUTHORITY=~/.Xauthority \
+    # -v $XAUTHORITY:~/.Xauthority \
 
 Develop for jenkins:
 sudo docker run -itd \

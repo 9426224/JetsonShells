@@ -330,7 +330,7 @@ RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/
 
 ARG buildtag
 WORKDIR /root
-RUN echo $buildtag >> build-tag
+RUN echo -n $buildtag >> build-tag
 
 # 
 # Description: Install ecu_web Packages

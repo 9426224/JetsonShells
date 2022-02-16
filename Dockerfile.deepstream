@@ -471,7 +471,7 @@ RUN mkdir -p ~/ros2_ws/src
 
 ARG buildtag
 WORKDIR /root
-RUN echo $buildtag >> build-tag
+RUN echo -n $buildtag >> build-tag
 
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
