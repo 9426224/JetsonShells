@@ -1,0 +1,56 @@
+Sending build context to Docker daemon   72.7kB
+Step 1/29 : ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+Step 2/29 : FROM ${BASE_IMAGE}
+ ---> c93fc89026d9
+Step 3/29 : ARG ROS_PKG=ros_base
+ ---> Using cache
+ ---> 7edb28524631
+Step 4/29 : ENV ROS_DISTRO=melodic
+ ---> Using cache
+ ---> 3d1de565ef0a
+Step 5/29 : ENV ROS_ROOT=/opt/ros/${ROS_DISTRO}
+ ---> Using cache
+ ---> 0e96782cc0f4
+Step 6/29 : LABEL maintainer="9426224"     version="0.1"     description="A l4t-base dockerfile for ROS1 User"     email="9426224@live.com"
+ ---> Using cache
+ ---> df4ecca6b87c
+Step 7/29 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> e70184753c55
+Step 8/29 : ENV SHELL /bin/bash
+ ---> Using cache
+ ---> e3f1c84169a7
+Step 9/29 : SHELL ["/bin/bash", "-c"]
+ ---> Using cache
+ ---> b2657d1dbf67
+Step 10/29 : WORKDIR /tmp
+ ---> Using cache
+ ---> 87d4568f6f1d
+Step 11/29 : RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 2c34767dc7ee
+Step 12/29 : ENV LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 026ae3d90524
+Step 13/29 : ENV PYTHONIOENCODING=utf-8
+ ---> Using cache
+ ---> 4c5dae16bf10
+Step 14/29 : RUN apt-get update &&     apt-get install -y --no-install-recommends         curl         wget         gnupg2         lsb-release         ca-certificates         build-essential         git         openssh-server         vim         apt-utils         usbutils         iputils-ping         gdb         libtool         autoconf         automake         unzip         tmux &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' &&     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 83c88c590ac8
+Step 15/29 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate          https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 5bf0d719eb5f
+Step 16/29 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libbullet-dev         libpython3-dev         python3-colcon-common-extensions         python3-flake8         python3-pip         python3-numpy         python3-pytest-cov         libasio-dev         libtinyxml2-dev         libcunit1-dev         libopenblas-base         libopenmpi-dev         libopenblas-dev         libatlas-base-dev         gfortran         liblapack-dev         libboost-python-dev         libboost-thread-dev         libcurl4-openssl-dev         libfreetype6-dev         python3-matplotlib         python3-numba         python3-llvmlite         tcl-dev         tk-dev         python3-tk         protobuf-compiler         libprotoc-dev &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> d6a1be5b2c25
+Step 17/29 : RUN pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         wheel         Cython         setuptools         numpy==1.19.3 &&     python3 -m pip install --no-cache-dir -U         argcomplete         flake8-blind-except         flake8-builtins         flake8-class-newline         flake8-comprehensions         flake8-deprecated         flake8-docstrings         flake8-import-order         flake8-quotes         pytest-repeat         pytest-rerunfailures         pytest         pyzmq         pycuda==2019.1.2         filterpy==1.4.5         scikit-learn==0.24.2         scikit-image==0.17.2         scipy==1.5.4         pandas         pillow         onnx==1.4.1 &&     rm -rf /tmp/* &&     rm -rf ~/.cache/pip
+ ---> Using cache
+ ---> bac23d5d6abb
+Step 18/29 : RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 &&     cd yaml-cpp-0.7 &&     mkdir build &&     cd build &&     cmake -DBUILD_SHARED_LIBS=ON .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     git clone https://github.com/open-source-parsers/jsoncpp.git &&     cd jsoncpp &&     mkdir build &&     cd build &&     cmake .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 5059b40b985f
+Step 19/29 : RUN ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s $(which nvcc) /sbin/nvcc &&     ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.4 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 &&     ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.4 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18
+ ---> Running in 16a682b8ff34
+[91mln: failed to create symbolic link '/usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18'[0m[91m: No such file or directory
+[0mThe command '/bin/bash -c ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc.so.10.2 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libnvrtc-builtins.so /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcudart.so.10.2.89 /usr/lib/aarch64-linux-gnu/ &&     ln -s /usr/local/cuda-10.2/targets/aarch64-linux/lib/libcurand.so.10 /usr/lib/aarch64-linux-gnu/ &&     ln -s $(which nvcc) /sbin/nvcc &&     ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.32.4.4 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-fatbinaryloader.so.440.18 &&     ln -s /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.32.4.4 /usr/lib/aarch64-linux-gnu/libnvidia-fatbinaryloader.so.440.18' returned a non-zero code: 1

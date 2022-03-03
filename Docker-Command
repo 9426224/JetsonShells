@@ -90,3 +90,32 @@ sudo docker run -itd \
     9426224/ros-galactic-develop
 
 
+sudo docker run -itd \
+    --runtime nvidia \
+    --restart=always \
+    --net=host \
+    --ipc=host \
+    --privileged \
+    --env="_X11_NO_MITSHM=1" \
+    -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix/:/tmp/.X11-unix \
+    -v $XAUTHORITY:/tmp/.XAuthority \
+    -e XAUTHORITY=/tmp/.XAuthority \
+    -v /dev/bus:/dev/bus \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /usr/bin/docker:/usr/bin/docker \
+    -v /proc:/host/proc \
+    -v /usr/local/bitcq_config:/usr/local/bitcq_config \
+    -v /etc/localtime:/etc/localtime:ro \
+    -e ROS_DOMAIN_ID=50 \
+    -e cspwd=bitcq190423 \
+    -e csport=9990 \
+    -e sshport=6630 \
+    -e rootpwd=bitcq190423 \
+    --name="galactic-6630-9990" \
+    9426224/ros-galactic-deepstream
+
+#!/bin/bash
+image_name=$1
+image_tag=$2
+nsenter --mount=/host/proc/1/ns/mnt sh -c "echo -n $image_name:$image_tag > /usr/local/bitcq_config/docker_protect_service/build-tag ; sudo docker pull $image_name:$image_tag ; sudo docker rm -f galactic"

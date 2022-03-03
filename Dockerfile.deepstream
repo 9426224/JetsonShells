@@ -390,6 +390,12 @@ RUN wget  --quiet --show-progress --progress=bar:force:noscroll --no-check-certi
     rm -rf /tmp/*
 
 
+ARG buildtag
+WORKDIR /root
+RUN echo -n $buildtag >> build-tag
+
+
+WORKDIR /tmp
 # 
 # Description: Add pull_all_repo.sh.
 # Size: 6.8KB
@@ -467,11 +473,6 @@ RUN echo $'#!/bin/bash\n \
 # Size: near by 150KB
 #
 RUN mkdir -p ~/ros2_ws/src
-
-
-ARG buildtag
-WORKDIR /root
-RUN echo -n $buildtag >> build-tag
 
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
