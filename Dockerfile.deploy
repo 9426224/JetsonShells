@@ -288,7 +288,6 @@ RUN pip3 install --upgrade pip && \
         requests \
         theano \
         keras \
-        pil \
         hyperlpr \
         pillow && \
     rm -rf /tmp/* && \
