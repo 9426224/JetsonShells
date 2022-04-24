@@ -366,7 +366,7 @@ RUN source /opt/ros/galactic/install/setup.bash && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_camera.git && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git && \
-    git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr.git && \
+    git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr.git && \
     cd /root/ros2_ws && \
     colcon build --packages-select bitcq_msg && \
     source install/setup.bash && \
