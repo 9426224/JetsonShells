@@ -385,8 +385,10 @@ RUN source /opt/ros/galactic/install/setup.bash && \
 WORKDIR /tmp
 COPY ./docker-release-pack/yolo_release/yolov4-trt_1.0.6_arm64.deb /tmp/
 RUN dpkg -i yolov4-trt_1.0.6_arm64.deb && \
-    mkdir -p /root/sample
+    mkdir -p /root/sample && \
+    rm /usr/local/lib/python3.6/dist-packages/hyperlpr/hyperlpr.py
 
+COPY ./docker-release-pack/hyperlpr/hyperlpr.py /usr/local/lib/python3.6/dist-packages/hyperlpr/
 COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.so /root/sample
