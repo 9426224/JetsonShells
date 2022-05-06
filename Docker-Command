@@ -39,8 +39,8 @@ sudo docker run -itd \
     -v /proc:/host/proc \
     -v /usr/local/bitcq_config:/usr/local/bitcq_config \
     -v /etc/localtime:/etc/localtime:ro \
-    -e ROS_DOMAIN_ID=50 \
-    -e cspwd=bitcq190423 \
+    -e ROS_DOMAIN_ID=88 \
+    -e cspwd=root \
     -e csport=9990 \
     -e sshport=6630 \
     -e rootpwd=root \
