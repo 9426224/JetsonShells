@@ -356,7 +356,7 @@ RUN mkdir -p ~/ros2_ws/src
 WORKDIR /root/ros2_ws
 RUN source /opt/ros/galactic/install/setup.bash && \
     cd src && \
-    git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git && \
+    git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git && \
