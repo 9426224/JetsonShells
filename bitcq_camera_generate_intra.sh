@@ -6,7 +6,7 @@ has_docker=$(sudo docker rm -f galactic)
 
 mkdir src
 cd src
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git
 git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_ca.git bitcq_camera
 cd ..
 
