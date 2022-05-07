@@ -398,7 +398,7 @@ WORKDIR /tmp
 
 RUN pip3 install --upgrade pip && \
     python3 -m pip install --no-cache-dir -U \
-        lpr && \
+        hyperlpr && \
     rm -rf /tmp/* && \
     rm -rf ~/.cache/pip
 
@@ -447,7 +447,7 @@ source /root/ros2_ws/install/setup.bash\n \
     chmod +x /root/start_clean_script.sh && \
     mkdir /root/sample && \
     rm /usr/local/lib/python3.6/dist-packages/hyperlpr/hyperlpr.py
-    
+
 COPY ./docker-release-pack/hyperlpr/hyperlpr.py /usr/local/lib/python3.6/dist-packages/hyperlpr/
 COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
