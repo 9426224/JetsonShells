@@ -395,6 +395,13 @@ WORKDIR /root
 RUN echo -n $buildtag >> build-tag
 
 WORKDIR /tmp
+
+RUN pip3 install --upgrade pip && \
+    python3 -m pip install --no-cache-dir -U \
+        lpr && \
+    rm -rf /tmp/* && \
+    rm -rf ~/.cache/pip
+
 # 
 # Description: Add pull_all_repo.sh.
 # Size: 6.8KB
@@ -406,13 +413,15 @@ cd ~/ros2_ws/src\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git\n \
+git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_ca.git bitcq_camera\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_camera.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git\n \
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git\n \
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git\n \
+git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr.git\n \
 cd ~/ros2_ws\n \
 colcon build --packages-select bitcq_msg\n \
 source install/setup.bash\n \
@@ -436,8 +445,10 @@ source /root/ros2_ws/install/setup.bash\n \
 /usr/bin/clean_script >/dev/null 2>&1 &' > /root/start_clean_script.sh && \
     chmod +x /root/pull_all_repo.sh && \
     chmod +x /root/start_clean_script.sh && \
-    mkdir /root/sample
-
+    mkdir /root/sample && \
+    rm /usr/local/lib/python3.6/dist-packages/hyperlpr/hyperlpr.py
+    
+COPY ./docker-release-pack/hyperlpr/hyperlpr.py /usr/local/lib/python3.6/dist-packages/hyperlpr/
 COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.so /root/sample
