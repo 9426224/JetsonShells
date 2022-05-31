@@ -288,7 +288,6 @@ RUN pip3 install --upgrade pip && \
         requests \
         theano \
         keras \
-        hyperlpr \
         pillow && \
     rm -rf /tmp/* && \
     rm -rf ~/.cache/pip
@@ -358,9 +357,7 @@ RUN source /opt/ros/galactic/install/setup.bash && \
     cd src && \
     git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git && \
-    # git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git && \
-    # git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git && \
@@ -370,9 +367,6 @@ RUN source /opt/ros/galactic/install/setup.bash && \
     colcon build --packages-select bitcq_msg && \
     source install/setup.bash && \
     colcon build && \
-    # cd src/tiandy_camera/clean_script/ && \
-    # chmod +x ./install.sh ./build.sh && \
-    # ./install.sh && \
     cd /root/ros2_ws && \
     rm -rf ./src ./build ./log  
 
@@ -384,14 +378,12 @@ RUN source /opt/ros/galactic/install/setup.bash && \
 WORKDIR /tmp
 COPY ./docker-release-pack/bitcq_camera_release/bitcq-camera_${buildtag}_arm64.deb /tmp/
 RUN dpkg -i bitcq-camera_${buildtag}_arm64.deb && \
-    mkdir -p /root/sample && \
-    rm /usr/local/lib/python3.6/dist-packages/hyperlpr/hyperlpr.py
+    mkdir -p /root/sample
 
 COPY ./docker-release-pack/hyperlpr/hyperlpr.py /usr/local/lib/python3.6/dist-packages/hyperlpr/
 COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.so /root/sample
-# COPY ./fastrtps.xml /root/
 
 RUN ln -s /root/sample/libcjson.so.1.7.14 /root/sample/libcjson.so.1 && \
     ln -s /root/sample/libcjson.so.1 /root/sample/libcjson.so && \
@@ -408,18 +400,15 @@ RUN echo $'#!/bin/bash\n \
     source ~/ros2_ws/install/setup.bash\n \
     export LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH\n \ 
     export OPENBLAS_NUM_THREADS=1\n \
-#    export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\n \
-#    export RMW_FASTRTPS_USE_QOS_FROM_XML=1\n \
-#    export FASTRTPS_DEFAULT_PROFILES_FILE=/root/fastrtps.xml\n \
+    export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\n \
     cd /home/ecuNodeServer/server\n \
     ./start.sh\n \
-#    /usr/bin/clean_script >/dev/null 2>&1 &\n \
     ros2 launch sensor_fusion run_all.launch.py\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     chmod +x /home/ecuNodeServer/server/start.sh && \
-    echo $'source /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash\nexport LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH\nexport OPENBLAS_NUM_THREADS=1' >> /root/.bashrc
-#    echo $'export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\nexport RMW_FASTRTPS_USE_QOS_FROM_XML=1\nexport FASTRTPS_DEFAULT_PROFILES_FILE=/root/fastrtps.xml' >> /root/.bashrc
+    echo $'source /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash\nexport LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH\nexport OPENBLAS_NUM_THREADS=1' >> /root/.bashrc && \
+    echo $'export RMW_IMPLEMENTATION=rmw_fastrtps_cpp' >> /root/.bashrc
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
