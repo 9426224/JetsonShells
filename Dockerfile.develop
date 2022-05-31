@@ -396,12 +396,6 @@ RUN echo -n $buildtag >> build-tag
 
 WORKDIR /tmp
 
-RUN pip3 install --upgrade pip && \
-    python3 -m pip install --no-cache-dir -U \
-        hyperlpr && \
-    rm -rf /tmp/* && \
-    rm -rf ~/.cache/pip
-
 # 
 # Description: Add pull_all_repo.sh.
 # Size: 6.8KB
@@ -411,24 +405,23 @@ source /opt/ros/galactic/install/setup.bash\n \
 mkdir -p ~/ros2_ws/src\n \
 cd ~/ros2_ws/src\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git\n \
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git\n \
+#git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/tiandy_camera.git\n \
 git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_ca.git bitcq_camera\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git\n \
-git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_camera.git\n \
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git\n \
+#git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/traffic_count.git\n \
+#git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/yolov4_trt.git\n \
+git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git\n \
 git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git\n \
 git clone --branch intra https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git\n \
-git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr.git\n \
+git clone --branch master https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr_c.git\n \
 cd ~/ros2_ws\n \
 colcon build --packages-select bitcq_msg\n \
 source install/setup.bash\n \
 colcon build\n \
-cd src/tiandy_camera/clean_script/ && \
-chmod +x ./install.sh ./build.sh && \
-./install.sh && \
+#cd src/tiandy_camera/clean_script/ && \
+#chmod +x ./install.sh ./build.sh && \
+#./install.sh && \
 cd ~/\n \
 git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/ecu_web.git\n \
 cd ecu_web\n \
@@ -445,10 +438,8 @@ source /root/ros2_ws/install/setup.bash\n \
 /usr/bin/clean_script >/dev/null 2>&1 &' > /root/start_clean_script.sh && \
     chmod +x /root/pull_all_repo.sh && \
     chmod +x /root/start_clean_script.sh && \
-    mkdir /root/sample && \
-    rm /usr/local/lib/python3.6/dist-packages/hyperlpr/hyperlpr.py
+    mkdir /root/sample
 
-COPY ./docker-release-pack/hyperlpr/hyperlpr.py /usr/local/lib/python3.6/dist-packages/hyperlpr/
 COPY ./docker-release-pack/sample/libcjson.so.1.7.14 /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.a /root/sample
 COPY ./docker-release-pack/sample/libcqbit_target2mas.so /root/sample
@@ -470,13 +461,11 @@ RUN echo $'#!/bin/bash\n \
     echo port=${sshport} >> /etc/ssh/sshd_config\n \
     /etc/init.d/ssh restart\n \
     nohup /root/code-server/code-server --port $csport --auth password --host 0.0.0.0 >& /root/code-server/run.log &\n \
-    echo -e export\tDISPLAY=$DISPLAY >> /root/.bashrc\n \
+#    echo -e export\tDISPLAY=$DISPLAY >> /root/.bashrc\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
-    echo $'export XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash\nexport LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH' >> /root/.bashrc && \
-    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config && \
-    echo $'export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\nexport RMW_FASTRTPS_USE_QOS_FROM_XML=1\nexport FASTRTPS_DEFAULT_PROFILES_FILE=/root/fastrtps.xml\nexport OPENBLAS_NUM_THREADS=1' >> /root/.bashrc
-
+    echo $'export XAUTHORITY=/tmp/.XAuthority\nsource /opt/ros/galactic/install/setup.bash\nsource ~/ros2_ws/install/setup.bash\nexport OPENBLAS_NUM_THREADS=1\nexport LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH' >> /root/.bashrc && \
+    echo $'PermitRootLogin yes\nPubkeyAuthentication yes\nAllowTcpForwarding yes\nX11DisplayOffset 10\nX11UseLocalhost yes' >> /etc/ssh/sshd_config
 
 # 
 # Description: Install BITCQ ROS2 Packages

@@ -414,7 +414,7 @@ RUN echo $'#!/bin/bash\n \
     cd /home/ecuNodeServer/server\n \
     ./start.sh\n \
 #    /usr/bin/clean_script >/dev/null 2>&1 &\n \
-    ros2 launch sensor_fusion run_all.launch.py >/dev/null 2>&1\n \
+    ros2 launch sensor_fusion run_all.launch.py\n \
     exec "$@"' > /ros_entrypoint.sh && \
     chmod +x /ros_entrypoint.sh && \
     chmod +x /home/ecuNodeServer/server/start.sh && \
