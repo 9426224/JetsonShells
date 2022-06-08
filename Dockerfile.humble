@@ -1,0 +1,258 @@
+# 
+# Description: nvidia l4t base container
+# Size: 631MB
+#
+ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+FROM ${BASE_IMAGE}
+
+LABEL maintainer="9426224" \
+    version="0.1" \
+    description="A l4t-base dockerfile for ROS2 User" \
+    email="9426224@live.com"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV SHELL /bin/bash
+SHELL ["/bin/bash", "-c"] 
+
+WORKDIR /tmp
+
+# 
+# Description: Change the locale from POSIX to UTF-8
+# Size: near by  3.32MB
+#
+RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
+# 
+# Description: Install basic packages
+# Size: 11.7MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        gnupg2 \
+        lsb-release \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install used packages
+# Size: 213MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        git \
+        apt-utils \
+        usbutils \
+        iputils-ping \
+        gdb \
+        libtool \
+        autoconf \
+        automake && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Add ROS repo
+# Size: 10.3KB
+#
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+
+# 
+# Description: Build CMake 3.20.5
+# Size: 120MB
+#
+RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate  \
+        https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&\
+    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake && \
+    ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install OpenCV 4.5.0 with CUDA
+# Size: 477MB
+#
+#WORKDIR /tmp
+#COPY ./docker-release-pack/opencv/OpenCV-4.5.0-aarch64.tar.gz /tmp/
+RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" && \
+    wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz && \
+    tar -xzvf OpenCV-4.5.0-aarch64.tar.gz && \
+    dpkg -i --force-depends *.deb && \
+    apt-get update && \
+    apt-get install -y -f --no-install-recommends && \
+    dpkg -i *.deb && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/* && \
+    cp -r /usr/include/opencv4 /usr/local/include/opencv4 && \
+    cp -r /usr/lib/python3.6/dist-packages/cv2 /usr/local/lib/python3.6/dist-packages/cv2
+
+
+# 
+# Description: Install yaml-cpp and jsoncpp
+# Size: 6.04MB
+#
+RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 && \
+    cd yaml-cpp-0.7 && \
+    mkdir build && \
+    cd build && \
+    cmake -DBUILD_SHARED_LIBS=ON .. && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \ 
+    git clone --branch 1.9.5 https://github.com/open-source-parsers/jsoncpp.git && \
+    cd jsoncpp && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \ 
+    rm -rf /tmp/*
+
+# 
+# Description: Install ROS2 install link packages
+# Size: 173MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libpython3-dev \
+        python3-colcon-common-extensions \ 
+        python3-pip \
+        python3-numpy \
+        python3-rosdep \
+        python3-setuptools \
+        python3-vcstool \
+        python3-rosinstall-generator \
+        libtinyxml2-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+
+# 
+# Description: Install ROS2 Required packages
+# Size: 516MB
+#
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libeigen3-dev \
+        libconsole-bridge-dev \
+        libzstd-dev \
+        python3-autobahn \
+        python3-tornado \
+        python3-twisted \
+        libogg-dev \
+        libtheora-dev \
+        pydocstyle \
+        libspdlog-dev \
+        python3-lark-parser \
+        libboost-dev \
+        libboost-python-dev \
+        libboost-python1.65.1 \
+        libcppunit-dev \
+        libsqlite3-dev \
+        python3-lxml \
+        libtinyxml-dev \
+        libbenchmark-dev \
+        ffmpeg \
+        libavcodec-dev \
+        libavformat-dev \
+        libavutil-dev \
+        libswscale-dev \
+        uncrustify \
+        cppcheck \
+        acl \
+        libacl1-dev \
+        python3-flake8 \
+        libbullet-dev \
+        python3-websocket \
+        libssl-dev \
+        libboost-all-dev \
+        libgtest-dev \
+        python3-bson \
+        libasio-dev \
+        python3-ifcfg \
+        python3-pytest-mock \
+        python3-mypy \
+        libxml2-utils \
+        python3-mock \
+        libcunit1-dev \
+        bison \
+        libyaml-dev \
+        graphviz \
+        rti-connext-dds-5.3.1 \
+        python3-netifaces \
+        python3-packaging \
+        google-mock && \
+    pip3 install --upgrade pip && \
+    python3 -m pip install --no-cache-dir -U \
+        importlib-resources \
+        importlib-metadata && \
+    rm -rf ~/.cache/pip && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+
+# # 
+# # Description: Install ROS2 Galactic (Build from Ubuntu 18.04 Source)
+# # Size: 237MB
+# #
+RUN mkdir -p /opt/ros/humble/src && \
+    cd /opt/ros/humble && \
+    rosinstall_generator --deps --rosdistro humble ros_base \
+        launch_xml \
+        launch_yaml \
+        launch_testing \
+        launch_testing_ament_cmake \
+        example_interfaces \
+        cv_bridge \
+        v4l2_camera \
+        vision_opencv \
+        vision_msgs \
+        image_transport \
+        compressed_image_transport \
+        compressed_depth_image_transport \
+        image_transport_plugins \
+        rosbridge_suite \
+        async_web_server_cpp \
+    > ros2.humble.ros_base.rosinstall && \
+    cat ros2.humble.ros_base.rosinstall && \
+    vcs import src < ros2.humble.ros_base.rosinstall && \
+    cd /opt/ros/humble/src && git clone --branch ros2 https://github.com/RobotWebTools/web_video_server.git && \
+    cd web_video_server && sed -i '3i set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)' ./CMakeLists.txt && \
+    cd /opt/ros/humble/src/async_web_server_cpp && sed -i 's/@Boost_VERSION@/1.65/g' ./find_dependencies.cmake.in && \
+    cd /opt/ros/humble && \
+    apt-get update && \
+    rosdep init && \
+    rosdep update && \
+    rosdep install -y \
+        --ignore-src \
+        --from-paths src \
+        --rosdistro humble \
+        --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" && \
+    colcon build --merge-install && \
+    rm -rf /opt/ros/humble/src && \
+    rm -rf /opt/ros/humble/log && \
+    rm -rf /opt/ros/humble/build && \
+    rm /opt/ros/humble/*.rosinstall && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /tmp/*
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+
+
+CMD ["bash"]
+WORKDIR /root/

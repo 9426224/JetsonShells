@@ -334,6 +334,7 @@ ARG buildtag
 WORKDIR /root
 RUN echo -n $buildtag >> build-tag
 
+
 # 
 # Description: Install ecu_web Packages
 # Size: 34.5MB
@@ -355,20 +356,22 @@ RUN mkdir -p ~/ros2_ws/src
 WORKDIR /root/ros2_ws
 RUN source /opt/ros/galactic/install/setup.bash && \
     cd src && \
-    git clone --branch ros-galactic https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git && \
+    git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_msg.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/radar.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sort_track.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/camera_radar_publisher.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/demo_view.git && \
     git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/sensor_fusion.git && \
-    git clone --branch master       https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr_c.git && \
-    git clone --branch master       https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/snap.git && \
+    git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/lpr_c.git && \
+    git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/snap.git && \
     cd /root/ros2_ws && \
     colcon build --packages-select bitcq_msg && \
     source install/setup.bash && \
     colcon build && \
     cd /root/ros2_ws && \
-    rm -rf ./src ./build ./log  
+    rm -rf ./src ./build ./log  && \
+    cd /root/ && \
+    git clone --branch intra        https://sw9426224:f86815ba0c0befb27143581b592c1955@gitee.com/bitcq/bitcq_config.git
 
 
 # 
@@ -401,6 +404,7 @@ RUN echo $'#!/bin/bash\n \
     export LD_LIBRARY_PATH=/root/sample/:$LD_LIBRARY_PATH\n \ 
     export OPENBLAS_NUM_THREADS=1\n \
     export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\n \
+    /root/bitcq_config/config_update src_path=/root/bitcq_config dst_path=/usr/local/bitcq_config > /usr/local/bitcq_config/update.log 2>&1\n \
     cd /home/ecuNodeServer/server\n \
     ./start.sh\n \
     ros2 launch sensor_fusion run_all.launch.py\n \

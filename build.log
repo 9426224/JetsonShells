@@ -1,0 +1,4273 @@
+Sending build context to Docker daemon  6.499MB
+Step 1/22 : ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.4.3
+Step 2/22 : FROM ${BASE_IMAGE}
+ ---> c93fc89026d9
+Step 3/22 : LABEL maintainer="9426224"     version="0.1"     description="A l4t-base dockerfile for ROS2 User"     email="9426224@live.com"
+ ---> Using cache
+ ---> 527469b77af4
+Step 4/22 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> 75e57f9db35b
+Step 5/22 : ENV SHELL /bin/bash
+ ---> Using cache
+ ---> 08858c301704
+Step 6/22 : SHELL ["/bin/bash", "-c"]
+ ---> Using cache
+ ---> 2ca9ea6e5cc9
+Step 7/22 : WORKDIR /tmp
+ ---> Using cache
+ ---> 8ee6f00d9e88
+Step 8/22 : RUN locale-gen en_US en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ ---> Using cache
+ ---> 666daecebb26
+Step 9/22 : ENV LANG=en_US.UTF-8
+ ---> Using cache
+ ---> bd63880483ef
+Step 10/22 : ENV PYTHONIOENCODING=utf-8
+ ---> Using cache
+ ---> e75aea031624
+Step 11/22 : RUN apt-get update &&     apt-get install -y --no-install-recommends         curl         wget         gnupg2         lsb-release         ca-certificates &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 6fdb8d8b2c02
+Step 12/22 : RUN apt-get update &&     apt-get install -y --no-install-recommends         build-essential         git         apt-utils         usbutils         iputils-ping         gdb         libtool         autoconf         automake &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> a8b645fa8831
+Step 13/22 : RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg &&     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+ ---> Using cache
+ ---> 7828ddf8e7ba
+Step 14/22 : RUN wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate          https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.tar.gz &&    tar -zxvf ./cmake-3.20.5-linux-aarch64.tar.gz -C /usr/local/share/ &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/bin/cmake &&     ln -s /usr/local/share/cmake-3.20.5-linux-aarch64/bin/cmake /usr/local/bin/cmake &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 39fe00fac62b
+Step 15/22 : RUN apt-get purge -y '*opencv*' || echo "previous OpenCV installation not found" &&     wget --quiet --show-progress --progress=bar:force:noscroll --no-check-certificate https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz -O OpenCV-4.5.0-aarch64.tar.gz &&     tar -xzvf OpenCV-4.5.0-aarch64.tar.gz &&     dpkg -i --force-depends *.deb &&     apt-get update &&     apt-get install -y -f --no-install-recommends &&     dpkg -i *.deb &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/* &&     cp -r /usr/include/opencv4 /usr/local/include/opencv4 &&     cp -r /usr/lib/python3.6/dist-packages/cv2 /usr/local/lib/python3.6/dist-packages/cv2
+ ---> Using cache
+ ---> b22d9bbbb5f4
+Step 16/22 : RUN git clone --branch yaml-cpp-0.7.0 https://github.com/jbeder/yaml-cpp yaml-cpp-0.7 &&     cd yaml-cpp-0.7 &&     mkdir build &&     cd build &&     cmake -DBUILD_SHARED_LIBS=ON .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     git clone --branch 1.9.5 https://github.com/open-source-parsers/jsoncpp.git &&     cd jsoncpp &&     mkdir build &&     cd build &&     cmake .. &&     make -j$(nproc) &&     make -j$(nproc) install &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 9d969a977131
+Step 17/22 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libpython3-dev         python3-colcon-common-extensions         python3-pip         python3-numpy         python3-rosdep         python3-setuptools         python3-vcstool         python3-rosinstall-generator         libtinyxml2-dev &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 5dcd054f831d
+Step 18/22 : RUN apt-get update &&     apt-get install -y --no-install-recommends         libeigen3-dev         libconsole-bridge-dev         libzstd-dev         python3-autobahn         python3-tornado         python3-twisted         libogg-dev         libtheora-dev         pydocstyle         libspdlog-dev         python3-lark-parser         libboost-dev         libboost-python-dev         libboost-python1.65.1         libcppunit-dev         libsqlite3-dev         python3-lxml         libtinyxml-dev         libbenchmark-dev         ffmpeg         libavcodec-dev         libavformat-dev         libavutil-dev         libswscale-dev         uncrustify         cppcheck         acl         libacl1-dev         python3-flake8         libbullet-dev         python3-websocket         libssl-dev         libboost-all-dev         libgtest-dev         python3-bson         libasio-dev         python3-ifcfg         python3-pytest-mock         python3-mypy         libxml2-utils         python3-mock         libcunit1-dev         bison         libyaml-dev         graphviz         rti-connext-dds-5.3.1         python3-netifaces         python3-packaging         google-mock &&     pip3 install --upgrade pip &&     python3 -m pip install --no-cache-dir -U         importlib-resources         importlib-metadata &&     rm -rf ~/.cache/pip &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Using cache
+ ---> 5e4bf4d5e4aa
+Step 19/22 : RUN mkdir -p /opt/ros/humble/src &&     cd /opt/ros/humble &&     rosinstall_generator --deps --rosdistro humble ros_base         launch_xml         launch_yaml         launch_testing         launch_testing_ament_cmake         example_interfaces         cv_bridge         v4l2_camera         vision_opencv         vision_msgs         image_transport         compressed_image_transport         compressed_depth_image_transport         image_transport_plugins         rosbridge_suite         async_web_server_cpp     > ros2.humble.ros_base.rosinstall &&     cat ros2.humble.ros_base.rosinstall &&     vcs import src < ros2.humble.ros_base.rosinstall &&     cd /opt/ros/humble/src && git clone --branch ros2 https://github.com/RobotWebTools/web_video_server.git &&     cd web_video_server && sed -i '3i set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)' ./CMakeLists.txt &&     cd /opt/ros/humble/src/async_web_server_cpp && sed -i 's/@Boost_VERSION@/1.65/g' ./find_dependencies.cmake.in &&     cd /opt/ros/humble &&     apt-get update &&     rosdep init &&     rosdep update &&     rosdep install -y         --ignore-src         --from-paths src         --rosdistro humble         --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" &&     colcon build --merge-install &&     rm -rf /opt/ros/humble/src &&     rm -rf /opt/ros/humble/log &&     rm -rf /opt/ros/humble/build &&     rm /opt/ros/humble/*.rosinstall &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*
+ ---> Running in c5b2579a7ea4
+- git:
+    local-name: ament_cmake/ament_cmake
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_auto
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_auto/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_core
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_core/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_definitions
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_definitions/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_dependencies
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_dependencies/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_include_directories
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_include_directories/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_interfaces
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_interfaces/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_libraries
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_libraries/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_link_flags
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_link_flags/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_export_targets
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_export_targets/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_gen_version_h
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_gen_version_h/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_gmock
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_gmock/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_google_benchmark
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_google_benchmark/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_gtest
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_gtest/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_include_directories
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_include_directories/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_libraries
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_libraries/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_pytest
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_pytest/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_python
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_python/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_target_dependencies
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_target_dependencies/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_test
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_test/1.3.2-1
+- git:
+    local-name: ament_cmake/ament_cmake_version
+    uri: https://github.com/ros2-gbp/ament_cmake-release.git
+    version: release/humble/ament_cmake_version/1.3.2-1
+- git:
+    local-name: ament_cmake_ros/ament_cmake_ros
+    uri: https://github.com/ros2-gbp/ament_cmake_ros-release.git
+    version: release/humble/ament_cmake_ros/0.10.0-3
+- git:
+    local-name: ament_cmake_ros/domain_coordinator
+    uri: https://github.com/ros2-gbp/ament_cmake_ros-release.git
+    version: release/humble/domain_coordinator/0.10.0-3
+- git:
+    local-name: ament_index/ament_index_cpp
+    uri: https://github.com/ros2-gbp/ament_index-release.git
+    version: release/humble/ament_index_cpp/1.4.0-2
+- git:
+    local-name: ament_index/ament_index_python
+    uri: https://github.com/ros2-gbp/ament_index-release.git
+    version: release/humble/ament_index_python/1.4.0-2
+- git:
+    local-name: ament_lint/ament_cmake_copyright
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_copyright/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_cppcheck
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_cppcheck/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_cpplint
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_cpplint/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_flake8
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_flake8/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_lint_cmake
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_lint_cmake/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_pep257
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_pep257/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_uncrustify
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_uncrustify/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cmake_xmllint
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cmake_xmllint/0.12.4-1
+- git:
+    local-name: ament_lint/ament_copyright
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_copyright/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cppcheck
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cppcheck/0.12.4-1
+- git:
+    local-name: ament_lint/ament_cpplint
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_cpplint/0.12.4-1
+- git:
+    local-name: ament_lint/ament_flake8
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_flake8/0.12.4-1
+- git:
+    local-name: ament_lint/ament_lint
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_lint/0.12.4-1
+- git:
+    local-name: ament_lint/ament_lint_auto
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_lint_auto/0.12.4-1
+- git:
+    local-name: ament_lint/ament_lint_cmake
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_lint_cmake/0.12.4-1
+- git:
+    local-name: ament_lint/ament_lint_common
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_lint_common/0.12.4-1
+- git:
+    local-name: ament_lint/ament_mypy
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_mypy/0.12.4-1
+- git:
+    local-name: ament_lint/ament_pep257
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_pep257/0.12.4-1
+- git:
+    local-name: ament_lint/ament_pycodestyle
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_pycodestyle/0.12.4-1
+- git:
+    local-name: ament_lint/ament_uncrustify
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_uncrustify/0.12.4-1
+- git:
+    local-name: ament_lint/ament_xmllint
+    uri: https://github.com/ros2-gbp/ament_lint-release.git
+    version: release/humble/ament_xmllint/0.12.4-1
+- git:
+    local-name: ament_package
+    uri: https://github.com/ros2-gbp/ament_package-release.git
+    version: release/humble/ament_package/0.14.0-4
+- git:
+    local-name: async_web_server_cpp
+    uri: https://github.com/ros2-gbp/async_web_server_cpp-release.git
+    version: release/humble/async_web_server_cpp/2.0.0-3
+- git:
+    local-name: class_loader
+    uri: https://github.com/ros2-gbp/class_loader-release.git
+    version: release/humble/class_loader/2.2.0-3
+- git:
+    local-name: common_interfaces/actionlib_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/actionlib_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/common_interfaces
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/common_interfaces/4.2.2-1
+- git:
+    local-name: common_interfaces/diagnostic_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/diagnostic_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/geometry_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/geometry_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/nav_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/nav_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/sensor_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/sensor_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/shape_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/shape_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/std_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/std_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/std_srvs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/std_srvs/4.2.2-1
+- git:
+    local-name: common_interfaces/stereo_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/stereo_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/trajectory_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/trajectory_msgs/4.2.2-1
+- git:
+    local-name: common_interfaces/visualization_msgs
+    uri: https://github.com/ros2-gbp/common_interfaces-release.git
+    version: release/humble/visualization_msgs/4.2.2-1
+- git:
+    local-name: console_bridge_vendor
+    uri: https://github.com/ros2-gbp/console_bridge_vendor-release.git
+    version: release/humble/console_bridge_vendor/1.4.0-2
+- git:
+    local-name: cyclonedds
+    uri: https://github.com/ros2-gbp/cyclonedds-release.git
+    version: release/humble/cyclonedds/0.9.0-2
+- git:
+    local-name: eigen3_cmake_module
+    uri: https://github.com/ros2-gbp/eigen3_cmake_module-release.git
+    version: release/humble/eigen3_cmake_module/0.1.1-4
+- git:
+    local-name: example_interfaces
+    uri: https://github.com/ros2-gbp/example_interfaces-release.git
+    version: release/humble/example_interfaces/0.9.3-2
+- git:
+    local-name: fastcdr
+    uri: https://github.com/ros2-gbp/fastcdr-release.git
+    version: release/humble/fastcdr/1.0.24-2
+- git:
+    local-name: fastrtps
+    uri: https://github.com/ros2-gbp/fastrtps-release.git
+    version: release/humble/fastrtps/2.6.0-3
+- git:
+    local-name: foonathan_memory_vendor
+    uri: https://github.com/ros2-gbp/foonathan_memory_vendor-release.git
+    version: release/humble/foonathan_memory_vendor/1.2.0-3
+- git:
+    local-name: geometry2/geometry2
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/geometry2/0.25.0-2
+- git:
+    local-name: geometry2/tf2
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2/0.25.0-2
+- git:
+    local-name: geometry2/tf2_bullet
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_bullet/0.25.0-2
+- git:
+    local-name: geometry2/tf2_eigen
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_eigen/0.25.0-2
+- git:
+    local-name: geometry2/tf2_eigen_kdl
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_eigen_kdl/0.25.0-2
+- git:
+    local-name: geometry2/tf2_geometry_msgs
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_geometry_msgs/0.25.0-2
+- git:
+    local-name: geometry2/tf2_kdl
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_kdl/0.25.0-2
+- git:
+    local-name: geometry2/tf2_msgs
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_msgs/0.25.0-2
+- git:
+    local-name: geometry2/tf2_py
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_py/0.25.0-2
+- git:
+    local-name: geometry2/tf2_ros
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_ros/0.25.0-2
+- git:
+    local-name: geometry2/tf2_ros_py
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_ros_py/0.25.0-2
+- git:
+    local-name: geometry2/tf2_sensor_msgs
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_sensor_msgs/0.25.0-2
+- git:
+    local-name: geometry2/tf2_tools
+    uri: https://github.com/ros2-gbp/geometry2-release.git
+    version: release/humble/tf2_tools/0.25.0-2
+- git:
+    local-name: google_benchmark_vendor
+    uri: https://github.com/ros2-gbp/google_benchmark_vendor-release.git
+    version: release/humble/google_benchmark_vendor/0.1.1-2
+- git:
+    local-name: googletest/gmock_vendor
+    uri: https://github.com/ros2-gbp/googletest-release.git
+    version: release/humble/gmock_vendor/1.10.9004-4
+- git:
+    local-name: googletest/gtest_vendor
+    uri: https://github.com/ros2-gbp/googletest-release.git
+    version: release/humble/gtest_vendor/1.10.9004-4
+- git:
+    local-name: iceoryx/iceoryx_binding_c
+    uri: https://github.com/ros2-gbp/iceoryx-release.git
+    version: release/humble/iceoryx_binding_c/2.0.2-3
+- git:
+    local-name: iceoryx/iceoryx_hoofs
+    uri: https://github.com/ros2-gbp/iceoryx-release.git
+    version: release/humble/iceoryx_hoofs/2.0.2-3
+- git:
+    local-name: iceoryx/iceoryx_posh
+    uri: https://github.com/ros2-gbp/iceoryx-release.git
+    version: release/humble/iceoryx_posh/2.0.2-3
+- git:
+    local-name: image_common/camera_calibration_parsers
+    uri: https://github.com/ros2-gbp/image_common-release.git
+    version: release/humble/camera_calibration_parsers/3.1.4-2
+- git:
+    local-name: image_common/camera_info_manager
+    uri: https://github.com/ros2-gbp/image_common-release.git
+    version: release/humble/camera_info_manager/3.1.4-2
+- git:
+    local-name: image_common/image_transport
+    uri: https://github.com/ros2-gbp/image_common-release.git
+    version: release/humble/image_transport/3.1.4-2
+- git:
+    local-name: image_transport_plugins/compressed_depth_image_transport
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/humble/compressed_depth_image_transport/2.5.0-2
+- git:
+    local-name: image_transport_plugins/compressed_image_transport
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/humble/compressed_image_transport/2.5.0-2
+- git:
+    local-name: image_transport_plugins/image_transport_plugins
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/humble/image_transport_plugins/2.5.0-2
+- git:
+    local-name: image_transport_plugins/theora_image_transport
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/humble/theora_image_transport/2.5.0-2
+- git:
+    local-name: kdl_parser
+    uri: https://github.com/ros2-gbp/kdl_parser-release.git
+    version: release/humble/kdl_parser/2.6.2-2
+- git:
+    local-name: keyboard_handler
+    uri: https://github.com/ros2-gbp/keyboard_handler-release.git
+    version: release/humble/keyboard_handler/0.0.4-2
+- git:
+    local-name: launch/launch
+    uri: https://github.com/ros2-gbp/launch-release.git
+    version: release/humble/launch/1.0.2-1
+- git:
+    local-name: launch/launch_testing
+    uri: https://github.com/ros2-gbp/launch-release.git
+    version: release/humble/launch_testing/1.0.2-1
+- git:
+    local-name: launch/launch_testing_ament_cmake
+    uri: https://github.com/ros2-gbp/launch-release.git
+    version: release/humble/launch_testing_ament_cmake/1.0.2-1
+- git:
+    local-name: launch/launch_xml
+    uri: https://github.com/ros2-gbp/launch-release.git
+    version: release/humble/launch_xml/1.0.2-1
+- git:
+    local-name: launch/launch_yaml
+    uri: https://github.com/ros2-gbp/launch-release.git
+    version: release/humble/launch_yaml/1.0.2-1
+- git:
+    local-name: launch_ros/launch_ros
+    uri: https://github.com/ros2-gbp/launch_ros-release.git
+    version: release/humble/launch_ros/0.19.3-1
+- git:
+    local-name: launch_ros/launch_testing_ros
+    uri: https://github.com/ros2-gbp/launch_ros-release.git
+    version: release/humble/launch_testing_ros/0.19.3-1
+- git:
+    local-name: launch_ros/ros2launch
+    uri: https://github.com/ros2-gbp/launch_ros-release.git
+    version: release/humble/ros2launch/0.19.3-1
+- git:
+    local-name: libstatistics_collector
+    uri: https://github.com/ros2-gbp/libstatistics_collector-release.git
+    version: release/humble/libstatistics_collector/1.2.0-2
+- git:
+    local-name: libyaml_vendor
+    uri: https://github.com/ros2-gbp/libyaml_vendor-release.git
+    version: release/humble/libyaml_vendor/1.2.2-2
+- git:
+    local-name: message_filters
+    uri: https://github.com/ros2-gbp/ros2_message_filters-release.git
+    version: release/humble/message_filters/4.3.1-2
+- git:
+    local-name: mimick_vendor
+    uri: https://github.com/ros2-gbp/mimick_vendor-release.git
+    version: release/humble/mimick_vendor/0.2.8-2
+- git:
+    local-name: orocos_kdl_vendor/orocos_kdl_vendor
+    uri: https://github.com/ros2-gbp/orocos_kdl_vendor-release.git
+    version: release/humble/orocos_kdl_vendor/0.2.2-3
+- git:
+    local-name: osrf_pycommon
+    uri: https://github.com/ros2-gbp/osrf_pycommon-release.git
+    version: release/humble/osrf_pycommon/2.0.2-2
+- git:
+    local-name: osrf_testing_tools_cpp
+    uri: https://github.com/ros2-gbp/osrf_testing_tools_cpp-release.git
+    version: release/humble/osrf_testing_tools_cpp/1.5.1-2
+- git:
+    local-name: performance_test_fixture
+    uri: https://github.com/ros2-gbp/performance_test_fixture-release.git
+    version: release/humble/performance_test_fixture/0.0.8-3
+- git:
+    local-name: pluginlib
+    uri: https://github.com/ros2-gbp/pluginlib-release.git
+    version: release/humble/pluginlib/5.1.0-3
+- git:
+    local-name: pybind11_vendor
+    uri: https://github.com/ros2-gbp/pybind11_vendor-release.git
+    version: release/humble/pybind11_vendor/2.4.1-1
+- git:
+    local-name: python_cmake_module
+    uri: https://github.com/ros2-gbp/python_cmake_module-release.git
+    version: release/humble/python_cmake_module/0.10.0-2
+- git:
+    local-name: rcl/rcl
+    uri: https://github.com/ros2-gbp/rcl-release.git
+    version: release/humble/rcl/5.3.1-1
+- git:
+    local-name: rcl/rcl_action
+    uri: https://github.com/ros2-gbp/rcl-release.git
+    version: release/humble/rcl_action/5.3.1-1
+- git:
+    local-name: rcl/rcl_lifecycle
+    uri: https://github.com/ros2-gbp/rcl-release.git
+    version: release/humble/rcl_lifecycle/5.3.1-1
+- git:
+    local-name: rcl/rcl_yaml_param_parser
+    uri: https://github.com/ros2-gbp/rcl-release.git
+    version: release/humble/rcl_yaml_param_parser/5.3.1-1
+- git:
+    local-name: rcl_interfaces/action_msgs
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/action_msgs/1.2.0-2
+- git:
+    local-name: rcl_interfaces/builtin_interfaces
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/builtin_interfaces/1.2.0-2
+- git:
+    local-name: rcl_interfaces/composition_interfaces
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/composition_interfaces/1.2.0-2
+- git:
+    local-name: rcl_interfaces/lifecycle_msgs
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/lifecycle_msgs/1.2.0-2
+- git:
+    local-name: rcl_interfaces/rcl_interfaces
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/rcl_interfaces/1.2.0-2
+- git:
+    local-name: rcl_interfaces/rosgraph_msgs
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/rosgraph_msgs/1.2.0-2
+- git:
+    local-name: rcl_interfaces/statistics_msgs
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/statistics_msgs/1.2.0-2
+- git:
+    local-name: rcl_interfaces/test_msgs
+    uri: https://github.com/ros2-gbp/rcl_interfaces-release.git
+    version: release/humble/test_msgs/1.2.0-2
+- git:
+    local-name: rcl_logging/rcl_logging_interface
+    uri: https://github.com/ros2-gbp/rcl_logging-release.git
+    version: release/humble/rcl_logging_interface/2.3.0-2
+- git:
+    local-name: rcl_logging/rcl_logging_spdlog
+    uri: https://github.com/ros2-gbp/rcl_logging-release.git
+    version: release/humble/rcl_logging_spdlog/2.3.0-2
+- git:
+    local-name: rclcpp/rclcpp
+    uri: https://github.com/ros2-gbp/rclcpp-release.git
+    version: release/humble/rclcpp/16.0.1-2
+- git:
+    local-name: rclcpp/rclcpp_action
+    uri: https://github.com/ros2-gbp/rclcpp-release.git
+    version: release/humble/rclcpp_action/16.0.1-2
+- git:
+    local-name: rclcpp/rclcpp_components
+    uri: https://github.com/ros2-gbp/rclcpp-release.git
+    version: release/humble/rclcpp_components/16.0.1-2
+- git:
+    local-name: rclcpp/rclcpp_lifecycle
+    uri: https://github.com/ros2-gbp/rclcpp-release.git
+    version: release/humble/rclcpp_lifecycle/16.0.1-2
+- git:
+    local-name: rclpy
+    uri: https://github.com/ros2-gbp/rclpy-release.git
+    version: release/humble/rclpy/3.3.4-1
+- git:
+    local-name: rcpputils
+    uri: https://github.com/ros2-gbp/rcpputils-release.git
+    version: release/humble/rcpputils/2.4.0-2
+- git:
+    local-name: rcutils
+    uri: https://github.com/ros2-gbp/rcutils-release.git
+    version: release/humble/rcutils/5.1.1-2
+- git:
+    local-name: rmw/rmw
+    uri: https://github.com/ros2-gbp/rmw-release.git
+    version: release/humble/rmw/6.1.0-2
+- git:
+    local-name: rmw/rmw_implementation_cmake
+    uri: https://github.com/ros2-gbp/rmw-release.git
+    version: release/humble/rmw_implementation_cmake/6.1.0-2
+- git:
+    local-name: rmw_connextdds/rmw_connextdds
+    uri: https://github.com/ros2-gbp/rmw_connextdds-release.git
+    version: release/humble/rmw_connextdds/0.11.1-1
+- git:
+    local-name: rmw_connextdds/rmw_connextdds_common
+    uri: https://github.com/ros2-gbp/rmw_connextdds-release.git
+    version: release/humble/rmw_connextdds_common/0.11.1-1
+- git:
+    local-name: rmw_connextdds/rti_connext_dds_cmake_module
+    uri: https://github.com/ros2-gbp/rmw_connextdds-release.git
+    version: release/humble/rti_connext_dds_cmake_module/0.11.1-1
+- git:
+    local-name: rmw_cyclonedds_cpp
+    uri: https://github.com/ros2-gbp/rmw_cyclonedds-release.git
+    version: release/humble/rmw_cyclonedds_cpp/1.3.3-2
+- git:
+    local-name: rmw_dds_common
+    uri: https://github.com/ros2-gbp/rmw_dds_common-release.git
+    version: release/humble/rmw_dds_common/1.6.0-2
+- git:
+    local-name: rmw_fastrtps/rmw_fastrtps_cpp
+    uri: https://github.com/ros2-gbp/rmw_fastrtps-release.git
+    version: release/humble/rmw_fastrtps_cpp/6.2.1-2
+- git:
+    local-name: rmw_fastrtps/rmw_fastrtps_dynamic_cpp
+    uri: https://github.com/ros2-gbp/rmw_fastrtps-release.git
+    version: release/humble/rmw_fastrtps_dynamic_cpp/6.2.1-2
+- git:
+    local-name: rmw_fastrtps/rmw_fastrtps_shared_cpp
+    uri: https://github.com/ros2-gbp/rmw_fastrtps-release.git
+    version: release/humble/rmw_fastrtps_shared_cpp/6.2.1-2
+- git:
+    local-name: rmw_implementation
+    uri: https://github.com/ros2-gbp/rmw_implementation-release.git
+    version: release/humble/rmw_implementation/2.8.1-2
+- git:
+    local-name: robot_state_publisher
+    uri: https://github.com/ros2-gbp/robot_state_publisher-release.git
+    version: release/humble/robot_state_publisher/3.0.2-2
+- git:
+    local-name: ros2_tracing/tracetools
+    uri: https://github.com/ros2-gbp/ros2_tracing-release.git
+    version: release/humble/tracetools/4.1.0-2
+- git:
+    local-name: ros2cli/ros2action
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2action/0.18.3-2
+- git:
+    local-name: ros2cli/ros2cli
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2cli/0.18.3-2
+- git:
+    local-name: ros2cli/ros2cli_test_interfaces
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2cli_test_interfaces/0.18.3-2
+- git:
+    local-name: ros2cli/ros2component
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2component/0.18.3-2
+- git:
+    local-name: ros2cli/ros2doctor
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2doctor/0.18.3-2
+- git:
+    local-name: ros2cli/ros2interface
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2interface/0.18.3-2
+- git:
+    local-name: ros2cli/ros2lifecycle
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2lifecycle/0.18.3-2
+- git:
+    local-name: ros2cli/ros2lifecycle_test_fixtures
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2lifecycle_test_fixtures/0.18.3-2
+- git:
+    local-name: ros2cli/ros2multicast
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2multicast/0.18.3-2
+- git:
+    local-name: ros2cli/ros2node
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2node/0.18.3-2
+- git:
+    local-name: ros2cli/ros2param
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2param/0.18.3-2
+- git:
+    local-name: ros2cli/ros2pkg
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2pkg/0.18.3-2
+- git:
+    local-name: ros2cli/ros2run
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2run/0.18.3-2
+- git:
+    local-name: ros2cli/ros2service
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2service/0.18.3-2
+- git:
+    local-name: ros2cli/ros2topic
+    uri: https://github.com/ros2-gbp/ros2cli-release.git
+    version: release/humble/ros2topic/0.18.3-2
+- git:
+    local-name: ros2cli_common_extensions
+    uri: https://github.com/ros2-gbp/ros2cli_common_extensions-release.git
+    version: release/humble/ros2cli_common_extensions/0.1.1-4
+- git:
+    local-name: ros_environment
+    uri: https://github.com/ros2-gbp/ros_environment-release.git
+    version: release/humble/ros_environment/3.2.1-1
+- git:
+    local-name: ros_testing/ros2test
+    uri: https://github.com/ros2-gbp/ros_testing-release.git
+    version: release/humble/ros2test/0.4.0-3
+- git:
+    local-name: ros_testing/ros_testing
+    uri: https://github.com/ros2-gbp/ros_testing-release.git
+    version: release/humble/ros_testing/0.4.0-3
+- git:
+    local-name: rosbag2/ros2bag
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/ros2bag/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_compression
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_compression/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_compression_zstd
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_compression_zstd/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_cpp
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_cpp/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_interfaces
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_interfaces/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_py
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_py/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_storage
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_storage/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_storage_default_plugins
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_storage_default_plugins/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_test_common
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_test_common/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_tests
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_tests/0.15.2-1
+- git:
+    local-name: rosbag2/rosbag2_transport
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/rosbag2_transport/0.15.2-1
+- git:
+    local-name: rosbag2/shared_queues_vendor
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/shared_queues_vendor/0.15.2-1
+- git:
+    local-name: rosbag2/sqlite3_vendor
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/sqlite3_vendor/0.15.2-1
+- git:
+    local-name: rosbag2/zstd_vendor
+    uri: https://github.com/ros2-gbp/rosbag2-release.git
+    version: release/humble/zstd_vendor/0.15.2-1
+- git:
+    local-name: rosbridge_suite/rosapi
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosapi/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosapi_msgs
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosapi_msgs/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosbridge_library
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosbridge_library/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosbridge_msgs
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosbridge_msgs/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosbridge_server
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosbridge_server/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosbridge_suite
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosbridge_suite/1.2.0-1
+- git:
+    local-name: rosbridge_suite/rosbridge_test_msgs
+    uri: https://github.com/ros2-gbp/rosbridge_suite-release.git
+    version: release/humble/rosbridge_test_msgs/1.2.0-1
+- git:
+    local-name: rosidl/rosidl_adapter
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_adapter/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_cli
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_cli/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_cmake
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_cmake/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_generator_c
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_generator_c/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_generator_cpp
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_generator_cpp/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_parser
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_parser/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_runtime_c
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_runtime_c/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_runtime_cpp
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_runtime_cpp/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_typesupport_interface
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_typesupport_interface/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_typesupport_introspection_c
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_typesupport_introspection_c/3.1.3-2
+- git:
+    local-name: rosidl/rosidl_typesupport_introspection_cpp
+    uri: https://github.com/ros2-gbp/rosidl-release.git
+    version: release/humble/rosidl_typesupport_introspection_cpp/3.1.3-2
+- git:
+    local-name: rosidl_defaults/rosidl_default_generators
+    uri: https://github.com/ros2-gbp/rosidl_defaults-release.git
+    version: release/humble/rosidl_default_generators/1.2.0-2
+- git:
+    local-name: rosidl_defaults/rosidl_default_runtime
+    uri: https://github.com/ros2-gbp/rosidl_defaults-release.git
+    version: release/humble/rosidl_default_runtime/1.2.0-2
+- git:
+    local-name: rosidl_generator_py
+    uri: https://github.com/ros2-gbp/rosidl_python-release.git
+    version: release/humble/rosidl_generator_py/0.14.2-2
+- git:
+    local-name: rosidl_runtime_py
+    uri: https://github.com/ros2-gbp/rosidl_runtime_py-release.git
+    version: release/humble/rosidl_runtime_py/0.9.2-2
+- git:
+    local-name: rosidl_typesupport/rosidl_typesupport_c
+    uri: https://github.com/ros2-gbp/rosidl_typesupport-release.git
+    version: release/humble/rosidl_typesupport_c/2.0.0-2
+- git:
+    local-name: rosidl_typesupport/rosidl_typesupport_cpp
+    uri: https://github.com/ros2-gbp/rosidl_typesupport-release.git
+    version: release/humble/rosidl_typesupport_cpp/2.0.0-2
+- git:
+    local-name: rosidl_typesupport_fastrtps/fastrtps_cmake_module
+    uri: https://github.com/ros2-gbp/rosidl_typesupport_fastrtps-release.git
+    version: release/humble/fastrtps_cmake_module/2.2.0-2
+- git:
+    local-name: rosidl_typesupport_fastrtps/rosidl_typesupport_fastrtps_c
+    uri: https://github.com/ros2-gbp/rosidl_typesupport_fastrtps-release.git
+    version: release/humble/rosidl_typesupport_fastrtps_c/2.2.0-2
+- git:
+    local-name: rosidl_typesupport_fastrtps/rosidl_typesupport_fastrtps_cpp
+    uri: https://github.com/ros2-gbp/rosidl_typesupport_fastrtps-release.git
+    version: release/humble/rosidl_typesupport_fastrtps_cpp/2.2.0-2
+- git:
+    local-name: rpyutils
+    uri: https://github.com/ros2-gbp/rpyutils-release.git
+    version: release/humble/rpyutils/0.2.1-2
+- git:
+    local-name: spdlog_vendor
+    uri: https://github.com/ros2-gbp/spdlog_vendor-release.git
+    version: release/humble/spdlog_vendor/1.3.0-3
+- git:
+    local-name: sros2/sros2
+    uri: https://github.com/ros2-gbp/sros2-release.git
+    version: release/humble/sros2/0.10.4-2
+- git:
+    local-name: sros2/sros2_cmake
+    uri: https://github.com/ros2-gbp/sros2-release.git
+    version: release/humble/sros2_cmake/0.10.4-2
+- git:
+    local-name: test_interface_files
+    uri: https://github.com/ros2-gbp/test_interface_files-release.git
+    version: release/humble/test_interface_files/0.9.1-2
+- git:
+    local-name: tinyxml2_vendor
+    uri: https://github.com/ros2-gbp/tinyxml2_vendor-release.git
+    version: release/humble/tinyxml2_vendor/0.7.5-2
+- git:
+    local-name: tinyxml_vendor
+    uri: https://github.com/ros2-gbp/tinyxml_vendor-release.git
+    version: release/humble/tinyxml_vendor/0.8.3-2
+- git:
+    local-name: uncrustify_vendor
+    uri: https://github.com/ros2-gbp/uncrustify_vendor-release.git
+    version: release/humble/uncrustify_vendor/2.0.2-2
+- git:
+    local-name: unique_identifier_msgs
+    uri: https://github.com/ros2-gbp/unique_identifier_msgs-release.git
+    version: release/humble/unique_identifier_msgs/2.2.1-3
+- git:
+    local-name: urdf/urdf
+    uri: https://github.com/ros2-gbp/urdf-release.git
+    version: release/humble/urdf/2.6.0-2
+- git:
+    local-name: urdf/urdf_parser_plugin
+    uri: https://github.com/ros2-gbp/urdf-release.git
+    version: release/humble/urdf_parser_plugin/2.6.0-2
+- git:
+    local-name: urdfdom
+    uri: https://github.com/ros2-gbp/urdfdom-release.git
+    version: release/humble/urdfdom/3.0.2-2
+- git:
+    local-name: urdfdom_headers
+    uri: https://github.com/ros2-gbp/urdfdom_headers-release.git
+    version: release/humble/urdfdom_headers/1.0.6-2
+- git:
+    local-name: v4l2_camera
+    uri: https://github.com/ros2-gbp/ros2_v4l2_camera-release.git
+    version: release/humble/v4l2_camera/0.4.0-1
+- git:
+    local-name: variants/ros_base
+    uri: https://github.com/ros2-gbp/variants-release.git
+    version: release/humble/ros_base/0.10.0-1
+- git:
+    local-name: variants/ros_core
+    uri: https://github.com/ros2-gbp/variants-release.git
+    version: release/humble/ros_core/0.10.0-1
+- git:
+    local-name: vision_msgs
+    uri: https://github.com/ros2-gbp/vision_msgs-release.git
+    version: release/humble/vision_msgs/4.0.0-2
+- git:
+    local-name: vision_opencv/cv_bridge
+    uri: https://github.com/ros2-gbp/vision_opencv-release.git
+    version: release/humble/cv_bridge/3.0.3-2
+- git:
+    local-name: vision_opencv/image_geometry
+    uri: https://github.com/ros2-gbp/vision_opencv-release.git
+    version: release/humble/image_geometry/3.0.3-2
+- git:
+    local-name: vision_opencv/vision_opencv
+    uri: https://github.com/ros2-gbp/vision_opencv-release.git
+    version: release/humble/vision_opencv/3.0.3-2
+- git:
+    local-name: yaml_cpp_vendor
+    uri: https://github.com/ros2-gbp/yaml_cpp_vendor-release.git
+    version: release/humble/yaml_cpp_vendor/8.0.1-2
+
+.......................................................................................................................................................................................................................................
+=== src/ament_cmake/ament_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fdfe28baa Trimmed the branch to only the ament_cmake sub directory
+=== src/ament_cmake/ament_cmake_auto (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_auto/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3485bb38a Trimmed the branch to only the ament_cmake_auto sub directory
+=== src/ament_cmake/ament_cmake_core (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_core/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fc8c11a75 Trimmed the branch to only the ament_cmake_core sub directory
+=== src/ament_cmake/ament_cmake_export_definitions (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_definitions/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7c9c02acb Trimmed the branch to only the ament_cmake_export_definitions sub directory
+=== src/ament_cmake/ament_cmake_export_dependencies (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_dependencies/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at de2dc281c Trimmed the branch to only the ament_cmake_export_dependencies sub directory
+=== src/ament_cmake/ament_cmake_export_include_directories (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_include_directories/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at bea44ae9c Trimmed the branch to only the ament_cmake_export_include_directories sub directory
+=== src/ament_cmake/ament_cmake_export_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_interfaces/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1874c903c Trimmed the branch to only the ament_cmake_export_interfaces sub directory
+=== src/ament_cmake/ament_cmake_export_libraries (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_libraries/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f97b9c411 Trimmed the branch to only the ament_cmake_export_libraries sub directory
+=== src/ament_cmake/ament_cmake_export_link_flags (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_link_flags/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 65d2d16e8 Trimmed the branch to only the ament_cmake_export_link_flags sub directory
+=== src/ament_cmake/ament_cmake_export_targets (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_export_targets/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4de5a57a7 Trimmed the branch to only the ament_cmake_export_targets sub directory
+=== src/ament_cmake/ament_cmake_gen_version_h (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_gen_version_h/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 53661a822 Trimmed the branch to only the ament_cmake_gen_version_h sub directory
+=== src/ament_cmake/ament_cmake_gmock (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_gmock/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 549a3ff4a Trimmed the branch to only the ament_cmake_gmock sub directory
+=== src/ament_cmake/ament_cmake_google_benchmark (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_google_benchmark/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 18ee0893e Trimmed the branch to only the ament_cmake_google_benchmark sub directory
+=== src/ament_cmake/ament_cmake_gtest (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_gtest/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9a388b026 Trimmed the branch to only the ament_cmake_gtest sub directory
+=== src/ament_cmake/ament_cmake_include_directories (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_include_directories/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3753c047f Trimmed the branch to only the ament_cmake_include_directories sub directory
+=== src/ament_cmake/ament_cmake_libraries (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_libraries/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 626bff892 Trimmed the branch to only the ament_cmake_libraries sub directory
+=== src/ament_cmake/ament_cmake_pytest (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_pytest/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7348476b1 Trimmed the branch to only the ament_cmake_pytest sub directory
+=== src/ament_cmake/ament_cmake_python (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_python/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1a3b3570c Trimmed the branch to only the ament_cmake_python sub directory
+=== src/ament_cmake/ament_cmake_target_dependencies (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_target_dependencies/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e6bbab069 Trimmed the branch to only the ament_cmake_target_dependencies sub directory
+=== src/ament_cmake/ament_cmake_test (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_test/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e36d1c576 Trimmed the branch to only the ament_cmake_test sub directory
+=== src/ament_cmake/ament_cmake_version (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_version/1.3.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 62130c451 Trimmed the branch to only the ament_cmake_version sub directory
+=== src/ament_cmake_ros/ament_cmake_ros (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_ros/0.10.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6acf4d9 Trimmed the branch to only the ament_cmake_ros sub directory
+=== src/ament_cmake_ros/domain_coordinator (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/domain_coordinator/0.10.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at a4d43c5 Trimmed the branch to only the domain_coordinator sub directory
+=== src/ament_index/ament_index_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_index_cpp/1.4.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0817642 Trimmed the branch to only the ament_index_cpp sub directory
+=== src/ament_index/ament_index_python (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_index_python/1.4.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f07a66c Trimmed the branch to only the ament_index_python sub directory
+=== src/ament_lint/ament_cmake_copyright (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_copyright/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ad8a42b58 Trimmed the branch to only the ament_cmake_copyright sub directory
+=== src/ament_lint/ament_cmake_cppcheck (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_cppcheck/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7441f6279 Trimmed the branch to only the ament_cmake_cppcheck sub directory
+=== src/ament_lint/ament_cmake_cpplint (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_cpplint/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7f16e61c4 Trimmed the branch to only the ament_cmake_cpplint sub directory
+=== src/ament_lint/ament_cmake_flake8 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_flake8/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2d40141c6 Trimmed the branch to only the ament_cmake_flake8 sub directory
+=== src/ament_lint/ament_cmake_lint_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_lint_cmake/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2bb4ae8a5 Trimmed the branch to only the ament_cmake_lint_cmake sub directory
+=== src/ament_lint/ament_cmake_pep257 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_pep257/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5058c4dbc Trimmed the branch to only the ament_cmake_pep257 sub directory
+=== src/ament_lint/ament_cmake_uncrustify (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_uncrustify/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7d7e795bb Trimmed the branch to only the ament_cmake_uncrustify sub directory
+=== src/ament_lint/ament_cmake_xmllint (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cmake_xmllint/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0158f4dfb Trimmed the branch to only the ament_cmake_xmllint sub directory
+=== src/ament_lint/ament_copyright (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_copyright/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d384e73f3 Trimmed the branch to only the ament_copyright sub directory
+=== src/ament_lint/ament_cppcheck (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cppcheck/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4168d9389 Trimmed the branch to only the ament_cppcheck sub directory
+=== src/ament_lint/ament_cpplint (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_cpplint/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9e3854829 Trimmed the branch to only the ament_cpplint sub directory
+=== src/ament_lint/ament_flake8 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_flake8/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 31f38cb1b Trimmed the branch to only the ament_flake8 sub directory
+=== src/ament_lint/ament_lint (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_lint/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d0c5e626f Trimmed the branch to only the ament_lint sub directory
+=== src/ament_lint/ament_lint_auto (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_lint_auto/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ee3dfdab0 Trimmed the branch to only the ament_lint_auto sub directory
+=== src/ament_lint/ament_lint_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_lint_cmake/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at a990ca459 Trimmed the branch to only the ament_lint_cmake sub directory
+=== src/ament_lint/ament_lint_common (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_lint_common/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0a2306f34 Trimmed the branch to only the ament_lint_common sub directory
+=== src/ament_lint/ament_mypy (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_mypy/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8c15f0aa7 Trimmed the branch to only the ament_mypy sub directory
+=== src/ament_lint/ament_pep257 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_pep257/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at dea7d1320 Trimmed the branch to only the ament_pep257 sub directory
+=== src/ament_lint/ament_pycodestyle (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_pycodestyle/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3eff16785 Trimmed the branch to only the ament_pycodestyle sub directory
+=== src/ament_lint/ament_uncrustify (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_uncrustify/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6e62b9296 Trimmed the branch to only the ament_uncrustify sub directory
+=== src/ament_lint/ament_xmllint (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_xmllint/0.12.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9b9fb1101 Trimmed the branch to only the ament_xmllint sub directory
+=== src/ament_package (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ament_package/0.14.0-4'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 00da147 Rebase from 'upstream' (no changes)
+=== src/async_web_server_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/async_web_server_cpp/2.0.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at da6bf2d Rebase from 'upstream' (no changes)
+=== src/class_loader (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/class_loader/2.2.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 05674e2 Rebase from 'upstream' (no changes)
+=== src/common_interfaces/actionlib_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/actionlib_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 44a438b8 Trimmed the branch to only the actionlib_msgs sub directory
+=== src/common_interfaces/common_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/common_interfaces/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 47cf40c2 Trimmed the branch to only the common_interfaces sub directory
+=== src/common_interfaces/diagnostic_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/diagnostic_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d6e98367 Trimmed the branch to only the diagnostic_msgs sub directory
+=== src/common_interfaces/geometry_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/geometry_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1cf84840 Trimmed the branch to only the geometry_msgs sub directory
+=== src/common_interfaces/nav_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/nav_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 537f86e1 Trimmed the branch to only the nav_msgs sub directory
+=== src/common_interfaces/sensor_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/sensor_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3d781b96 Trimmed the branch to only the sensor_msgs sub directory
+=== src/common_interfaces/shape_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/shape_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 30a5478e Trimmed the branch to only the shape_msgs sub directory
+=== src/common_interfaces/std_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/std_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e19956b4 Trimmed the branch to only the std_msgs sub directory
+=== src/common_interfaces/std_srvs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/std_srvs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6323417c Trimmed the branch to only the std_srvs sub directory
+=== src/common_interfaces/stereo_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/stereo_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0b26210e Trimmed the branch to only the stereo_msgs sub directory
+=== src/common_interfaces/trajectory_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/trajectory_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 29f88cba Trimmed the branch to only the trajectory_msgs sub directory
+=== src/common_interfaces/visualization_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/visualization_msgs/4.2.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6ad907e4 Trimmed the branch to only the visualization_msgs sub directory
+=== src/console_bridge_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/console_bridge_vendor/1.4.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 45606e1 Rebase from 'upstream' (no changes)
+=== src/cyclonedds (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/cyclonedds/0.9.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9feb1d2 Rebase from 'upstream' (no changes)
+=== src/eigen3_cmake_module (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/eigen3_cmake_module/0.1.1-4'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fb6325b Rebase from 'upstream' (no changes)
+=== src/example_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/example_interfaces/0.9.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7468255 Rebase from 'upstream' (no changes)
+=== src/fastcdr (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/fastcdr/1.0.24-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at af820fd Rebase from 'upstream' (no changes)
+=== src/fastrtps (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/fastrtps/2.6.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8abc2136 Rebase from 'upstream' (no changes)
+=== src/foonathan_memory_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/foonathan_memory_vendor/1.2.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1cf70fe Rebase from 'upstream' (no changes)
+=== src/geometry2/geometry2 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/geometry2/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 125b2fac Trimmed the branch to only the geometry2 sub directory
+=== src/geometry2/tf2 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fe5931e0 Trimmed the branch to only the tf2 sub directory
+=== src/geometry2/tf2_bullet (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_bullet/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 56c085b7 Trimmed the branch to only the tf2_bullet sub directory
+=== src/geometry2/tf2_eigen (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_eigen/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4ff1fb79 Trimmed the branch to only the tf2_eigen sub directory
+=== src/geometry2/tf2_eigen_kdl (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_eigen_kdl/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7b3da6df Trimmed the branch to only the tf2_eigen_kdl sub directory
+=== src/geometry2/tf2_geometry_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_geometry_msgs/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7a6b3a87 Trimmed the branch to only the tf2_geometry_msgs sub directory
+=== src/geometry2/tf2_kdl (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_kdl/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at a2aac87f Trimmed the branch to only the tf2_kdl sub directory
+=== src/geometry2/tf2_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_msgs/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c5830ea9 Trimmed the branch to only the tf2_msgs sub directory
+=== src/geometry2/tf2_py (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_py/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3308e2b8 Trimmed the branch to only the tf2_py sub directory
+=== src/geometry2/tf2_ros (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_ros/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6ba7b6d2 Trimmed the branch to only the tf2_ros sub directory
+=== src/geometry2/tf2_ros_py (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_ros_py/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4d927f6f Trimmed the branch to only the tf2_ros_py sub directory
+=== src/geometry2/tf2_sensor_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_sensor_msgs/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7bd604bc Trimmed the branch to only the tf2_sensor_msgs sub directory
+=== src/geometry2/tf2_tools (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tf2_tools/0.25.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at cd505b2f Trimmed the branch to only the tf2_tools sub directory
+=== src/google_benchmark_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/google_benchmark_vendor/0.1.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8404e90 Rebase from 'upstream' (no changes)
+=== src/googletest/gmock_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/gmock_vendor/1.10.9004-4'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ab62b30 Trimmed the branch to only the googlemock sub directory
+=== src/googletest/gtest_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/gtest_vendor/1.10.9004-4'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 20131d7 Trimmed the branch to only the googletest sub directory
+=== src/iceoryx/iceoryx_binding_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/iceoryx_binding_c/2.0.2-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c8d75f1 Trimmed the branch to only the iceoryx_binding_c sub directory
+=== src/iceoryx/iceoryx_hoofs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/iceoryx_hoofs/2.0.2-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9603c02 Trimmed the branch to only the iceoryx_hoofs sub directory
+=== src/iceoryx/iceoryx_posh (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/iceoryx_posh/2.0.2-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 81042e4 Trimmed the branch to only the iceoryx_posh sub directory
+=== src/image_common/camera_calibration_parsers (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/camera_calibration_parsers/3.1.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fbd3f49 Trimmed the branch to only the camera_calibration_parsers sub directory
+=== src/image_common/camera_info_manager (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/camera_info_manager/3.1.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9071abc Trimmed the branch to only the camera_info_manager sub directory
+=== src/image_common/image_transport (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/image_transport/3.1.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d9b4608 Trimmed the branch to only the image_transport sub directory
+=== src/image_transport_plugins/compressed_depth_image_transport (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/compressed_depth_image_transport/2.5.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9dcabdd Trimmed the branch to only the compressed_depth_image_transport sub directory
+=== src/image_transport_plugins/compressed_image_transport (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/compressed_image_transport/2.5.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9f95164 Trimmed the branch to only the compressed_image_transport sub directory
+=== src/image_transport_plugins/image_transport_plugins (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/image_transport_plugins/2.5.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9df1f3f Trimmed the branch to only the image_transport_plugins sub directory
+=== src/image_transport_plugins/theora_image_transport (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/theora_image_transport/2.5.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b9f0fc6 Trimmed the branch to only the theora_image_transport sub directory
+=== src/kdl_parser (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/kdl_parser/2.6.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0d6b0e7 Trimmed the branch to only the kdl_parser sub directory
+=== src/keyboard_handler (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/keyboard_handler/0.0.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 05e733d Trimmed the branch to only the keyboard_handler sub directory
+=== src/launch/launch (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch/1.0.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d2929600 Trimmed the branch to only the launch sub directory
+=== src/launch/launch_testing (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_testing/1.0.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b5981382 Trimmed the branch to only the launch_testing sub directory
+=== src/launch/launch_testing_ament_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_testing_ament_cmake/1.0.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f3c145f7 Trimmed the branch to only the launch_testing_ament_cmake sub directory
+=== src/launch/launch_xml (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_xml/1.0.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 20e703a6 Trimmed the branch to only the launch_xml sub directory
+=== src/launch/launch_yaml (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_yaml/1.0.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c21c9fda Trimmed the branch to only the launch_yaml sub directory
+=== src/launch_ros/launch_ros (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_ros/0.19.3-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b5e05aa Trimmed the branch to only the launch_ros sub directory
+=== src/launch_ros/launch_testing_ros (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/launch_testing_ros/0.19.3-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5825b5f Trimmed the branch to only the launch_testing_ros sub directory
+=== src/launch_ros/ros2launch (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2launch/0.19.3-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 03a2f82 Trimmed the branch to only the ros2launch sub directory
+=== src/libstatistics_collector (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/libstatistics_collector/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 81f4e34 Rebase from 'upstream' (no changes)
+=== src/libyaml_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/libyaml_vendor/1.2.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6b016f9 Rebase from 'upstream' (no changes)
+=== src/message_filters (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/message_filters/4.3.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2cf744a Rebase from 'upstream' (no changes)
+=== src/mimick_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/mimick_vendor/0.2.8-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c2c7ccc Rebase from 'upstream' (no changes)
+=== src/orocos_kdl_vendor/orocos_kdl_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/orocos_kdl_vendor/0.2.2-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 47ed391 Trimmed the branch to only the orocos_kdl_vendor sub directory
+=== src/osrf_pycommon (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/osrf_pycommon/2.0.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fcbcc78 Rebase from 'upstream'
+=== src/osrf_testing_tools_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/osrf_testing_tools_cpp/1.5.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7ff4076 Trimmed the branch to only the osrf_testing_tools_cpp sub directory
+=== src/performance_test_fixture (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/performance_test_fixture/0.0.8-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b411012 Rebase from 'upstream' (no changes)
+=== src/pluginlib (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/pluginlib/5.1.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 551fbde Trimmed the branch to only the pluginlib sub directory
+=== src/pybind11_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/pybind11_vendor/2.4.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9ecdc8a Rebase from 'upstream'
+=== src/python_cmake_module (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/python_cmake_module/0.10.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at afb4c5c Rebase from 'upstream' (no changes)
+=== src/rcl/rcl (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl/5.3.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4f3814b7 Trimmed the branch to only the rcl sub directory
+=== src/rcl/rcl_action (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_action/5.3.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 47fe8924 Trimmed the branch to only the rcl_action sub directory
+=== src/rcl/rcl_lifecycle (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_lifecycle/5.3.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5e880af9 Trimmed the branch to only the rcl_lifecycle sub directory
+=== src/rcl/rcl_yaml_param_parser (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_yaml_param_parser/5.3.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d6007337 Trimmed the branch to only the rcl_yaml_param_parser sub directory
+=== src/rcl_interfaces/action_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/action_msgs/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6248b15 Trimmed the branch to only the action_msgs sub directory
+=== src/rcl_interfaces/builtin_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/builtin_interfaces/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 64893ca Trimmed the branch to only the builtin_interfaces sub directory
+=== src/rcl_interfaces/composition_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/composition_interfaces/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2ddeadd Trimmed the branch to only the composition_interfaces sub directory
+=== src/rcl_interfaces/lifecycle_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/lifecycle_msgs/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1a898e1 Trimmed the branch to only the lifecycle_msgs sub directory
+=== src/rcl_interfaces/rcl_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_interfaces/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3373712 Trimmed the branch to only the rcl_interfaces sub directory
+=== src/rcl_interfaces/rosgraph_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosgraph_msgs/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fd7a84d Trimmed the branch to only the rosgraph_msgs sub directory
+=== src/rcl_interfaces/statistics_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/statistics_msgs/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at a7c0dfe Trimmed the branch to only the statistics_msgs sub directory
+=== src/rcl_interfaces/test_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/test_msgs/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 63ce63d Trimmed the branch to only the test_msgs sub directory
+=== src/rcl_logging/rcl_logging_interface (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_logging_interface/2.3.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b10413a Trimmed the branch to only the rcl_logging_interface sub directory
+=== src/rcl_logging/rcl_logging_spdlog (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcl_logging_spdlog/2.3.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9433120 Trimmed the branch to only the rcl_logging_spdlog sub directory
+=== src/rclcpp/rclcpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rclcpp/16.0.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at fb8d2e04 Trimmed the branch to only the rclcpp sub directory
+=== src/rclcpp/rclcpp_action (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rclcpp_action/16.0.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ed318603 Trimmed the branch to only the rclcpp_action sub directory
+=== src/rclcpp/rclcpp_components (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rclcpp_components/16.0.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9b749cf8 Trimmed the branch to only the rclcpp_components sub directory
+=== src/rclcpp/rclcpp_lifecycle (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rclcpp_lifecycle/16.0.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 128aeef1 Trimmed the branch to only the rclcpp_lifecycle sub directory
+=== src/rclpy (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rclpy/3.3.4-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c76ce99 Trimmed the branch to only the rclpy sub directory
+=== src/rcpputils (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcpputils/2.4.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 03a637a Rebase from 'upstream' (no changes)
+=== src/rcutils (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rcutils/5.1.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at bb897c7 Rebase from 'upstream' (no changes)
+=== src/rmw/rmw (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw/6.1.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5c43cc6 Trimmed the branch to only the rmw sub directory
+=== src/rmw/rmw_implementation_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_implementation_cmake/6.1.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5c1675b Trimmed the branch to only the rmw_implementation_cmake sub directory
+=== src/rmw_connextdds/rmw_connextdds (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_connextdds/0.11.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 166cd22 Trimmed the branch to only the rmw_connextdds sub directory
+=== src/rmw_connextdds/rmw_connextdds_common (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_connextdds_common/0.11.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2f2c44f Trimmed the branch to only the rmw_connextdds_common sub directory
+=== src/rmw_connextdds/rti_connext_dds_cmake_module (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rti_connext_dds_cmake_module/0.11.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 53deff4 Trimmed the branch to only the rti_connext_dds_cmake_module sub directory
+=== src/rmw_cyclonedds_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_cyclonedds_cpp/1.3.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 412f3e6 Trimmed the branch to only the rmw_cyclonedds_cpp sub directory
+=== src/rmw_dds_common (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_dds_common/1.6.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at eb132be Trimmed the branch to only the rmw_dds_common sub directory
+=== src/rmw_fastrtps/rmw_fastrtps_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_fastrtps_cpp/6.2.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 33e6b49 Trimmed the branch to only the rmw_fastrtps_cpp sub directory
+=== src/rmw_fastrtps/rmw_fastrtps_dynamic_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_fastrtps_dynamic_cpp/6.2.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 89bb5f5 Trimmed the branch to only the rmw_fastrtps_dynamic_cpp sub directory
+=== src/rmw_fastrtps/rmw_fastrtps_shared_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_fastrtps_shared_cpp/6.2.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4913a75 Trimmed the branch to only the rmw_fastrtps_shared_cpp sub directory
+=== src/rmw_implementation (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rmw_implementation/2.8.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0b6ac02 Trimmed the branch to only the rmw_implementation sub directory
+=== src/robot_state_publisher (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/robot_state_publisher/3.0.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5fa15e3 Rebase from 'upstream' (no changes)
+=== src/ros2_tracing/tracetools (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tracetools/4.1.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 308be4d Trimmed the branch to only the tracetools sub directory
+=== src/ros2cli/ros2action (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2action/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c4433943 Trimmed the branch to only the ros2action sub directory
+=== src/ros2cli/ros2cli (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2cli/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7e3d4439 Trimmed the branch to only the ros2cli sub directory
+=== src/ros2cli/ros2cli_test_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2cli_test_interfaces/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 60afbdfe Trimmed the branch to only the ros2cli_test_interfaces sub directory
+=== src/ros2cli/ros2component (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2component/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d2a973ca Trimmed the branch to only the ros2component sub directory
+=== src/ros2cli/ros2doctor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2doctor/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 54efdd50 Trimmed the branch to only the ros2doctor sub directory
+=== src/ros2cli/ros2interface (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2interface/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 629df418 Trimmed the branch to only the ros2interface sub directory
+=== src/ros2cli/ros2lifecycle (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2lifecycle/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 250dab27 Trimmed the branch to only the ros2lifecycle sub directory
+=== src/ros2cli/ros2lifecycle_test_fixtures (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2lifecycle_test_fixtures/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 193a133b Trimmed the branch to only the ros2lifecycle_test_fixtures sub directory
+=== src/ros2cli/ros2multicast (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2multicast/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e971aac1 Trimmed the branch to only the ros2multicast sub directory
+=== src/ros2cli/ros2node (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2node/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 34815405 Trimmed the branch to only the ros2node sub directory
+=== src/ros2cli/ros2param (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2param/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7ae66740 Trimmed the branch to only the ros2param sub directory
+=== src/ros2cli/ros2pkg (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2pkg/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b682a82a Trimmed the branch to only the ros2pkg sub directory
+=== src/ros2cli/ros2run (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2run/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c8dfcbfc Trimmed the branch to only the ros2run sub directory
+=== src/ros2cli/ros2service (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2service/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ad8bc42b Trimmed the branch to only the ros2service sub directory
+=== src/ros2cli/ros2topic (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2topic/0.18.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ff9b3532 Trimmed the branch to only the ros2topic sub directory
+=== src/ros2cli_common_extensions (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2cli_common_extensions/0.1.1-4'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8241251 Trimmed the branch to only the ros2cli_common_extensions sub directory
+=== src/ros_environment (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros_environment/3.2.1-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 310b925 Rebase from 'upstream'
+=== src/ros_testing/ros2test (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2test/0.4.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0a986fb Trimmed the branch to only the ros2test sub directory
+=== src/ros_testing/ros_testing (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros_testing/0.4.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d967927 Trimmed the branch to only the ros_testing sub directory
+=== src/rosbag2/ros2bag (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros2bag/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 36588fac Trimmed the branch to only the ros2bag sub directory
+=== src/rosbag2/rosbag2 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ae980f2b Trimmed the branch to only the rosbag2 sub directory
+=== src/rosbag2/rosbag2_compression (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_compression/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 62aa8d74 Trimmed the branch to only the rosbag2_compression sub directory
+=== src/rosbag2/rosbag2_compression_zstd (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_compression_zstd/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at d8a655ad Trimmed the branch to only the rosbag2_compression_zstd sub directory
+=== src/rosbag2/rosbag2_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_cpp/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8302a9fe Trimmed the branch to only the rosbag2_cpp sub directory
+=== src/rosbag2/rosbag2_interfaces (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_interfaces/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 54907ce1 Trimmed the branch to only the rosbag2_interfaces sub directory
+=== src/rosbag2/rosbag2_py (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_py/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4744e38f Trimmed the branch to only the rosbag2_py sub directory
+=== src/rosbag2/rosbag2_storage (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_storage/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 271076b4 Trimmed the branch to only the rosbag2_storage sub directory
+=== src/rosbag2/rosbag2_storage_default_plugins (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_storage_default_plugins/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 31720912 Trimmed the branch to only the rosbag2_storage_default_plugins sub directory
+=== src/rosbag2/rosbag2_test_common (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_test_common/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6989fd73 Trimmed the branch to only the rosbag2_test_common sub directory
+=== src/rosbag2/rosbag2_tests (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_tests/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f47dd638 Trimmed the branch to only the rosbag2_tests sub directory
+=== src/rosbag2/rosbag2_transport (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbag2_transport/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6f106293 Trimmed the branch to only the rosbag2_transport sub directory
+=== src/rosbag2/shared_queues_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/shared_queues_vendor/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8deb78f2 Trimmed the branch to only the shared_queues_vendor sub directory
+=== src/rosbag2/sqlite3_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/sqlite3_vendor/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at dabc5791 Trimmed the branch to only the sqlite3_vendor sub directory
+=== src/rosbag2/zstd_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/zstd_vendor/0.15.2-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 69c8170f Trimmed the branch to only the zstd_vendor sub directory
+=== src/rosbridge_suite/rosapi (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosapi/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at af72666 Trimmed the branch to only the rosapi sub directory
+=== src/rosbridge_suite/rosapi_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosapi_msgs/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 4534af6 Trimmed the branch to only the rosapi_msgs sub directory
+=== src/rosbridge_suite/rosbridge_library (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbridge_library/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 8bbe536 Trimmed the branch to only the rosbridge_library sub directory
+=== src/rosbridge_suite/rosbridge_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbridge_msgs/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 98e14f5 Trimmed the branch to only the rosbridge_msgs sub directory
+=== src/rosbridge_suite/rosbridge_server (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbridge_server/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 3b07c2d Trimmed the branch to only the rosbridge_server sub directory
+=== src/rosbridge_suite/rosbridge_suite (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbridge_suite/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 5e1ef45 Trimmed the branch to only the rosbridge_suite sub directory
+=== src/rosbridge_suite/rosbridge_test_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosbridge_test_msgs/1.2.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 28e90c1 Trimmed the branch to only the rosbridge_test_msgs sub directory
+=== src/rosidl/rosidl_adapter (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_adapter/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 9dbc929c Trimmed the branch to only the rosidl_adapter sub directory
+=== src/rosidl/rosidl_cli (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_cli/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6ae9c247 Trimmed the branch to only the rosidl_cli sub directory
+=== src/rosidl/rosidl_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_cmake/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c9e9cebf Trimmed the branch to only the rosidl_cmake sub directory
+=== src/rosidl/rosidl_generator_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_generator_c/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7eeeb93e Trimmed the branch to only the rosidl_generator_c sub directory
+=== src/rosidl/rosidl_generator_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_generator_cpp/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 872486c7 Trimmed the branch to only the rosidl_generator_cpp sub directory
+=== src/rosidl/rosidl_parser (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_parser/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 97227aff Trimmed the branch to only the rosidl_parser sub directory
+=== src/rosidl/rosidl_runtime_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_runtime_c/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 792fed38 Trimmed the branch to only the rosidl_runtime_c sub directory
+=== src/rosidl/rosidl_runtime_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_runtime_cpp/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at eef8beb4 Trimmed the branch to only the rosidl_runtime_cpp sub directory
+=== src/rosidl/rosidl_typesupport_interface (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_interface/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c7c2cd97 Trimmed the branch to only the rosidl_typesupport_interface sub directory
+=== src/rosidl/rosidl_typesupport_introspection_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_introspection_c/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at edaa63b7 Trimmed the branch to only the rosidl_typesupport_introspection_c sub directory
+=== src/rosidl/rosidl_typesupport_introspection_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_introspection_cpp/3.1.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 2932af45 Trimmed the branch to only the rosidl_typesupport_introspection_cpp sub directory
+=== src/rosidl_defaults/rosidl_default_generators (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_default_generators/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0b7f3d9 Trimmed the branch to only the rosidl_default_generators sub directory
+=== src/rosidl_defaults/rosidl_default_runtime (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_default_runtime/1.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 66bde95 Trimmed the branch to only the rosidl_default_runtime sub directory
+=== src/rosidl_generator_py (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_generator_py/0.14.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f4365eb Trimmed the branch to only the rosidl_generator_py sub directory
+=== src/rosidl_runtime_py (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_runtime_py/0.9.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b93a865 Rebase from 'upstream' (no changes)
+=== src/rosidl_typesupport/rosidl_typesupport_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_c/2.0.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 66f0176 Trimmed the branch to only the rosidl_typesupport_c sub directory
+=== src/rosidl_typesupport/rosidl_typesupport_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_cpp/2.0.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 08cd18e Trimmed the branch to only the rosidl_typesupport_cpp sub directory
+=== src/rosidl_typesupport_fastrtps/fastrtps_cmake_module (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/fastrtps_cmake_module/2.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 7b00b20 Trimmed the branch to only the fastrtps_cmake_module sub directory
+=== src/rosidl_typesupport_fastrtps/rosidl_typesupport_fastrtps_c (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_fastrtps_c/2.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1d638f6 Trimmed the branch to only the rosidl_typesupport_fastrtps_c sub directory
+=== src/rosidl_typesupport_fastrtps/rosidl_typesupport_fastrtps_cpp (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rosidl_typesupport_fastrtps_cpp/2.2.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 13f9ccd Trimmed the branch to only the rosidl_typesupport_fastrtps_cpp sub directory
+=== src/rpyutils (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/rpyutils/0.2.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f85e87d Rebase from 'upstream' (no changes)
+=== src/spdlog_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/spdlog_vendor/1.3.0-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 1f04b84 Rebase from 'upstream' (no changes)
+=== src/sros2/sros2 (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/sros2/0.10.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 13a4145 Trimmed the branch to only the sros2 sub directory
+=== src/sros2/sros2_cmake (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/sros2_cmake/0.10.4-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c1c0bc3 Trimmed the branch to only the sros2_cmake sub directory
+=== src/test_interface_files (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/test_interface_files/0.9.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e3d0c4e Rebase from 'upstream' (no changes)
+=== src/tinyxml2_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tinyxml2_vendor/0.7.5-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 6d792da Rebase from 'upstream' (no changes)
+=== src/tinyxml_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/tinyxml_vendor/0.8.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at cf95f13 Rebase from 'upstream' (no changes)
+=== src/uncrustify_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/uncrustify_vendor/2.0.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at e2bddd9 Rebase from 'upstream' (no changes)
+=== src/unique_identifier_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/unique_identifier_msgs/2.2.1-3'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 76d4304 Rebase from 'upstream' (no changes)
+=== src/urdf/urdf (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/urdf/2.6.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 491b263 Trimmed the branch to only the urdf sub directory
+=== src/urdf/urdf_parser_plugin (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/urdf_parser_plugin/2.6.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ec11cfc Trimmed the branch to only the urdf_parser_plugin sub directory
+=== src/urdfdom (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/urdfdom/3.0.2-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at f542c91 Rebase from 'upstream' (no changes)
+=== src/urdfdom_headers (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/urdfdom_headers/1.0.6-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 65a274b Rebase from 'upstream' (no changes)
+=== src/v4l2_camera (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/v4l2_camera/0.4.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 86c466a Rebase from 'upstream' (no changes)
+=== src/variants/ros_base (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros_base/0.10.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 0017343 Trimmed the branch to only the ros_base sub directory
+=== src/variants/ros_core (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/ros_core/0.10.0-1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 695dfbd Trimmed the branch to only the ros_core sub directory
+=== src/vision_msgs (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/vision_msgs/4.0.0-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at b6e06b9 Rebase from 'upstream' (no changes)
+=== src/vision_opencv/cv_bridge (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/cv_bridge/3.0.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at a2d4b5f Trimmed the branch to only the cv_bridge sub directory
+=== src/vision_opencv/image_geometry (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/image_geometry/3.0.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 20108a2 Trimmed the branch to only the image_geometry sub directory
+=== src/vision_opencv/vision_opencv (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/vision_opencv/3.0.3-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 26e1aef Trimmed the branch to only the vision_opencv sub directory
+=== src/yaml_cpp_vendor (git) ===
+Cloning into '.'...
+Note: checking out 'release/humble/yaml_cpp_vendor/8.0.1-2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 79732fe Rebase from 'upstream' (no changes)
+[91mCloning into 'web_video_server'...
+[0mGet:1 http://ports.ubuntu.com/ubuntu-ports bionic InRelease [242 kB]
+Get:2 http://packages.ros.org/ros2/ubuntu bionic InRelease [4,680 B]
+Get:3 http://ports.ubuntu.com/ubuntu-ports bionic-updates InRelease [88.7 kB]
+Get:4 http://packages.ros.org/ros2/ubuntu bionic/main arm64 Packages [660 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-backports InRelease [74.6 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-security InRelease [88.7 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports bionic/main arm64 Packages [1,285 kB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports bionic/universe arm64 Packages [11.0 MB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports bionic/restricted arm64 Packages [572 B]
+Get:10 http://ports.ubuntu.com/ubuntu-ports bionic/multiverse arm64 Packages [153 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports bionic-updates/multiverse arm64 Packages [5,354 B]
+Get:12 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main arm64 Packages [1,930 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports bionic-updates/restricted arm64 Packages [5,038 B]
+Get:14 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe arm64 Packages [2,043 kB]
+Get:15 http://ports.ubuntu.com/ubuntu-ports bionic-backports/universe arm64 Packages [12.5 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports bionic-backports/main arm64 Packages [12.2 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports bionic-security/multiverse arm64 Packages [2,755 B]
+Get:18 http://ports.ubuntu.com/ubuntu-ports bionic-security/main arm64 Packages [1,549 kB]
+Get:19 http://ports.ubuntu.com/ubuntu-ports bionic-security/universe arm64 Packages [1,347 kB]
+Get:20 http://ports.ubuntu.com/ubuntu-ports bionic-security/restricted arm64 Packages [4,366 B]
+Fetched 20.5 MB in 9s (2,348 kB/s)
+Reading package lists...
+Wrote /etc/ros/rosdep/sources.list.d/20-default.list
+Recommended: please run
+
+	rosdep update
+
+[91mWarning: running 'rosdep update' as root is not recommended.
+  You should run 'sudo rosdep fix-permissions' and invoke 'rosdep update' again without sudo.
+[0mreading in sources list data from /etc/ros/rosdep/sources.list.d
+Hit https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/osx-homebrew.yaml
+Hit https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml
+Hit https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml
+Hit https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/ruby.yaml
+Hit https://raw.githubusercontent.com/ros/rosdistro/master/releases/fuerte.yaml
+Query rosdistro index https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml
+Skip end-of-life distro "ardent"
+Skip end-of-life distro "bouncy"
+Skip end-of-life distro "crystal"
+Skip end-of-life distro "dashing"
+Skip end-of-life distro "eloquent"
+Add distro "foxy"
+Add distro "galactic"
+Skip end-of-life distro "groovy"
+Add distro "humble"
+Skip end-of-life distro "hydro"
+Skip end-of-life distro "indigo"
+Skip end-of-life distro "jade"
+Skip end-of-life distro "kinetic"
+Skip end-of-life distro "lunar"
+Add distro "melodic"
+Add distro "noetic"
+Add distro "rolling"
+updated cache in /root/.ros/rosdep/sources.cache
+[91mERROR: the following packages/stacks could not have their rosdep keys resolved
+to system dependencies:
+rti_connext_dds_cmake_module: No definition of [rti-connext-dds-6.0.1] for OS version [bionic]
+[0mThe command '/bin/bash -c mkdir -p /opt/ros/humble/src &&     cd /opt/ros/humble &&     rosinstall_generator --deps --rosdistro humble ros_base         launch_xml         launch_yaml         launch_testing         launch_testing_ament_cmake         example_interfaces         cv_bridge         v4l2_camera         vision_opencv         vision_msgs         image_transport         compressed_image_transport         compressed_depth_image_transport         image_transport_plugins         rosbridge_suite         async_web_server_cpp     > ros2.humble.ros_base.rosinstall &&     cat ros2.humble.ros_base.rosinstall &&     vcs import src < ros2.humble.ros_base.rosinstall &&     cd /opt/ros/humble/src && git clone --branch ros2 https://github.com/RobotWebTools/web_video_server.git &&     cd web_video_server && sed -i '3i set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)' ./CMakeLists.txt &&     cd /opt/ros/humble/src/async_web_server_cpp && sed -i 's/@Boost_VERSION@/1.65/g' ./find_dependencies.cmake.in &&     cd /opt/ros/humble &&     apt-get update &&     rosdep init &&     rosdep update &&     rosdep install -y         --ignore-src         --from-paths src         --rosdistro humble         --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" &&     colcon build --merge-install &&     rm -rf /opt/ros/humble/src &&     rm -rf /opt/ros/humble/log &&     rm -rf /opt/ros/humble/build &&     rm /opt/ros/humble/*.rosinstall &&     rm -rf /var/lib/apt/lists/* &&     apt-get clean &&     rm -rf /tmp/*' returned a non-zero code: 1
